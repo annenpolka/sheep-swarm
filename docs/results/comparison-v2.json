@@ -1,0 +1,778 @@
+{
+  "format": 1,
+  "generatedAt": "2026-09-09T18:16:38.514Z",
+  "sourceManifest": {
+    "src/cli.ts": "89e7b4d999ddcb2244b9bf92e65a6985ad43df2633be91ace6fd8fcce4f79f10",
+    "src/codex-worker.ts": "f0ce9b1d9c43a4820b7d4d512e87d6f78caab329688a9555554d2270a1cc8a87",
+    "src/compare-cli.ts": "04ed17f185422eaabac89e49f71c5dadaa8acc00756c8c29f3a553a4443b14f7",
+    "src/comparison.ts": "b5291258c21e6c401e9c5867dc21491fbeeab2ff7664a8ca57627044e3b0f366",
+    "src/durable-cli.ts": "718bda903cf6207ef6cda28e2621b19ddbb9bafe587cadd5be182205bf9d2a2c",
+    "src/durable-run.ts": "b6c54551db7df825266e94959b1c2d11198d1317fe9597f61a23b5b3bc5a4a13",
+    "src/fixture.ts": "01b6ed9d60b2d8633a9e1e79368985a4e87cd36f9b4361f27345b48d4c65b2e2",
+    "src/heldout-fixture.ts": "f07cb8ed795817df3b0466bf9b61b33002d317640a14c4ce0234b8fabc274b48",
+    "src/journal.ts": "f706e87c675da20742c93679e1082a3bac06c6dff97b1fd25c7f313873c59998",
+    "src/kernel-state.ts": "b2b99aadd88326c9d9cbb0442780f7a59c946eeb690cd4335eabe681729aed18",
+    "src/kernel.ts": "5e8bb070bdc4ea144f657569450018c20b3a9457f33525110e0ae750c1ff805f",
+    "src/protocol.ts": "e2a180c9a4e4c3097d833d81ca73f990133160393818912e75507bb4b129b399",
+    "src/swarm.ts": "8a946e267a97b56c79a04a7792f3404b4507c112c4c1ad3444213679640c51ca",
+    "src/worker-pool.ts": "2b1412f38606f7a8b816c8edc79a479eb367a7897a3ac969720b7e64602c7397",
+    "package.json": "f5f4fbd765a40f6b23e0573d86040aee54335e8a65c6f3ad82909e94290dc202",
+    "package-lock.json": "df65b657a516d338ead84eb59d3db48144d622be3db3deccc864707e9eba80b8"
+  },
+  "common": {
+    "size": 8,
+    "workers": 4,
+    "concurrency": 4,
+    "maxCalls": 48,
+    "maxTokens": 500000,
+    "reserveTokens": 30000,
+    "timeoutMs": 90000,
+    "maxRounds": 24
+  },
+  "complete": true,
+  "rows": [
+    {
+      "id": "single-upper-none-r1",
+      "method": "single-upper",
+      "fault": "none",
+      "replicate": 1,
+      "fixtureFingerprint": "ba44d9e93745c8feebbaf950c9b30ea0833798ede97db86878a682cde17d3dea",
+      "configuration": {
+        "method": "single-upper",
+        "size": 8,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCalls": 48,
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "timeoutMs": 90000,
+        "maxRounds": 24,
+        "maxAttempts": 3,
+        "fault": "none"
+      },
+      "success": true,
+      "qualityPass": true,
+      "lowerCalls": 0,
+      "upperCalls": 1,
+      "interventions": 0,
+      "retries": 0,
+      "budget": {
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "observedTokens": 23832,
+        "observedInputTokens": 22507,
+        "observedOutputTokens": 1325,
+        "unknownUsageCalls": 0,
+        "reservationOverruns": 0,
+        "exceeded": false,
+        "admissionDenied": false
+      },
+      "times": {
+        "preparationMs": 1.4662500000000023,
+        "readingMs": 1.7525819999910652,
+        "acceptanceMs": 1236.1205009999817,
+        "discoveryMs": 0,
+        "modelMs": 45172.701917,
+        "retryModelMs": 0,
+        "elapsedMs": 46417.764125
+      },
+      "discovery": {
+        "scans": 0,
+        "filesRead": 0,
+        "bytesRead": 0,
+        "edges": 23,
+        "missingDeclaredEdges": 0
+      },
+      "acceptanceChecks": 22,
+      "contextBytes": 5152,
+      "maxActiveModelCalls": 1,
+      "outcomes": {
+        "committed": 1
+      },
+      "finalErrors": [],
+      "rawResultSha256": "cd77af3f0f344b427912469b2534381e608f10318e8094d0e8b344b7816dc73d"
+    },
+    {
+      "id": "manager-local-none-r1",
+      "method": "manager-local",
+      "fault": "none",
+      "replicate": 1,
+      "fixtureFingerprint": "ba44d9e93745c8feebbaf950c9b30ea0833798ede97db86878a682cde17d3dea",
+      "configuration": {
+        "method": "manager-local",
+        "size": 8,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCalls": 48,
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "timeoutMs": 90000,
+        "maxRounds": 24,
+        "maxAttempts": 3,
+        "fault": "none"
+      },
+      "success": true,
+      "qualityPass": true,
+      "lowerCalls": 10,
+      "upperCalls": 3,
+      "interventions": 0,
+      "retries": 0,
+      "budget": {
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "observedTokens": 260626,
+        "observedInputTokens": 257859,
+        "observedOutputTokens": 2767,
+        "unknownUsageCalls": 0,
+        "reservationOverruns": 0,
+        "exceeded": false,
+        "admissionDenied": false
+      },
+      "times": {
+        "preparationMs": 1.4587080000000014,
+        "readingMs": 1.3912060000028674,
+        "acceptanceMs": 1639.2620799999997,
+        "discoveryMs": 0,
+        "modelMs": 124826.845417,
+        "retryModelMs": 0,
+        "elapsedMs": 58886.157208
+      },
+      "discovery": {
+        "scans": 0,
+        "filesRead": 0,
+        "bytesRead": 0,
+        "edges": 23,
+        "missingDeclaredEdges": 0
+      },
+      "acceptanceChecks": 29,
+      "contextBytes": 33296,
+      "maxActiveModelCalls": 4,
+      "outcomes": {
+        "planned": 3,
+        "committed": 10
+      },
+      "finalErrors": [],
+      "rawResultSha256": "c4f4fdacdf3a846ec8b28d1364067e649dca72e348fbfae5de4d942e477cfa00"
+    },
+    {
+      "id": "sheep-fixed-none-r1",
+      "method": "sheep-fixed",
+      "fault": "none",
+      "replicate": 1,
+      "fixtureFingerprint": "ba44d9e93745c8feebbaf950c9b30ea0833798ede97db86878a682cde17d3dea",
+      "configuration": {
+        "method": "sheep-fixed",
+        "size": 8,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCalls": 48,
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "timeoutMs": 90000,
+        "maxRounds": 24,
+        "maxAttempts": 3,
+        "fault": "none"
+      },
+      "success": true,
+      "qualityPass": true,
+      "lowerCalls": 10,
+      "upperCalls": 0,
+      "interventions": 0,
+      "retries": 0,
+      "budget": {
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "observedTokens": 192655,
+        "observedInputTokens": 190266,
+        "observedOutputTokens": 2389,
+        "unknownUsageCalls": 0,
+        "reservationOverruns": 0,
+        "exceeded": false,
+        "admissionDenied": false
+      },
+      "times": {
+        "preparationMs": 1.8112079999999935,
+        "readingMs": 0.9697879999987435,
+        "acceptanceMs": 1672.8587110000049,
+        "discoveryMs": 0,
+        "modelMs": 91945.146625,
+        "retryModelMs": 0,
+        "elapsedMs": 31191.998583
+      },
+      "discovery": {
+        "scans": 0,
+        "filesRead": 0,
+        "bytesRead": 0,
+        "edges": 23,
+        "missingDeclaredEdges": 0
+      },
+      "acceptanceChecks": 29,
+      "contextBytes": 17877,
+      "maxActiveModelCalls": 4,
+      "outcomes": {
+        "committed": 10
+      },
+      "finalErrors": [],
+      "rawResultSha256": "d088a350c72c941c20a7dfcabf631d571c2fb31422511a3b7a91d711b4fd0785"
+    },
+    {
+      "id": "sheep-full-none-r1",
+      "method": "sheep-full",
+      "fault": "none",
+      "replicate": 1,
+      "fixtureFingerprint": "ba44d9e93745c8feebbaf950c9b30ea0833798ede97db86878a682cde17d3dea",
+      "configuration": {
+        "method": "sheep-full",
+        "size": 8,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCalls": 48,
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "timeoutMs": 90000,
+        "maxRounds": 24,
+        "maxAttempts": 3,
+        "fault": "none"
+      },
+      "success": true,
+      "qualityPass": true,
+      "lowerCalls": 10,
+      "upperCalls": 0,
+      "interventions": 0,
+      "retries": 0,
+      "budget": {
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "observedTokens": 192827,
+        "observedInputTokens": 190291,
+        "observedOutputTokens": 2536,
+        "unknownUsageCalls": 0,
+        "reservationOverruns": 0,
+        "exceeded": false,
+        "admissionDenied": false
+      },
+      "times": {
+        "preparationMs": 1.7406249999999943,
+        "readingMs": 0.9729989999974578,
+        "acceptanceMs": 1659.0554149999944,
+        "discoveryMs": 0.6789169999945699,
+        "modelMs": 91146.69166699999,
+        "retryModelMs": 0,
+        "elapsedMs": 30452.002083
+      },
+      "discovery": {
+        "scans": 11,
+        "filesRead": 121,
+        "bytesRead": 40487,
+        "edges": 23,
+        "missingDeclaredEdges": 0
+      },
+      "acceptanceChecks": 29,
+      "contextBytes": 17942,
+      "maxActiveModelCalls": 4,
+      "outcomes": {
+        "committed": 10
+      },
+      "finalErrors": [],
+      "rawResultSha256": "bf4ee4d4c01cd64df6d72e69f9a9acc74ad294cbdd2c4c6fef84d49a8224679d"
+    },
+    {
+      "id": "sheep-full-none-r2",
+      "method": "sheep-full",
+      "fault": "none",
+      "replicate": 2,
+      "fixtureFingerprint": "ba44d9e93745c8feebbaf950c9b30ea0833798ede97db86878a682cde17d3dea",
+      "configuration": {
+        "method": "sheep-full",
+        "size": 8,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCalls": 48,
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "timeoutMs": 90000,
+        "maxRounds": 24,
+        "maxAttempts": 3,
+        "fault": "none"
+      },
+      "success": true,
+      "qualityPass": true,
+      "lowerCalls": 10,
+      "upperCalls": 0,
+      "interventions": 0,
+      "retries": 0,
+      "budget": {
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "observedTokens": 192639,
+        "observedInputTokens": 190256,
+        "observedOutputTokens": 2383,
+        "unknownUsageCalls": 0,
+        "reservationOverruns": 0,
+        "exceeded": false,
+        "admissionDenied": false
+      },
+      "times": {
+        "preparationMs": 1.8028329999999926,
+        "readingMs": 0.917874000005682,
+        "acceptanceMs": 1634.0704549999955,
+        "discoveryMs": 0.7156230000075823,
+        "modelMs": 96492.77587400001,
+        "retryModelMs": 0,
+        "elapsedMs": 36618.985457999996
+      },
+      "discovery": {
+        "scans": 11,
+        "filesRead": 121,
+        "bytesRead": 40007,
+        "edges": 23,
+        "missingDeclaredEdges": 0
+      },
+      "acceptanceChecks": 29,
+      "contextBytes": 17877,
+      "maxActiveModelCalls": 4,
+      "outcomes": {
+        "committed": 10
+      },
+      "finalErrors": [],
+      "rawResultSha256": "685a7844c2785e1675ee687523bca40630107aa0aefeefe670776f98b6df732c"
+    },
+    {
+      "id": "sheep-fixed-none-r2",
+      "method": "sheep-fixed",
+      "fault": "none",
+      "replicate": 2,
+      "fixtureFingerprint": "ba44d9e93745c8feebbaf950c9b30ea0833798ede97db86878a682cde17d3dea",
+      "configuration": {
+        "method": "sheep-fixed",
+        "size": 8,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCalls": 48,
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "timeoutMs": 90000,
+        "maxRounds": 24,
+        "maxAttempts": 3,
+        "fault": "none"
+      },
+      "success": true,
+      "qualityPass": true,
+      "lowerCalls": 10,
+      "upperCalls": 0,
+      "interventions": 0,
+      "retries": 0,
+      "budget": {
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "observedTokens": 192648,
+        "observedInputTokens": 190260,
+        "observedOutputTokens": 2388,
+        "unknownUsageCalls": 0,
+        "reservationOverruns": 0,
+        "exceeded": false,
+        "admissionDenied": false
+      },
+      "times": {
+        "preparationMs": 1.471041999999997,
+        "readingMs": 0.9566269999937163,
+        "acceptanceMs": 1615.8977049999964,
+        "discoveryMs": 0,
+        "modelMs": 96460.855376,
+        "retryModelMs": 0,
+        "elapsedMs": 33523.666625000005
+      },
+      "discovery": {
+        "scans": 0,
+        "filesRead": 0,
+        "bytesRead": 0,
+        "edges": 23,
+        "missingDeclaredEdges": 0
+      },
+      "acceptanceChecks": 29,
+      "contextBytes": 17877,
+      "maxActiveModelCalls": 4,
+      "outcomes": {
+        "committed": 10
+      },
+      "finalErrors": [],
+      "rawResultSha256": "c5c487146f08c5327a256859f31db3d88cbd695da651e6ab226814f0d4e4df01"
+    },
+    {
+      "id": "manager-local-none-r2",
+      "method": "manager-local",
+      "fault": "none",
+      "replicate": 2,
+      "fixtureFingerprint": "ba44d9e93745c8feebbaf950c9b30ea0833798ede97db86878a682cde17d3dea",
+      "configuration": {
+        "method": "manager-local",
+        "size": 8,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCalls": 48,
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "timeoutMs": 90000,
+        "maxRounds": 24,
+        "maxAttempts": 3,
+        "fault": "none"
+      },
+      "success": true,
+      "qualityPass": true,
+      "lowerCalls": 10,
+      "upperCalls": 3,
+      "interventions": 0,
+      "retries": 0,
+      "budget": {
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "observedTokens": 260470,
+        "observedInputTokens": 257894,
+        "observedOutputTokens": 2576,
+        "unknownUsageCalls": 0,
+        "reservationOverruns": 0,
+        "exceeded": false,
+        "admissionDenied": false
+      },
+      "times": {
+        "preparationMs": 1.364582999999996,
+        "readingMs": 1.3223769999926418,
+        "acceptanceMs": 1660.7823750000089,
+        "discoveryMs": 0,
+        "modelMs": 116378.825748,
+        "retryModelMs": 0,
+        "elapsedMs": 57321.166916
+      },
+      "discovery": {
+        "scans": 0,
+        "filesRead": 0,
+        "bytesRead": 0,
+        "edges": 23,
+        "missingDeclaredEdges": 0
+      },
+      "acceptanceChecks": 29,
+      "contextBytes": 33353,
+      "maxActiveModelCalls": 4,
+      "outcomes": {
+        "planned": 3,
+        "committed": 10
+      },
+      "finalErrors": [],
+      "rawResultSha256": "c4bd1103336d2c92eeb592b4c618e2237e55f0dc208e9efc939c92e933cf8b8f"
+    },
+    {
+      "id": "single-upper-none-r2",
+      "method": "single-upper",
+      "fault": "none",
+      "replicate": 2,
+      "fixtureFingerprint": "ba44d9e93745c8feebbaf950c9b30ea0833798ede97db86878a682cde17d3dea",
+      "configuration": {
+        "method": "single-upper",
+        "size": 8,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCalls": 48,
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "timeoutMs": 90000,
+        "maxRounds": 24,
+        "maxAttempts": 3,
+        "fault": "none"
+      },
+      "success": true,
+      "qualityPass": true,
+      "lowerCalls": 0,
+      "upperCalls": 1,
+      "interventions": 0,
+      "retries": 0,
+      "budget": {
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "observedTokens": 23832,
+        "observedInputTokens": 22507,
+        "observedOutputTokens": 1325,
+        "unknownUsageCalls": 0,
+        "reservationOverruns": 0,
+        "exceeded": false,
+        "admissionDenied": false
+      },
+      "times": {
+        "preparationMs": 1.3335419999999942,
+        "readingMs": 2.4825410000061794,
+        "acceptanceMs": 1681.8410410000067,
+        "discoveryMs": 0,
+        "modelMs": 46224.181084,
+        "retryModelMs": 0,
+        "elapsedMs": 47916.957667
+      },
+      "discovery": {
+        "scans": 0,
+        "filesRead": 0,
+        "bytesRead": 0,
+        "edges": 23,
+        "missingDeclaredEdges": 0
+      },
+      "acceptanceChecks": 22,
+      "contextBytes": 5152,
+      "maxActiveModelCalls": 1,
+      "outcomes": {
+        "committed": 1
+      },
+      "finalErrors": [],
+      "rawResultSha256": "c99fdc871e45136adb953d499e5bec1f5703a8f02fc812836e50e6183b24226d"
+    },
+    {
+      "id": "sheep-fixed-rounded-guidance-r1",
+      "method": "sheep-fixed",
+      "fault": "rounded-guidance",
+      "replicate": 1,
+      "fixtureFingerprint": "b216efb8ba2e2be209aa7767220bd4dcf7301c2c7b34ed3727e44c5a893ae375",
+      "configuration": {
+        "method": "sheep-fixed",
+        "size": 8,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCalls": 48,
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "timeoutMs": 90000,
+        "maxRounds": 24,
+        "maxAttempts": 3,
+        "fault": "rounded-guidance"
+      },
+      "success": true,
+      "qualityPass": true,
+      "lowerCalls": 14,
+      "upperCalls": 1,
+      "interventions": 1,
+      "retries": 4,
+      "budget": {
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "observedTokens": 295894,
+        "observedInputTokens": 291841,
+        "observedOutputTokens": 4053,
+        "unknownUsageCalls": 0,
+        "reservationOverruns": 0,
+        "exceeded": false,
+        "admissionDenied": false
+      },
+      "times": {
+        "preparationMs": 4.6793329999999855,
+        "readingMs": 2.247627999998997,
+        "acceptanceMs": 3495.04999899999,
+        "discoveryMs": 0,
+        "modelMs": 152049.236333,
+        "retryModelMs": 38934.61479200001,
+        "elapsedMs": 62508.426833
+      },
+      "discovery": {
+        "scans": 0,
+        "filesRead": 0,
+        "bytesRead": 0,
+        "edges": 23,
+        "missingDeclaredEdges": 0
+      },
+      "acceptanceChecks": 55,
+      "contextBytes": 30606,
+      "maxActiveModelCalls": 4,
+      "outcomes": {
+        "rejected": 4,
+        "committed": 11
+      },
+      "finalErrors": [],
+      "rawResultSha256": "e384c426e93c27c920c7e7dc6747e91eedc1940d5ea2833c6a3cc666dfceb892"
+    },
+    {
+      "id": "single-upper-rounded-guidance-r1",
+      "method": "single-upper",
+      "fault": "rounded-guidance",
+      "replicate": 1,
+      "fixtureFingerprint": "b216efb8ba2e2be209aa7767220bd4dcf7301c2c7b34ed3727e44c5a893ae375",
+      "configuration": {
+        "method": "single-upper",
+        "size": 8,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCalls": 48,
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "timeoutMs": 90000,
+        "maxRounds": 24,
+        "maxAttempts": 3,
+        "fault": "rounded-guidance"
+      },
+      "success": true,
+      "qualityPass": true,
+      "lowerCalls": 0,
+      "upperCalls": 2,
+      "interventions": 0,
+      "retries": 1,
+      "budget": {
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "observedTokens": 88804,
+        "observedInputTokens": 85646,
+        "observedOutputTokens": 3158,
+        "unknownUsageCalls": 0,
+        "reservationOverruns": 1,
+        "exceeded": false,
+        "admissionDenied": false
+      },
+      "times": {
+        "preparationMs": 1.3440420000000017,
+        "readingMs": 2.5984980000270355,
+        "acceptanceMs": 1838.7547519999557,
+        "discoveryMs": 0,
+        "modelMs": 105248.750542,
+        "retryModelMs": 54478.69308399999,
+        "elapsedMs": 107099.615125
+      },
+      "discovery": {
+        "scans": 0,
+        "filesRead": 0,
+        "bytesRead": 0,
+        "edges": 23,
+        "missingDeclaredEdges": 0
+      },
+      "acceptanceChecks": 35,
+      "contextBytes": 10420,
+      "maxActiveModelCalls": 1,
+      "outcomes": {
+        "rejected": 1,
+        "committed": 1
+      },
+      "finalErrors": [],
+      "rawResultSha256": "6511a4dab48dc697d3000fa738d4727eb3911110c979fcc099d420c56557aa54"
+    },
+    {
+      "id": "sheep-full-rounded-guidance-r1",
+      "method": "sheep-full",
+      "fault": "rounded-guidance",
+      "replicate": 1,
+      "fixtureFingerprint": "b216efb8ba2e2be209aa7767220bd4dcf7301c2c7b34ed3727e44c5a893ae375",
+      "configuration": {
+        "method": "sheep-full",
+        "size": 8,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCalls": 48,
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "timeoutMs": 90000,
+        "maxRounds": 24,
+        "maxAttempts": 3,
+        "fault": "rounded-guidance"
+      },
+      "success": true,
+      "qualityPass": true,
+      "lowerCalls": 14,
+      "upperCalls": 1,
+      "interventions": 1,
+      "retries": 4,
+      "budget": {
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "observedTokens": 296415,
+        "observedInputTokens": 291780,
+        "observedOutputTokens": 4635,
+        "unknownUsageCalls": 0,
+        "reservationOverruns": 0,
+        "exceeded": false,
+        "admissionDenied": false
+      },
+      "times": {
+        "preparationMs": 1.9797089999999997,
+        "readingMs": 1.8738709999897765,
+        "acceptanceMs": 3041.885499000005,
+        "discoveryMs": 0.7187079999979318,
+        "modelMs": 161568.898458,
+        "retryModelMs": 51503.318958,
+        "elapsedMs": 68300.995834
+      },
+      "discovery": {
+        "scans": 12,
+        "filesRead": 132,
+        "bytesRead": 44273,
+        "edges": 23,
+        "missingDeclaredEdges": 0
+      },
+      "acceptanceChecks": 55,
+      "contextBytes": 30330,
+      "maxActiveModelCalls": 4,
+      "outcomes": {
+        "rejected": 4,
+        "committed": 11
+      },
+      "finalErrors": [],
+      "rawResultSha256": "80c8a7b0da4ed80ce245b70bf0d0d84f53072e816350a8c9390a81491be3330b"
+    },
+    {
+      "id": "manager-local-rounded-guidance-r1",
+      "method": "manager-local",
+      "fault": "rounded-guidance",
+      "replicate": 1,
+      "fixtureFingerprint": "b216efb8ba2e2be209aa7767220bd4dcf7301c2c7b34ed3727e44c5a893ae375",
+      "configuration": {
+        "method": "manager-local",
+        "size": 8,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCalls": 48,
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "timeoutMs": 90000,
+        "maxRounds": 24,
+        "maxAttempts": 3,
+        "fault": "rounded-guidance"
+      },
+      "success": false,
+      "qualityPass": false,
+      "lowerCalls": 17,
+      "upperCalls": 6,
+      "interventions": 2,
+      "retries": 9,
+      "budget": {
+        "maxTokens": 500000,
+        "reserveTokensPerCall": 30000,
+        "observedTokens": 481263,
+        "observedInputTokens": 476184,
+        "observedOutputTokens": 5079,
+        "unknownUsageCalls": 0,
+        "reservationOverruns": 0,
+        "exceeded": false,
+        "admissionDenied": false
+      },
+      "times": {
+        "preparationMs": 1.4027499999999975,
+        "readingMs": 6.268835000012828,
+        "acceptanceMs": 4485.248291000026,
+        "discoveryMs": 0,
+        "modelMs": 231575.34645799996,
+        "retryModelMs": 86038.522292,
+        "elapsedMs": 129660.34575000001
+      },
+      "discovery": {
+        "scans": 0,
+        "filesRead": 0,
+        "bytesRead": 0,
+        "edges": 23,
+        "missingDeclaredEdges": 0
+      },
+      "acceptanceChecks": 82,
+      "contextBytes": 79376,
+      "maxActiveModelCalls": 4,
+      "outcomes": {
+        "committed": 6,
+        "rejected": 4,
+        "stale-read": 9,
+        "planned": 4
+      },
+      "finalErrors": [
+        "pending-work",
+        "blocking-claims"
+      ],
+      "rawResultSha256": "59c46012dbbf6090a0bad73b44aa25ccf8f9ecaf7342d3e6508e621376a44e9e"
+    }
+  ]
+}

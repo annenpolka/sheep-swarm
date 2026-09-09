@@ -1,6 +1,6 @@
 # 実装順序
 
-2026-09-09の [現在の方針](current-direction.md) に基づく計画。小さなkernelから実workerへ進み、人数を変えた振る舞いを早く観測する。各段階の状態は実行証拠に合わせる。
+2026-09-09の [現在の方針](current-direction.md) に基づく計画。小さなkernelから実workerへ進み、人数を変えた振る舞いを早く観測する。各段階の状態は実行証拠に合わせる。詳細な進捗は [ExecPlan](execplan.md)、M2の証拠は [4体pilot](results/luna-four-worker-pilot.md) を参照。
 
 ## M0: リポジトリ初期化 — 完了
 
@@ -11,7 +11,7 @@
 
 完了確認: `npm run check`、`npm run demo`。これはkernel、メタ管理、規模比較の実装完了を意味しない。
 
-## M1: 小さなin-memory kernel — 未着手
+## M1: 小さなin-memory kernel — 完了（限定した実行API）
 
 範囲: 固定出力workerと観測側の固定判断、注入する時刻とID、版付きartifact、根拠付きdependency、event／obligation／receipt、proposal検査、advisory claimとauthority epoch、blocking claim、完了判定、版と範囲を持つ介入の反映。
 
@@ -19,7 +19,7 @@
 
 完了条件: [検証方針](testing-policy.md) のin-memoryで必要なケースを決定論的scheduleで検査できる。未解決状態を保持し、介入後の古い提案・権限・完了証拠を再評価できる。意味的判断は観測側に明示し、kernelの機械処理へ隠さない。crash/restartの保証はM4で検証する。
 
-## M2: 下位4体＋上位1体の実worker接続 — 未着手
+## M2: 下位4体＋上位1体の実worker接続 — 完了（合成fixture）
 
 範囲: 小さなfixture repo、下位モデル4体、上位モデル1体、差分と局所context、分離した作業領域、統合候補の受入テスト、既存coding agent adapter、観測と介入の記録。
 
@@ -27,7 +27,7 @@
 
 4体は動作確認であり、増員時の仮説検証の完了とはしない。永続化前の中断runは未完了として扱い、再開の保証を報告しない。
 
-## M3: 下位16体から8・16・32体の規模比較 — 未着手
+## M3: 下位16体から8・16・32体の規模比較 — 完了（初期の合成task比較）
 
 範囲: 数十個の意味のある変更箇所、局所依存と境界をまたぐ依存を持つfixture。上位1体、下位16体で最初の本実験を行い、8・16・32体を初期比較範囲とする。
 
@@ -35,21 +35,29 @@
 
 完了条件: 各規模で同じシナリオを複数回実行し、品質、分業、誤りと訂正の伝播、振動、復旧、上位の観測・介入負担を比較できる。モデルの組、上位の介入方針と予算上限を揃え、変更した条件を記録する。失敗や不利な結果も残す。
 
+実行証拠: [規模比較](results/scaling-findings.md)。主比較15runと別の16体pilotを保存。回復済み通信の誤分類も除外せず記録し、生usageを復元した。
+
 16体で設計を作り込みすぎる前に32体を試す。64体は結果と予算を踏まえた次の探索候補。人数は暫定値であり、成功の境目とは主張しない。
 
-## M4: 永続化と再開 — 未着手
+## M4: 永続化と再開 — 完了（C=1の専用runner）
 
 範囲: SQLite等の最小store、短いtransaction、durable obligation、read-set検査、outbox、重複排除、介入の保存と再適用、crash/restart。
 
 完了条件: 確定前後・受信前後・処理途中・介入適用前後のcrash後に、変更と通知の取りこぼし、二重確定、偽の成功がない。M1の性質を維持する。M2/M3で見つけた問題のうち永続化に関係するケースを含める。
 
+実行証拠: [再開試験](results/durable-restart.md)。固定oracleでSIGKILL11境界、実Lunaで確定後・介入後の2条件を検証。並列M3 runnerの再開対応は対象外として明示する。
+
 DB選定とschemaは、この段階でruntimeの要件とローカルの互換性を確認する。LLM実行中にDB transactionを保持しない。
 
-## M5: 有用性の比較 — 未着手
+## M5: 有用性の比較 — 完了（別の合成taskによる初期比較）
 
 範囲: 上位モデル単体、同じ上下モデルの組を使うManager-local、Sheep-fixed、Sheep-full。Broadcastやshadow診断は必要な場合の追加対照。
 
 完了条件: 調整に使っていないtaskで、外側の受入条件と総予算を揃えて品質・費用・復旧性を比較する。上位の観測・読み直し・介入、依存発見、retry、監査、準備時間を含める。運用メタ管理の介入を通常動作として計上し、実験外からの救済を別に記録する。
+
+実行証拠: [4方式比較](results/comparison-findings.md)の12runと、[Manager修正後の追加試行](results/manager-observation-fix.md)3run。外側oracle、権限、token上限を共通化し、未完了と予備runの使用量も保存した。単体上位のtokenが最少で、Sheepの通常所要時間が短かった。Managerの初期実装不具合は修正したが、追加の誤指示試行も予算内で未完了だった。
+
+この完了は初期比較の実行と報告を指す。fixture/既知graphの人間による準備費用、金額換算、未知の意味依存、一般repository、完全な盲検評価は未実施。これらを含む本格的な有用性評価は継続課題として残す。
 
 ## 再検討する条件
 
