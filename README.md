@@ -59,3 +59,7 @@ runtime依存はまだない。SQLite、LLM adapter、worktree操作、message b
 - 人数、最大同時実行数、実際の稼働数を分け、同じ仕事での増員と仕事量も増やす比較を行う。
 
 詳細と未解決点は [設計](docs/design.md) を参照。Agentで作業するときは先に [AGENTS.md](AGENTS.md) を読む。
+
+## License
+
+[MIT](LICENSE)
