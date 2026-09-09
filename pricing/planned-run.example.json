@@ -1,0 +1,21 @@
+{
+  "description": "Hypothetical Standard usage for planning. Calls count total across all workers, not calls per registered worker. No model invocation occurs.",
+  "rows": [
+    {
+      "model": "gpt-5.6-luna",
+      "calls": 40,
+      "inputTokensPerCall": 19000,
+      "cachedInputTokensPerCall": 13300,
+      "cacheWriteInputTokensPerCall": 0,
+      "outputTokensPerCall": 250
+    },
+    {
+      "model": "gpt-6-astra",
+      "calls": 1,
+      "inputTokensPerCall": 25000,
+      "cachedInputTokensPerCall": 0,
+      "cacheWriteInputTokensPerCall": 0,
+      "outputTokensPerCall": 500
+    }
+  ]
+}

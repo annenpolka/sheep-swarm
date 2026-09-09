@@ -104,7 +104,7 @@
 
 実workerを接続する前に、採用する機構の版検証、権限、競合、未処理作業、介入の反映、完了判定を機械的に確認する。永続化前の実験ではcrashからの継続を保証せず、中断は未完了として扱う。長時間運用の機能を揃えるまで群れの観測を先送りしない。
 
-現状はkernel、Codex adapter、実コードfixture、4体の疎通、8・16・32体の反復と介入、C=1のSQLite再開、別taskの4方式比較まで確認した。今回のSheepは通常条件で単体上位より短時間だったが、token消費は約8.1倍。個体数だけの効果、創発、一般repositoryでの費用優位は別の継続課題とする。
+現状はkernel、Codex adapter、実コードfixture、4体の疎通、8・16・32体の反復と介入、C=1のSQLite再開、別taskの4方式比較まで確認した。今回のSheepは通常条件で単体上位より短時間だったが、token消費は約8.1倍。[モデル別単価とcacheの再集計](results/cost-findings.md)では、同じ通常taskのSheep-fixedが単体Astraの約1/13.5のcredit相当となった。token比と費用比は分ける。個体数だけの効果、創発、一般repositoryでの費用優位は別の継続課題とし、[次の課題研究](task-design.md)では同額予算・単体Luna・総記憶量の対照を加える。
 
 ## 見直す条件
 

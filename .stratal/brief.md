@@ -6,7 +6,7 @@
 
 ## Current Working Contract
 
-現在はkernel、Luna4体、8・16・32体の規模比較、C=1の永続化と実process再開を確認済み。別taskで4方式の初期比較も完了し、失敗と実装修正後の追加試行を分けて保存した。小さなin-memory kernel、実worker4体＋上位1体、16体と8・32体の規模比較、永続化、有用性比較の順で進める。方針全体は [docs/current-direction.md](../docs/current-direction.md)、実装順序は [docs/roadmap.md](../docs/roadmap.md) を参照。
+現在はkernel、Luna4体、8・16・32体の規模比較、C=1の永続化と実process再開を確認済み。別taskで4方式の初期比較も完了し、失敗と実装修正後の追加試行を分けて保存した。公式価格・cacheによる費用再集計と事前見積器を追加し、次の課題設定をdocs/task-design.mdへ整理した。小さなin-memory kernel、実worker4体＋上位1体、16体と8・32体の規模比較、永続化、有用性比較の順で進める。方針全体は [docs/current-direction.md](../docs/current-direction.md)、実装順序は [docs/roadmap.md](../docs/roadmap.md) を参照。
 
 ## Fit Conditions
 

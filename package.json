@@ -16,7 +16,8 @@
     "check": "npm run typecheck && npm test && npm run check:references",
     "swarm": "node src/cli.ts",
     "durable": "node src/durable-cli.ts",
-    "compare": "node src/compare-cli.ts"
+    "compare": "node src/compare-cli.ts",
+    "estimate:cost": "node scripts/estimate-costs.mjs"
   },
   "devDependencies": {
     "@types/node": "24.13.3",

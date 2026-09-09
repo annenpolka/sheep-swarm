@@ -23,6 +23,8 @@
 | 実装の進捗と実行証拠 | [docs/execplan.md](docs/execplan.md)、[4体の実測](docs/results/luna-four-worker-pilot.md) |
 | 8・16・32体の反復と誤指示条件 | [規模比較の結果](docs/results/scaling-findings.md) |
 | SQLiteと実process中断・再開 | [src/durable-run.ts](src/durable-run.ts)、[実Luna再開の結果](docs/results/durable-restart.md) |
+| モデル別の費用概算・実行前の見積 | [使い方](pricing/README.md)、[キャッシュ反映の再集計](docs/results/cost-findings.md) |
+| 次の課題設定と対照実験 | [研究と設計案](docs/task-design.md)、[条件案JSON](experiments/task-design-v2.json) |
 | 単一上位・中央管理・2種のSheep対照 | [4方式の結果](docs/results/comparison-findings.md)、[Manager修正後の追加試行](docs/results/manager-observation-fix.md)、[実装](src/comparison.ts) |
 | 初期protocolの型草案 | [src/protocol.ts](src/protocol.ts) |
 | write skewの有限反例と検証 | [experiments](experiments/README.md) |
@@ -65,6 +67,8 @@ npm run compare -- --method sheep-full --size 8 --workers 4 --concurrency 4 --ma
 これらは実モデルを呼び出す。結果・コード・使用量・失敗履歴は `.sheep/` の一意なrunディレクトリへ保存する。`--max-calls`、`--max-meta-calls`、`--max-rounds`、`--timeout-ms` で上限を指定できる。通常の `npm run check` はモデルを呼び出さない。
 
 `compare` の方式は `single-upper`、`manager-local`、`sheep-fixed`、`sheep-full`。token予約は呼出しの受付制御であり、providerの強制上限ではない。超過・使用量不明は予算付き比較の成功にしない。Sheep-fullが発見するのは実ファイルの静的importと明示された仕様依存であり、任意の意味依存ではない。
+
+価格とクレジットは2026-09-10の公式レートを保存し、キャッシュを含む994呼出しから再計算した。通常taskのSheep-fixedは平均0.540282 credits相当、単体Astraは7.283 credits相当。実際の請求額・Proの利用枠消費とは区別する。実行前の概算は `npm run estimate:cost -- --rates pricing/openai-2026-09-10.json --scenario pricing/planned-run.example.json --output .sheep/planned-cost.json` で試せる。
 
 ## 守る設計
 

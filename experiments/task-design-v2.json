@@ -1,0 +1,101 @@
+{
+  "format": 1,
+  "status": "proposal_not_executed",
+  "preparedOn": "2026-09-10",
+  "purpose": "Separate persistent local workers and selective upper intervention from model price, parallelism, cache, and total memory capacity.",
+  "workerModel": "gpt-5.6-luna",
+  "upperModel": "gpt-6-astra",
+  "routineUpperConsultation": false,
+  "families": [
+    "static-api-migration",
+    "semantic-contract-dependencies",
+    "staged-specification-update"
+  ],
+  "negativeControl": "sequential-state-machine-change",
+  "longitudinalStages": [
+    3,
+    5
+  ],
+  "mainDesign": {
+    "registeredWorkers": [
+      8,
+      16,
+      32
+    ],
+    "concurrency": 8,
+    "fixedTotalWork": true,
+    "fixedTotalBudget": true,
+    "sameInitialSnapshot": true
+  },
+  "budget": {
+    "unit": "standard-codex-credit-equivalent",
+    "candidateLevels": [
+      10,
+      30,
+      100
+    ],
+    "levelsFrozen": false,
+    "ratesFile": "pricing/openai-2026-09-10.json",
+    "requiresRuntimeAdmissionImplementation": true,
+    "includes": [
+      "lower",
+      "upper",
+      "retry",
+      "model-based-selection",
+      "model-based-monitoring"
+    ]
+  },
+  "controls": [
+    "single-luna",
+    "single-astra",
+    "independent-luna-candidates-with-visible-selector",
+    "same-kernel-without-upper",
+    "same-kernel-without-private-memory",
+    "equal-total-memory-token-capacity",
+    "fair-random-assignment",
+    "periodic-upper-management"
+  ],
+  "changeTiming": {
+    "primary": "common-stage-acceptance-barrier",
+    "secondary": "fixed-external-time-with-inflight-exposure-recorded"
+  },
+  "holdoutAxes": [
+    "repository",
+    "semantic-contract-family",
+    "dependency-topology"
+  ],
+  "preflight": [
+    "base-fails-new-test",
+    "gold-passes-new-and-regression-tests",
+    "representative-mutants-rejected",
+    "hidden-oracle-unreadable-by-workers",
+    "gold-patch-and-future-history-unavailable",
+    "data-and-container-revisions-pinned"
+  ],
+  "externalCandidateAudit": {
+    "featurebench": {
+      "dataVersionCandidate": "v1.1",
+      "split": "fast",
+      "pilotCases": [
+        5,
+        10
+      ]
+    },
+    "sweBenchLive": {
+      "pilotCases": 10,
+      "repositories": [
+        3,
+        5
+      ],
+      "datasetRevisionRequired": true
+    },
+    "selectionBasedOnSwarmOutcome": false
+  },
+  "claimsNotEstablished": [
+    "emergence",
+    "benefit-of-N-at-fixed-C",
+    "general-repository-cost-superiority",
+    "independent-agent-errors"
+  ],
+  "researchDocument": "docs/task-design.md"
+}

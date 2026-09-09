@@ -79,6 +79,12 @@ M1では以下のうちcrash/restartを除くin-memoryの性質を確認する�
 少数のpilotで構成を直してから、調整に使っていないtask・repoでpaired比較する。短い成功例からproduction有効性を主張しない。
 
 
+## 費用見積器の検証
+
+公開レートを日付と出典付きで固定し、input内のcache read/write、output内のreasoningを二重計上しない。欠けたキャッシュ量は範囲、欠けた価格・receiptは未知として表示する。存在しないroot、manifest内run欠落、hash不一致を費用0にしない。実請求・利用枠の実測と仮想レート計算を区別し、原本を変更せず別集計を保存する。
+
+次の比較は[課題研究](task-design.md)のholdout・oracle監査と、単体Luna・記憶/介入/並列数の対照を使う設計案。現行runnerのmax-tokensを、credit上限の実装済み機能とは呼ばない。
+
 ## 現在の実行証拠の範囲
 
 M3は既知依存の合成taskで、主比較15runと別pilot1run。M4はC=1の専用実行系。M5は温度・圧力の別合成task、下位Luna/上位Astra、共通500,000token上限、30,000tokenの受付予約で比較する。単一上位にも増分の局所確定を許し、最終全体受入を共通にする。

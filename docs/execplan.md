@@ -68,7 +68,7 @@ M4では状態、変更履歴、未配送eventを一つのSQLite transactionへ�
     npm run check
     git diff --check
 
-初期化時には3件の反例テストと原文2資料の照合が成功した。現在はkernel・実コード・budget・crash等を含む137件へ拡充した。最終確認でcrash試験のチェックポイント通知の競合を修正し、137件すべてと型検査、原文2資料のハッシュ照合が通過した。追加するkernel・adapter・fixtureのテストも `npm run check` に含まれる。実験CLIは次の通り。これらは実モデルを呼ぶ。
+初期化時には3件の反例テストと原文2資料の照合が成功した。M1〜M5の完了時はkernel・実コード・budget・crash等を含む137件。最終確認でcrash試験のチェックポイント通知の競合を修正し、全件と型検査、原文2資料のハッシュ照合が通過した。2026-09-10の追加依頼では費用見積器の17件を加え、計154件・型検査・原文照合が通過した。追加するkernel・adapter・fixtureのテストも `npm run check` に含まれる。実験CLIは次の通り。これらは実モデルを呼ぶ。
 
     npm run swarm -- --workers 4 --concurrency 4 --size 4
     npm run swarm -- --workers 4 --concurrency 4 --size 4 --fault rounded-guidance
@@ -89,6 +89,8 @@ M3は8・16・32体の反復結果と両方の仕事量条件が対象。登録�
 原文資料と既存テストを変更しない。各実験の作業領域と出力先は一意に作り、途中結果を上書きしない。新しい実行を過去の成功として再利用しない。永続化前の中断は未完了として残す。M4以後の再開では保存した未処理義務と権限世代から再構成する。未知のモデル応答や受入不合格は証拠付きの失敗として扱う。
 
 ## Artifacts and Notes
+
+2026-09-10の追加依頼で[費用概算](results/cost-findings.md)と[使い方](../pricing/README.md)、[課題設定の研究](task-design.md)を追加。モデルは再実行せず、保存済み994レシートを公式価格で再計算した。次の課題・同credit予算のruntime受付は設計案であり、M1〜M5の過去runと混ぜない。
 
 結果は [規模比較](results/scaling-findings.md)、[実Lunaの再開](results/durable-restart.md)、[4方式比較](results/comparison-findings.md)、[Manager追加試行](results/manager-observation-fix.md) に保存する。実行時ソース4版は [凍結archive](results/frozen-runtime-sources.zip) に含め、結果と最終修正版を混同しない。
 
