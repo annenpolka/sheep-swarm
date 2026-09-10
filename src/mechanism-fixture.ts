@@ -3,7 +3,8 @@ import { mkdtemp, mkdir, realpath, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { promisify } from "node:util";
-import type { Contents, Verdict } from "./kernel.ts";
+import type { Contents } from "./kernel.ts";
+import type { FixtureObserver, FixtureResult } from "./fixture.ts";
 
 export type MechanismFamily = "static" | "semantic" | "staged";
 export interface MechanismFixture {
@@ -17,7 +18,8 @@ export interface MechanismFixture {
   readonly catalog: readonly { readonly id: string; readonly description: string }[];
   readonly initialDependencies: readonly { readonly consumer: string; readonly provider: string }[];
   readonly changesForStage: (stage: number) => Contents;
-  readonly verify: (contents: Contents, stage: number, scope?: readonly string[], mode?: "visible" | "final") => Promise<Verdict>;
+  readonly verify: (contents: Contents, stage: number, scope?: readonly string[], mode?: "visible" | "final", suppliedIds?: readonly string[]) => Promise<FixtureResult>;
+  readonly visibleFeedback: (contents: Contents, stage: number, targets: readonly string[]) => { source: string; readyTargets: string[]; requiredReads: string[] };
   readonly goldForStage: (stage: number) => Contents;
 }
 
@@ -188,7 +190,7 @@ export function run(raw) {
 
 /** Six heterogeneous APIs per domain. Fixture answers and case values stay outside artifacts. */
 export function createMechanismFixture(options: {
-  family: MechanismFamily; groups?: number; variant?: "base" | "gold";
+  family: MechanismFamily; groups?: number; variant?: "base" | "gold"; observe?: FixtureObserver;
 }): MechanismFixture {
   if (!options || !["static", "semantic", "staged"].includes(options.family)) throw new TypeError("unknown mechanism family");
   const groups = options.groups ?? 8;
@@ -228,10 +230,33 @@ export function createMechanismFixture(options: {
     catalog: Object.freeze(catalog), initialDependencies: Object.freeze(initialDependencies),
     changesForStage: stage => { assertStage(stage); return pinned(stage); },
     goldForStage: stage => { assertStage(stage); return full(stage); },
-    verify: async (contents, stage, scope, mode = "visible") => {
+    visibleFeedback: (contents, stage, targets) => {
+      assertStage(stage);
+      if (!targets.length || targets.some(id => !writableIds.includes(id) && id !== GUIDANCE)) throw new Error("invalid visible scope");
+      const current = pinned(stage), readyTargets: string[] = [], required = new Set<string>();
+      for (const id of targets) {
+        if (id === GUIDANCE) { readyTargets.push(id); continue; }
+        const item = domains.find(item => operations.some(op => item.ids[op] === id))!;
+        const needed = [SPEC, ...(id === item.ids.ingest ? [SOURCE] : [])];
+        if (family === "static") needed.push(policyId(item, family));
+        else {
+          needed.push(REGISTRY);
+          // Do not reveal ownership or values before the public registry is delivered.
+          if (contents[REGISTRY] === current[REGISTRY]) {
+            needed.push((JSON.parse(contents[REGISTRY]!) as Record<string, { policyArtifact: string }>)[item.group]!.policyArtifact);
+          }
+        }
+        const missing = needed.filter(key => contents[key] !== current[key]);
+        for (const key of missing) required.add(key);
+        if (!missing.length && typeof contents[id] === "string") readyTargets.push(id);
+      }
+      const checks = mechanismChecks(domains, family, stage, readyTargets, "visible");
+      return { readyTargets, requiredReads: [...required], source: visibleTestSource(checks) };
+    },
+    verify: async (contents, stage, scope, mode = "visible", suppliedIds) => {
       assertStage(stage);
       if (mode !== "visible" && mode !== "final") throw new TypeError("unknown oracle mode");
-      return verifyMechanism(contents, domains, family, stage, pinned(stage), writableIds, scope, mode);
+      return verifyMechanism(contents, domains, family, stage, pinned(stage), writableIds, scope, mode, options.observe, suppliedIds);
     },
   };
 }
@@ -317,7 +342,7 @@ process.stdout.write(JSON.stringify(outputs));
 `;
 
 async function verifyMechanism(contents: Contents, domains: readonly Layout[], family: MechanismFamily, stage: number,
-  pinned: Contents, writableIds: readonly string[], scope: readonly string[] | undefined, mode: "visible" | "final"): Promise<Verdict> {
+  pinned: Contents, writableIds: readonly string[], scope: readonly string[] | undefined, mode: "visible" | "final", observe?: FixtureObserver, suppliedIds?: readonly string[]): Promise<FixtureResult> {
   const targets = scope === undefined ? [...writableIds] : [...new Set(scope)];
   const errors: string[] = [];
   if (!targets.length) errors.push("empty verification scope");
@@ -327,6 +352,41 @@ async function verifyMechanism(contents: Contents, domains: readonly Layout[], f
   for (const [id, content] of Object.entries(pinned)) if (contents[id] !== content) errors.push(`pinned artifact changed or missing: ${id}`);
   for (const id of allowed) if (typeof contents[id] !== "string") errors.push(`missing artifact: ${id}`);
   if (errors.length) return { ok: false, errors };
+  const { calls, expected, imports } = mechanismChecks(domains, family, stage, targets, mode);
+  // A guidance-only edit is accepted structurally. It cannot alter the immutable semantic oracle.
+  if (!calls.length) return { ok: true, errors: [] };
+  let directory: string | undefined;
+  let executionFailure = false;
+  try {
+    let observations: unknown;
+    if (observe) observations = await observe(suppliedIds ? Object.fromEntries(suppliedIds.map(id => [id, contents[id]!])) : contents, calls.map(call => ({ id: call.id, method: "run", args: [call.input],
+      ...(call.pipeline ? { pipeline: call.pipeline } : {}) })), 3000, imports);
+    else {
+      directory = await realpath(await mkdtemp(join(tmpdir(), "sheep-mechanism-oracle-")));
+      for (const [id, content] of Object.entries(contents)) {
+        const path = join(directory, id); await mkdir(dirname(path), { recursive: true }); await writeFile(path, content);
+      }
+      const entry = join(directory, "__outside-runner.mjs"); await writeFile(entry, runner);
+      const child = execute(process.execPath, ["--experimental-vm-modules", "--permission", `--allow-fs-read=${directory}`,
+        "--disable-proto=throw", "--max-old-space-size=96", entry], {
+        cwd: directory, env: {}, timeout: 5000, killSignal: "SIGKILL", maxBuffer: 2 * 1024 * 1024,
+      });
+      child.child.stdin!.end(JSON.stringify({ calls, imports }));
+      observations = JSON.parse((await child).stdout);
+    }
+    if (!Array.isArray(observations) || observations.length !== calls.length) { executionFailure = true; errors.push("invalid observation count"); }
+    else for (let index = 0; index < calls.length; index++) {
+      const observation = observations[index] as { output?: unknown; error?: string } | null;
+      if (!observation || !matches(observation.output, expected[index])) errors.push(`${calls[index]!.id} (${calls[index]!.label}): ${observation?.error
+        ?? `expected ${JSON.stringify(expected[index])}; received ${JSON.stringify(observation?.output)}`}`);
+    }
+  } catch (error) { executionFailure = true; errors.push(`mechanism oracle execution failed: ${String(error).slice(0, 1000)}`); }
+  finally { if (directory) await rm(directory, { recursive: true, force: true }); }
+  return { ok: !errors.length, errors, ...(executionFailure ? { executionFailure: true as const } : {}) };
+}
+
+function mechanismChecks(domains: readonly Layout[], family: MechanismFamily, stage: number,
+  targets: readonly string[], mode: "visible" | "final") {
   const calls: Call[] = [], expected: unknown[] = [];
   const imports: { consumer: string; provider: string }[] = [];
   const add = (id: string, input: unknown, output: unknown, label: string) => { calls.push({ id, input, label }); expected.push(output); };
@@ -388,27 +448,31 @@ async function verifyMechanism(contents: Contents, domains: readonly Layout[], f
       expected.push({ report: expectedReport(aggregate, item, policy), stored: events.map(persisted), keys: events.map(cached) });
     }
   }
-  // A guidance-only edit is accepted structurally. It cannot alter the immutable semantic oracle.
-  if (!calls.length) return { ok: true, errors: [] };
-  const directory = await realpath(await mkdtemp(join(tmpdir(), "sheep-mechanism-oracle-")));
-  try {
-    for (const [id, content] of Object.entries(contents)) {
-      const path = join(directory, id); await mkdir(dirname(path), { recursive: true }); await writeFile(path, content);
-    }
-    const entry = join(directory, "__outside-runner.mjs"); await writeFile(entry, runner);
-    const child = execute(process.execPath, ["--experimental-vm-modules", "--permission", `--allow-fs-read=${directory}`,
-      "--disable-proto=throw", "--max-old-space-size=96", entry], {
-      cwd: directory, env: {}, timeout: 5000, killSignal: "SIGKILL", maxBuffer: 2 * 1024 * 1024,
-    });
-    child.child.stdin!.end(JSON.stringify({ calls, imports }));
-    const observations: unknown = JSON.parse((await child).stdout);
-    if (!Array.isArray(observations) || observations.length !== calls.length) errors.push("invalid observation count");
-    else for (let index = 0; index < calls.length; index++) {
-      const observation = observations[index] as { output?: unknown; error?: string } | null;
-      if (!observation || !matches(observation.output, expected[index])) errors.push(`${calls[index]!.id} (${calls[index]!.label}): ${observation?.error
-        ?? `expected ${JSON.stringify(expected[index])}; received ${JSON.stringify(observation?.output)}`}`);
-    }
-  } catch (error) { errors.push(`mechanism oracle execution failed: ${String(error).slice(0, 1000)}`); }
-  finally { await rm(directory, { recursive: true, force: true }); }
-  return { ok: !errors.length, errors };
+  return { calls, expected, imports };
+}
+
+function visibleTestSource(checks: ReturnType<typeof mechanismChecks>): string {
+  // Only the visible generator can reach this bundle; unready scopes have no cases.
+  return `import assert from 'node:assert/strict';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+const {calls,expected}=${JSON.stringify(checks)};
+assert.ok(calls.length, 'Request the required public files in a separate call before checking or editing.');
+const same=(a,e)=>typeof e==='number'?typeof a==='number'&&Number.isFinite(a)&&Math.abs(a-e)<=1e-9*Math.max(1,Math.abs(e)):
+ Array.isArray(e)?Array.isArray(a)&&a.length===e.length&&e.every((v,i)=>same(a[i],v)):
+ e&&typeof e==='object'?a&&typeof a==='object'&&!Array.isArray(a)&&Object.keys(a).length===Object.keys(e).length&&Object.keys(e).every(k=>Object.hasOwn(a,k)&&same(a[k],e[k])):a===e;
+const invoke=async(id,input)=>(await import(pathToFileURL(resolve(id)).href)).run(input);
+for(let i=0;i<calls.length;i++){
+ const c=calls[i]; let actual;
+ if(!c.pipeline)actual=await invoke(c.id,c.input);
+ else {
+  const p=c.pipeline, events=await Promise.all(c.input.map(raw=>invoke(p.ingest,raw)));
+  const windows=await Promise.all(events.map(e=>invoke(p.window,e)));
+  const rows=await invoke(p.aggregate,windows);
+  actual={report:await invoke(p.report,rows),stored:await Promise.all(events.map(e=>invoke(p.persist,e))),keys:await Promise.all(events.map(e=>invoke(p.cache,e)))};
+ }
+ assert.ok(same(actual,expected[i]), c.id+' ('+c.label+'): expected '+JSON.stringify(expected[i])+'; received '+JSON.stringify(actual));
+}
+console.log('Visible mechanism checks passed: '+calls.length);
+`;
 }

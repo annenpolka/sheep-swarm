@@ -1,0 +1,156 @@
+{
+  "error": "nonzero-exit",
+  "transcript": {
+    "runtime": "docker-agent",
+    "runtimeVersion": "v1.137.0",
+    "requestedModel": "gpt-5.6-luna",
+    "effectiveModelEvidence": null,
+    "usageCompleteness": "partial-or-unknown",
+    "stderr": "Error: Agent terminated: the model did not deliver structured output via the __structured_output__ tool after 2 reminders.\n",
+    "events": [
+      {
+        "agent_name": "sheep",
+        "timestamp": "2026-09-10T03:09:15.415098212Z",
+        "type": "stream_started",
+        "session_id": "f05cbc9d-49cb-4948-afd2-c66b182356fd"
+      },
+      {
+        "timestamp": "2026-09-10T03:09:15.415157212Z",
+        "type": "agent_info",
+        "agent_name": "sheep",
+        "model": "chatgpt/gpt-5.6-luna",
+        "description": ""
+      },
+      {
+        "agent_name": "sheep",
+        "timestamp": "2026-09-10T03:09:22.309550549Z",
+        "type": "token_usage",
+        "session_id": "f05cbc9d-49cb-4948-afd2-c66b182356fd",
+        "usage": {
+          "input_tokens": 2763,
+          "output_tokens": 284,
+          "context_length": 3047,
+          "context_limit": 0,
+          "cost": 0,
+          "last_message": {
+            "input_tokens": 2763,
+            "output_tokens": 284,
+            "cached_input_tokens": 0,
+            "cached_write_tokens": 0,
+            "reasoning_tokens": 56,
+            "Cost": 0,
+            "Model": "chatgpt/gpt-5.6-luna",
+            "finish_reason": "tool_calls"
+          }
+        }
+      },
+      {
+        "timestamp": "2026-09-10T03:09:22.310120965Z",
+        "type": "agent_info",
+        "agent_name": "sheep",
+        "model": "chatgpt/gpt-5.6-luna",
+        "description": ""
+      },
+      {
+        "agent_name": "sheep",
+        "timestamp": "2026-09-10T03:09:23.979586216Z",
+        "type": "token_usage",
+        "session_id": "f05cbc9d-49cb-4948-afd2-c66b182356fd",
+        "usage": {
+          "input_tokens": 3017,
+          "output_tokens": 14,
+          "context_length": 3031,
+          "context_limit": 0,
+          "cost": 0,
+          "last_message": {
+            "input_tokens": 457,
+            "output_tokens": 14,
+            "cached_input_tokens": 2560,
+            "cached_write_tokens": 0,
+            "Cost": 0,
+            "Model": "chatgpt/gpt-5.6-luna",
+            "finish_reason": "tool_calls"
+          }
+        }
+      },
+      {
+        "timestamp": "2026-09-10T03:09:24.196455925Z",
+        "type": "agent_info",
+        "agent_name": "sheep",
+        "model": "chatgpt/gpt-5.6-luna",
+        "description": ""
+      },
+      {
+        "agent_name": "sheep",
+        "timestamp": "2026-09-10T03:09:30.698499428Z",
+        "type": "token_usage",
+        "session_id": "f05cbc9d-49cb-4948-afd2-c66b182356fd",
+        "usage": {
+          "input_tokens": 3143,
+          "output_tokens": 262,
+          "context_length": 3405,
+          "context_limit": 0,
+          "cost": 0,
+          "last_message": {
+            "input_tokens": 3143,
+            "output_tokens": 262,
+            "cached_input_tokens": 0,
+            "cached_write_tokens": 0,
+            "Cost": 0,
+            "Model": "chatgpt/gpt-5.6-luna",
+            "finish_reason": "stop"
+          }
+        }
+      },
+      {
+        "timestamp": "2026-09-10T03:09:30.698651636Z",
+        "type": "agent_info",
+        "agent_name": "sheep",
+        "model": "chatgpt/gpt-5.6-luna",
+        "description": ""
+      },
+      {
+        "agent_name": "sheep",
+        "timestamp": "2026-09-10T03:09:32.271290678Z",
+        "type": "token_usage",
+        "session_id": "f05cbc9d-49cb-4948-afd2-c66b182356fd",
+        "usage": {
+          "input_tokens": 3447,
+          "output_tokens": 4,
+          "context_length": 3451,
+          "context_limit": 0,
+          "cost": 0
+        }
+      },
+      {
+        "timestamp": "2026-09-10T03:09:32.271477845Z",
+        "type": "agent_info",
+        "agent_name": "sheep",
+        "model": "chatgpt/gpt-5.6-luna",
+        "description": ""
+      },
+      {
+        "agent_name": "sheep",
+        "timestamp": "2026-09-10T03:09:39.106935807Z",
+        "type": "token_usage",
+        "session_id": "f05cbc9d-49cb-4948-afd2-c66b182356fd",
+        "usage": {
+          "input_tokens": 3447,
+          "output_tokens": 262,
+          "context_length": 3709,
+          "context_limit": 0,
+          "cost": 0,
+          "last_message": {
+            "input_tokens": 887,
+            "output_tokens": 262,
+            "cached_input_tokens": 2560,
+            "cached_write_tokens": 0,
+            "Cost": 0,
+            "Model": "chatgpt/gpt-5.6-luna",
+            "finish_reason": "stop"
+          }
+        }
+      }
+    ]
+  }
+}

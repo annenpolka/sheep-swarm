@@ -89,6 +89,22 @@ M1では以下のうちcrash/restartを除くin-memoryの性質を確認する�
 
 dispatcherは結果・レシート・保存ソースのhashを確認し、中断や欠落を費用0へ変えない。承認された追加100相当の系列では、元の不明1件を別の履歴に保持し、新たな不明分が出たら再び停止する。元のsrc/価格表の同一性と、追加系列の過去費用の取りこぼしも検査する。実モデルの[結果と未実行条件](results/mechanism-findings.md)はテスト成功と分けて記録する。
 
+## Docker Agent Sandboxのgate
+
+通常`npm run check`にはNDJSON、per-message usage/cache、設定IDと実model証拠の区別、schema・path・出力量・timeout/取消を追加した。DockerやLLMを通常gateの必須依存にはしない。
+
+`npm run sandbox:probe`は実microVMでhostファイル・SSH・外向き通信拒否、timeout後の削除、次のVMへの状態非継承を検査する。別VMの固定oracleで旧実装失敗・基準実装成功・always-empty/null-only変異拒否を検査する。`npm run sandbox:pilot`は実Lunaの局所tool作業と、別VM受入を経たkernel確定。tool-lessの`swarm --runtime docker-agent`は登録4体・C=2で確認した。
+
+モデルの回答と実workspace差分、可視テストと外側oracle、レシートの設定modelとproviderの実model証拠を分ける。Lunaはruntimeの価格catalog上unpricedであり、cost=0を無料と読まない。timeoutの途中usageは既知下限で、未完了推論を含む総費用として集計しない。[実測](results/docker-agent-sandbox.md)に初回失敗と修正後の検証を残す。
+
+道具付きswarmでは、固定oracleの値・case・閾値・比較を変更せず、観測する実行環境だけを差し替える。通常gateは従来と同じ変異拒否、実差分優先、担当外・テスト改変・削除の拒否、局所contextとread setの一致、usage不明・検証基盤障害時の停止を検査する。guest runnerの局所subprocess試験はVM隔離の実証には数えない。
+
+`npm run sandbox:swarm-probe`は実VMで合成fixtureの基準解成功・旧実装失敗・閾値変異拒否・host API import拒否・無限loopと回収を検査する。setup失敗を変異拒否の成功へ数えない。実Lunaの道具付きswarmは別runに保存する。受入VMは同期`.mjs`の局所importのみを扱い、任意repositoryの実行互換性を保証しない。
+
+`sandbox:comparison-probe`はthermal fixtureの値・境界・必須importを実VMで検査する。等価な値を返す実装でも、importをコメントへ変えた変異を拒否する。通常gateで単独Luna・Manager-local・Sheep-fixed/fullのtool、role権限、oracle、途中usage・cleanup失敗の受付停止を揃える。一括dispatcherは同一profileを全条件へ渡し、使用量不明の最初の結果で後続を止める。
+
+`sandbox:recovery-probe`は実child processをSIGKILLし、残留VMの回収、生存中のVMの保護、作成前crashの記録保持と遅延出現の回収を検査する。通常gateでは他host、PID生存、不正record、symlink、image不一致、削除失敗、同時回収を拒否・保留できることを確認する。VM資源の回収を、元runの成功・再開・usage復元とは扱わない。
+
 ## 現在の実行証拠の範囲
 
 M3は既知依存の合成taskで、主比較15runと別pilot1run。M4はC=1の専用実行系。M5は温度・圧力の別合成task、下位Luna/上位Astra、共通500,000token上限、30,000tokenの受付予約で比較する。単一上位にも増分の局所確定を許し、最終全体受入を共通にする。
@@ -96,3 +112,7 @@ M3は既知依存の合成taskで、主比較15runと別pilot1run。M4はC=1の�
 必須の静的importは外側oracleで構文解析して検査する。Sheep-fullの発見は明示されたimport/仕様依存の走査に限る。各方式の呼出し、再試行、上位読取、走査と受入時間を記録する。人間によるfixture/既知graph作成と開発Agentの費用は未測定として分離し、全工程の費用優位を主張しない。
 
 CLIの途中errorの後にturn.completedとexit 0が来る回復経路を保持し、出力schemaも検査する。元runは再集計で書き換えず、使用量の復元は生レシートとSHA256を根拠にした別集計へ記録する。
+
+`mechanism`のDocker検査は、3課題・3段階のhost oracleとの一致、負の時刻等の変異、必須import、非同期JSON読取、供給外ファイル拒否を含む。可視bundleの旧版/基準解、未読・旧版policyのケース非公開、選択したreadの先取り禁止、全methodの読取精算・read set・履歴、実差分の権限、最終失敗後の呼出し不在を検査する。上位のtool-less/guidance権限、使用量不明・cleanup失敗・検証基盤障害の受付停止も通常gateに含む。`sandbox:mechanism-probe`はモデルなしで8つの実VMを作成・検査・削除する。実Lunaと通常gateの証拠は[結果](results/docker-agent-mechanism.md)で分ける。
+
+既存swarmの実装課題では、固定した未実装stubの失敗、担当外変更の拒否、返却された2 helperの可視・追加ケース（入力不変、途中/重複tool、未知応答、prototypeに衝突する名前、不完全なstage/budget証拠）を検査する。集計CLIは欠落レシートを無視せず、元runのunknown usageから完了を推定しない。helper本体の作者と、親が書いたfactory・oracle・CLI接続を分けて記録する。

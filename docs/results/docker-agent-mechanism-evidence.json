@@ -1,0 +1,842 @@
+{
+  "replay": {
+    "modelCalls": 0,
+    "source": ".sheep/docker-mechanism-semantic-fixed-20260910/call-6.json",
+    "sourceSha256": "b80f529d0d4bb75d56dea9bfa53e1ea40b75bd483c1cf13aa64a83d3fb37dec2",
+    "scope": [
+      "domains/domain-01/window.mjs"
+    ],
+    "result": {
+      "ok": true,
+      "errors": []
+    },
+    "adoptedIntoOriginalRun": false,
+    "artifact": {
+      "path": ".sheep/docker-mechanism-window-replay-20260910/result.json",
+      "sha256": "f66b498af1b54d336aaf0afa99a3850b4aa46ab9465031d5feb3d88c9d340e8e"
+    },
+    "receipts": [
+      {
+        "path": ".sheep/docker-mechanism-window-replay-20260910/acceptance/sheep-accept-3b37af2a-9f95-41a7-9986-24d3571de028/receipt.json",
+        "sha256": "5802edb1b0b783822579537cb6036c1b2153c47613bd0c8ab8441002c5a6dac3",
+        "cleanupSucceeded": true
+      }
+    ]
+  },
+  "format": 1,
+  "recordedOn": "2026-09-10",
+  "scope": "Docker mechanism integration acceptance; synthetic event fixture; Luna only",
+  "validatedSources": [
+    {
+      "path": "src/credit-budget.ts",
+      "sha256": "16ab64ee57e347b45ac069b2314c2d2630936a52bff468d26b916d42b0cb789e"
+    },
+    {
+      "path": "src/mechanism-fixture.ts",
+      "sha256": "c8bb8c3078644cdd78da565f4a57af5bb1d53bb6935a091acc7ee3229979ad3a"
+    },
+    {
+      "path": "src/mechanism-run.ts",
+      "sha256": "a38be0c9da4df6ed3207d9dbd68ac0c6c99d2939762476d40faa50608c9c1597"
+    },
+    {
+      "path": "src/docker-fixture-observer.ts",
+      "sha256": "29d410ac57a4452f34de55398dc308803fa67a671fb5b0f4c44f68cc9ee14266"
+    },
+    {
+      "path": "src/docker-agent-worker.ts",
+      "sha256": "501226181b732e4fe3b2ce4a6f506c408345e3ff21b16c998f45d49247b4366b"
+    },
+    {
+      "path": "src/mechanism-cli.ts",
+      "sha256": "23f57fe14bf2d521aa8db6a97d824489e38e7e78868b71496d647d9a41fab21a"
+    }
+  ],
+  "sourceCapture": "Hashes of final validated source. The explicit structured-output instruction and rejected-after-call label were added after the incomplete live run, and have no new live-model verification.",
+  "rates": {
+    "path": "pricing/openai-2026-09-10.json",
+    "sha256": "e25991caebda1b840569e20a8774b11f9f14e95f3b365fe304dade7bf1ba1312"
+  },
+  "probe": {
+    "result": {
+      "path": ".sheep/docker-mechanism-probe-1789009246460/result.json",
+      "sha256": "723d825dbe9191cdf7794a96f8e73d04679cd6aa56a9aab5c493473adc9ed8cf"
+    },
+    "success": true,
+    "modelCalls": 0,
+    "observations": [
+      {
+        "label": "static gold stage 0",
+        "expected": true,
+        "ok": true,
+        "executionFailure": false
+      },
+      {
+        "label": "semantic gold stage 0",
+        "expected": true,
+        "ok": true,
+        "executionFailure": false
+      },
+      {
+        "label": "staged gold stage 0",
+        "expected": true,
+        "ok": true,
+        "executionFailure": false
+      },
+      {
+        "label": "staged gold stage 1",
+        "expected": true,
+        "ok": true,
+        "executionFailure": false
+      },
+      {
+        "label": "staged gold stage 2",
+        "expected": true,
+        "ok": true,
+        "executionFailure": false
+      },
+      {
+        "label": "semantic old targets",
+        "expected": false,
+        "ok": false,
+        "executionFailure": false
+      },
+      {
+        "label": "negative-time mutation",
+        "expected": false,
+        "ok": false,
+        "executionFailure": false
+      },
+      {
+        "label": "missing required decoder import",
+        "expected": false,
+        "ok": false,
+        "executionFailure": false
+      }
+    ],
+    "receipts": [
+      {
+        "path": ".sheep/docker-mechanism-probe-1789009246460/acceptance/sheep-accept-07ff9bb0-c6bc-420f-99ec-85f149e16ff0/receipt.json",
+        "sha256": "eda340932d1c6f9dbfbf553e4d789c6181b15656d3fc78f706f52ed84b7c702b",
+        "cleanupSucceeded": true,
+        "failure": null
+      },
+      {
+        "path": ".sheep/docker-mechanism-probe-1789009246460/acceptance/sheep-accept-0f4cfc6f-e314-4bc7-a14b-c00824611f68/receipt.json",
+        "sha256": "078020802b5d88fa8cec22b949e0c7c9e245085a664d21942b0553938b784093",
+        "cleanupSucceeded": true,
+        "failure": null
+      },
+      {
+        "path": ".sheep/docker-mechanism-probe-1789009246460/acceptance/sheep-accept-3e72f84e-9b1f-4ddf-9099-ab9885cc5bc5/receipt.json",
+        "sha256": "2542a0f0f95ce58bf6928b4dc97491be930ed7ba1bb93a183e62794d4af3613a",
+        "cleanupSucceeded": true,
+        "failure": null
+      },
+      {
+        "path": ".sheep/docker-mechanism-probe-1789009246460/acceptance/sheep-accept-4b4b01bd-9303-476c-a466-ae1d1da011fa/receipt.json",
+        "sha256": "cabc06f6fc3419d6250bb1c6f21c4fd3b16cb09c8e10f55758f9b37cc6ddb9f2",
+        "cleanupSucceeded": true,
+        "failure": null
+      },
+      {
+        "path": ".sheep/docker-mechanism-probe-1789009246460/acceptance/sheep-accept-530e0a54-b4b3-47bd-8607-a7013f708513/receipt.json",
+        "sha256": "87deebf456b3dedbea7302aed9e75bd03acf2f4559ed71262ca625226d4d8bfc",
+        "cleanupSucceeded": true,
+        "failure": null
+      },
+      {
+        "path": ".sheep/docker-mechanism-probe-1789009246460/acceptance/sheep-accept-5ec7789e-f183-462d-8bdc-ec915ed1f50a/receipt.json",
+        "sha256": "f7230d33f47a433773486644c669072c40be8a2395c649c5bd9632dbd844291e",
+        "cleanupSucceeded": true,
+        "failure": null
+      },
+      {
+        "path": ".sheep/docker-mechanism-probe-1789009246460/acceptance/sheep-accept-60e01097-02a3-4f48-a0c7-60e11b3c10e2/receipt.json",
+        "sha256": "6baf31360b1cec240edb1c3dd601f84900026553e96c05cb8f1d368c3efe67ab",
+        "cleanupSucceeded": true,
+        "failure": null
+      },
+      {
+        "path": ".sheep/docker-mechanism-probe-1789009246460/acceptance/sheep-accept-6543def3-94f7-45e0-9d29-369384296bc5/receipt.json",
+        "sha256": "18fb5139ad68502c5f984b88d501e1f8262f5325001968637435fc0503ede42d",
+        "cleanupSucceeded": true,
+        "failure": null
+      }
+    ]
+  },
+  "runs": [
+    {
+      "directory": ".sheep/docker-mechanism-semantic-20260910",
+      "result": {
+        "path": ".sheep/docker-mechanism-semantic-20260910/result.json",
+        "sha256": "d1d152a1ab1a80d92ace3fb704fba64cb247a6d79211ae71c194ff1057ca0bf6"
+      },
+      "success": false,
+      "terminationReason": "budget-unknown",
+      "fixtureFingerprint": "f386d4f5cc60f453dae3be096e4fab290b576abb6ae78f064312aa9eb84d90ed",
+      "configuration": {
+        "runtime": "docker-agent",
+        "workerTools": "local",
+        "maxTokensPerCall": 60000,
+        "method": "sheep",
+        "family": "semantic",
+        "groups": 1,
+        "workers": 4,
+        "concurrency": 2,
+        "maxCredits": 3,
+        "lunaReservation": 0.5,
+        "astraReservation": 15,
+        "maxCalls": 24,
+        "timeoutMs": 240000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 0,
+        "workerModel": "gpt-5.6-luna",
+        "metaModel": "gpt-6-astra",
+        "memoryLimit": 4
+      },
+      "durationMs": 23528.874792,
+      "lowerCalls": 2,
+      "upperCalls": 0,
+      "stages": [
+        {
+          "stage": 0,
+          "terminationReason": "budget-unknown",
+          "success": false,
+          "qualityPass": false,
+          "protocolClean": false,
+          "calls": 2,
+          "lowerCalls": 2,
+          "upperCalls": 0,
+          "readCalls": 0,
+          "interventions": 0,
+          "patchAttempts": {
+            "domains/domain-01/ingest.mjs": 1,
+            "domains/domain-01/window.mjs": 1
+          },
+          "readAttempts": {},
+          "elapsedMs": 23527.105333,
+          "errorCount": 35
+        }
+      ],
+      "committedArtifacts": [],
+      "reportedBudget": {
+        "maxCredits": 3,
+        "observedCredits": 0,
+        "reservedCredits": 0,
+        "unknownUsageCalls": 2,
+        "exceeded": false,
+        "admissionDenied": false,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "settledCalls": 2,
+        "locked": true,
+        "calls": [
+          {
+            "callId": "call-1",
+            "model": "gpt-5.6-luna",
+            "reservedCredits": 0.5,
+            "status": "settled",
+            "credits": null,
+            "knownCreditsLower": 0,
+            "overrun": false,
+            "modelIdentity": "conflicting-or-missing",
+            "issues": [
+              "transcript event: model differs from the reservation or is invalid"
+            ]
+          },
+          {
+            "callId": "call-2",
+            "model": "gpt-5.6-luna",
+            "reservedCredits": 0.5,
+            "status": "settled",
+            "credits": null,
+            "knownCreditsLower": 0,
+            "overrun": false,
+            "modelIdentity": "conflicting-or-missing",
+            "issues": [
+              "transcript event: model differs from the reservation or is invalid"
+            ]
+          }
+        ]
+      },
+      "reauditedBudget": {
+        "maxCredits": 3,
+        "observedCredits": 0.028165,
+        "reservedCredits": 0,
+        "unknownUsageCalls": 0,
+        "exceeded": false,
+        "admissionDenied": false,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "settledCalls": 2,
+        "locked": false,
+        "calls": [
+          {
+            "callId": "call-1",
+            "model": "gpt-5.6-luna",
+            "reservedCredits": 0.5,
+            "status": "settled",
+            "credits": 0.01412,
+            "knownCreditsLower": 0.01412,
+            "overrun": false,
+            "modelIdentity": "requested-only",
+            "issues": []
+          },
+          {
+            "callId": "call-2",
+            "model": "gpt-5.6-luna",
+            "reservedCredits": 0.5,
+            "status": "settled",
+            "credits": 0.014044999999999998,
+            "knownCreditsLower": 0.014044999999999998,
+            "overrun": false,
+            "modelIdentity": "requested-only",
+            "issues": []
+          }
+        ]
+      },
+      "tokens": {
+        "inputTokens": 4823,
+        "outputTokens": 135,
+        "cachedInputTokens": 0,
+        "cacheWriteInputTokens": 0
+      },
+      "discoveredEdges": [],
+      "receipts": [
+        {
+          "path": ".sheep/docker-mechanism-semantic-20260910/call-1.json",
+          "sha256": "caaaeed9b83c26cc83cecc1854bc05be89836504012b74a775d4cc82c249fd44",
+          "id": "call-1",
+          "target": "domains/domain-01/ingest.mjs",
+          "outcome": "received",
+          "readRequests": [
+            "config/domain-registry.json"
+          ],
+          "changedFiles": [],
+          "cleanupSucceeded": true,
+          "usageCompleteness": "complete",
+          "configuredModelEvidence": "chatgpt/gpt-5.6-luna",
+          "effectiveModelEvidence": null,
+          "tools": [
+            "__structured_output__"
+          ],
+          "usage": {
+            "inputTokens": 2470,
+            "outputTokens": 59,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "reasoningOutputTokens": 12,
+            "source": "docker-agent.per-message",
+            "partial": false,
+            "issues": []
+          },
+          "guestReceipt": {
+            "path": ".sheep/docker-mechanism-semantic-20260910/transcripts/sheep-docker-call-9Zhqsi/receipt.json",
+            "sha256": "0a367e9a1d948e10b9503512bfc20b71c6fed6e263846d7a69ccbe169491ce81"
+          }
+        },
+        {
+          "path": ".sheep/docker-mechanism-semantic-20260910/call-2.json",
+          "sha256": "3b1a33425829773c4ed4dbd2a4df3d16b943a082dc3a8b5d43bbc7e74e8668cb",
+          "id": "call-2",
+          "target": "domains/domain-01/window.mjs",
+          "outcome": "received",
+          "readRequests": [
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "changedFiles": [],
+          "cleanupSucceeded": true,
+          "usageCompleteness": "complete",
+          "configuredModelEvidence": "chatgpt/gpt-5.6-luna",
+          "effectiveModelEvidence": null,
+          "tools": [
+            "__structured_output__"
+          ],
+          "usage": {
+            "inputTokens": 2353,
+            "outputTokens": 76,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "reasoningOutputTokens": 17,
+            "source": "docker-agent.per-message",
+            "partial": false,
+            "issues": []
+          },
+          "guestReceipt": {
+            "path": ".sheep/docker-mechanism-semantic-20260910/transcripts/sheep-docker-call-mehWDY/receipt.json",
+            "sha256": "f9c1842dffc20c685071640e23667f7a9651849153fa7b3a1175de974dea81c2"
+          }
+        }
+      ],
+      "acceptance": [
+        {
+          "path": ".sheep/docker-mechanism-semantic-20260910/acceptance/sheep-accept-7a3486f7-51d3-4c17-b6ae-39bbe6337a97/receipt.json",
+          "sha256": "0587519c044b05c3308b01e7b98898007ef072e250a639580b896b64ef8fb1b4",
+          "cleanupSucceeded": true,
+          "failure": null
+        }
+      ]
+    },
+    {
+      "directory": ".sheep/docker-mechanism-semantic-fixed-20260910",
+      "result": {
+        "path": ".sheep/docker-mechanism-semantic-fixed-20260910/result.json",
+        "sha256": "fbabcfe5caa0d51a0fb8cb6af746411b26efc995b8a566a8c5f2004e55db0a14"
+      },
+      "success": false,
+      "terminationReason": "budget-unknown",
+      "fixtureFingerprint": "f386d4f5cc60f453dae3be096e4fab290b576abb6ae78f064312aa9eb84d90ed",
+      "configuration": {
+        "runtime": "docker-agent",
+        "workerTools": "local",
+        "maxTokensPerCall": 60000,
+        "method": "sheep",
+        "family": "semantic",
+        "groups": 1,
+        "workers": 4,
+        "concurrency": 2,
+        "maxCredits": 2.9,
+        "lunaReservation": 0.5,
+        "astraReservation": 15,
+        "maxCalls": 24,
+        "timeoutMs": 240000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 0,
+        "workerModel": "gpt-5.6-luna",
+        "metaModel": "gpt-6-astra",
+        "memoryLimit": 4
+      },
+      "durationMs": 161247.352875,
+      "lowerCalls": 6,
+      "upperCalls": 0,
+      "stages": [
+        {
+          "stage": 0,
+          "terminationReason": "budget-unknown",
+          "success": false,
+          "qualityPass": false,
+          "protocolClean": false,
+          "calls": 6,
+          "lowerCalls": 6,
+          "upperCalls": 0,
+          "readCalls": 4,
+          "interventions": 0,
+          "patchAttempts": {
+            "domains/domain-01/ingest.mjs": 1,
+            "domains/domain-01/window.mjs": 1
+          },
+          "readAttempts": {
+            "domains/domain-01/ingest.mjs": 2,
+            "domains/domain-01/window.mjs": 2
+          },
+          "elapsedMs": 161245.156333,
+          "errorCount": 35
+        }
+      ],
+      "committedArtifacts": [],
+      "reportedBudget": {
+        "maxCredits": 2.9,
+        "observedCredits": 0.16261799999999998,
+        "reservedCredits": 0,
+        "unknownUsageCalls": 1,
+        "exceeded": false,
+        "admissionDenied": false,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "settledCalls": 6,
+        "locked": true,
+        "calls": [
+          {
+            "callId": "call-1",
+            "model": "gpt-5.6-luna",
+            "reservedCredits": 0.5,
+            "status": "settled",
+            "credits": 0.01421,
+            "knownCreditsLower": 0.01421,
+            "overrun": false,
+            "modelIdentity": "requested-only",
+            "issues": []
+          },
+          {
+            "callId": "call-2",
+            "model": "gpt-5.6-luna",
+            "reservedCredits": 0.5,
+            "status": "settled",
+            "credits": 0.013954999999999999,
+            "knownCreditsLower": 0.013954999999999999,
+            "overrun": false,
+            "modelIdentity": "requested-only",
+            "issues": []
+          },
+          {
+            "callId": "call-3",
+            "model": "gpt-5.6-luna",
+            "reservedCredits": 0.5,
+            "status": "settled",
+            "credits": 0.015445,
+            "knownCreditsLower": 0.015445,
+            "overrun": false,
+            "modelIdentity": "requested-only",
+            "issues": []
+          },
+          {
+            "callId": "call-4",
+            "model": "gpt-5.6-luna",
+            "reservedCredits": 0.5,
+            "status": "settled",
+            "credits": 0.014020000000000001,
+            "knownCreditsLower": 0.014020000000000001,
+            "overrun": false,
+            "modelIdentity": "requested-only",
+            "issues": []
+          },
+          {
+            "callId": "call-5",
+            "model": "gpt-5.6-luna",
+            "reservedCredits": 0.5,
+            "status": "settled",
+            "credits": null,
+            "knownCreditsLower": 0.06347,
+            "overrun": false,
+            "modelIdentity": "requested-only",
+            "issues": [
+              "Docker Agent usage is a known lower bound; the complete total is unknown",
+              "Codex credits: unfinished usage total is unknown"
+            ]
+          },
+          {
+            "callId": "call-6",
+            "model": "gpt-5.6-luna",
+            "reservedCredits": 0.5,
+            "status": "settled",
+            "credits": 0.041518,
+            "knownCreditsLower": 0.041518,
+            "overrun": false,
+            "modelIdentity": "requested-only",
+            "issues": []
+          }
+        ]
+      },
+      "reauditedBudget": {
+        "maxCredits": 3,
+        "observedCredits": 0.16261799999999998,
+        "reservedCredits": 0,
+        "unknownUsageCalls": 1,
+        "exceeded": false,
+        "admissionDenied": false,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "settledCalls": 6,
+        "locked": true,
+        "calls": [
+          {
+            "callId": "call-1",
+            "model": "gpt-5.6-luna",
+            "reservedCredits": 0.5,
+            "status": "settled",
+            "credits": 0.01421,
+            "knownCreditsLower": 0.01421,
+            "overrun": false,
+            "modelIdentity": "requested-only",
+            "issues": []
+          },
+          {
+            "callId": "call-2",
+            "model": "gpt-5.6-luna",
+            "reservedCredits": 0.5,
+            "status": "settled",
+            "credits": 0.013954999999999999,
+            "knownCreditsLower": 0.013954999999999999,
+            "overrun": false,
+            "modelIdentity": "requested-only",
+            "issues": []
+          },
+          {
+            "callId": "call-3",
+            "model": "gpt-5.6-luna",
+            "reservedCredits": 0.5,
+            "status": "settled",
+            "credits": 0.015445,
+            "knownCreditsLower": 0.015445,
+            "overrun": false,
+            "modelIdentity": "requested-only",
+            "issues": []
+          },
+          {
+            "callId": "call-4",
+            "model": "gpt-5.6-luna",
+            "reservedCredits": 0.5,
+            "status": "settled",
+            "credits": 0.014020000000000001,
+            "knownCreditsLower": 0.014020000000000001,
+            "overrun": false,
+            "modelIdentity": "requested-only",
+            "issues": []
+          },
+          {
+            "callId": "call-5",
+            "model": "gpt-5.6-luna",
+            "reservedCredits": 0.5,
+            "status": "settled",
+            "credits": null,
+            "knownCreditsLower": 0.06347,
+            "overrun": false,
+            "modelIdentity": "requested-only",
+            "issues": [
+              "Docker Agent usage is a known lower bound; the complete total is unknown",
+              "Codex credits: unfinished usage total is unknown"
+            ]
+          },
+          {
+            "callId": "call-6",
+            "model": "gpt-5.6-luna",
+            "reservedCredits": 0.5,
+            "status": "settled",
+            "credits": 0.041518,
+            "knownCreditsLower": 0.041518,
+            "overrun": false,
+            "modelIdentity": "requested-only",
+            "issues": []
+          }
+        ]
+      },
+      "tokens": {
+        "inputTokens": 30876,
+        "outputTokens": 1657,
+        "cachedInputTokens": 9216,
+        "cacheWriteInputTokens": 0
+      },
+      "discoveredEdges": [
+        {
+          "stage": 0,
+          "callId": "call-4",
+          "target": "domains/domain-01/window.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-3",
+          "target": "domains/domain-01/ingest.mjs",
+          "provider": "config/domain-registry.json"
+        }
+      ],
+      "receipts": [
+        {
+          "path": ".sheep/docker-mechanism-semantic-fixed-20260910/call-1.json",
+          "sha256": "e4131f0b54f53575624e7abcb3bad9aea51e74411502ecd13d0ead77fcc46a80",
+          "id": "call-1",
+          "target": "domains/domain-01/ingest.mjs",
+          "outcome": "read-requested",
+          "readRequests": [
+            "config/domain-registry.json"
+          ],
+          "changedFiles": [],
+          "cleanupSucceeded": true,
+          "usageCompleteness": "complete",
+          "configuredModelEvidence": "chatgpt/gpt-5.6-luna",
+          "effectiveModelEvidence": null,
+          "tools": [
+            "__structured_output__"
+          ],
+          "usage": {
+            "inputTokens": 2470,
+            "outputTokens": 62,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "reasoningOutputTokens": 15,
+            "source": "docker-agent.per-message",
+            "partial": false,
+            "issues": []
+          },
+          "guestReceipt": {
+            "path": ".sheep/docker-mechanism-semantic-fixed-20260910/transcripts/sheep-docker-call-kjKMCH/receipt.json",
+            "sha256": "538bf12f8855a751f3bdbcbb05748669c535206aef281ca26e750d4d68849f53"
+          }
+        },
+        {
+          "path": ".sheep/docker-mechanism-semantic-fixed-20260910/call-2.json",
+          "sha256": "37fd5ba016f1529bdc8b7a9fb1861bbe86d2d246b3a93ff91da01575adbc3024",
+          "id": "call-2",
+          "target": "domains/domain-01/window.mjs",
+          "outcome": "read-requested",
+          "readRequests": [
+            "config/domain-registry.json"
+          ],
+          "changedFiles": [],
+          "cleanupSucceeded": true,
+          "usageCompleteness": "complete",
+          "configuredModelEvidence": "chatgpt/gpt-5.6-luna",
+          "effectiveModelEvidence": null,
+          "tools": [
+            "__structured_output__"
+          ],
+          "usage": {
+            "inputTokens": 2353,
+            "outputTokens": 73,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "reasoningOutputTokens": 23,
+            "source": "docker-agent.per-message",
+            "partial": false,
+            "issues": []
+          },
+          "guestReceipt": {
+            "path": ".sheep/docker-mechanism-semantic-fixed-20260910/transcripts/sheep-docker-call-ypcgzQ/receipt.json",
+            "sha256": "e397117ab37dbcf2f97b1c60b2ab2bbb9109e9d5b5baa7f02bcf2d2271915f34"
+          }
+        },
+        {
+          "path": ".sheep/docker-mechanism-semantic-fixed-20260910/call-3.json",
+          "sha256": "898a7e05eebc3e0ba1107c4adeed820f3e3710e4e9885dd3cde4bde2f907df20",
+          "id": "call-3",
+          "target": "domains/domain-01/ingest.mjs",
+          "outcome": "read-requested",
+          "readRequests": [
+            "policies/policy-003.json"
+          ],
+          "changedFiles": [],
+          "cleanupSucceeded": true,
+          "usageCompleteness": "complete",
+          "configuredModelEvidence": "chatgpt/gpt-5.6-luna",
+          "effectiveModelEvidence": null,
+          "tools": [
+            "__structured_output__"
+          ],
+          "usage": {
+            "inputTokens": 2525,
+            "outputTokens": 94,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "reasoningOutputTokens": 40,
+            "source": "docker-agent.per-message",
+            "partial": false,
+            "issues": []
+          },
+          "guestReceipt": {
+            "path": ".sheep/docker-mechanism-semantic-fixed-20260910/transcripts/sheep-docker-call-jysus5/receipt.json",
+            "sha256": "bcf4b7261fffc60c32ea1260ed44789c2eaa8441f9c789216436f458200f8b67"
+          }
+        },
+        {
+          "path": ".sheep/docker-mechanism-semantic-fixed-20260910/call-4.json",
+          "sha256": "22a9b74b859ab2238c90b5b5e8c7be37c5e8ed1a1823e6f8e761967272a9dedf",
+          "id": "call-4",
+          "target": "domains/domain-01/window.mjs",
+          "outcome": "read-requested",
+          "readRequests": [
+            "policies/policy-003.json"
+          ],
+          "changedFiles": [],
+          "cleanupSucceeded": true,
+          "usageCompleteness": "complete",
+          "configuredModelEvidence": "chatgpt/gpt-5.6-luna",
+          "effectiveModelEvidence": null,
+          "tools": [
+            "__structured_output__"
+          ],
+          "usage": {
+            "inputTokens": 2408,
+            "outputTokens": 66,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "reasoningOutputTokens": 18,
+            "source": "docker-agent.per-message",
+            "partial": false,
+            "issues": []
+          },
+          "guestReceipt": {
+            "path": ".sheep/docker-mechanism-semantic-fixed-20260910/transcripts/sheep-docker-call-JzAVfs/receipt.json",
+            "sha256": "020726f16a750c63b00a1da3fbf4b8a539fdbfe1d870262052a9c0e2fae302e2"
+          }
+        },
+        {
+          "path": ".sheep/docker-mechanism-semantic-fixed-20260910/call-5.json",
+          "sha256": "e73258f9f64c4ec036473e60bbbbf4fd7908fedce962ddccba41968099fa944f",
+          "id": "call-5",
+          "target": "domains/domain-01/ingest.mjs",
+          "outcome": "model-error",
+          "readRequests": [],
+          "changedFiles": [],
+          "cleanupSucceeded": true,
+          "usageCompleteness": "partial-or-unknown",
+          "configuredModelEvidence": "chatgpt/gpt-5.6-luna",
+          "effectiveModelEvidence": null,
+          "tools": [
+            "write_file",
+            "check_local"
+          ],
+          "usage": {
+            "inputTokens": 12370,
+            "outputTokens": 822,
+            "cachedInputTokens": 5120,
+            "cacheWriteInputTokens": 0,
+            "reasoningOutputTokens": null,
+            "source": "docker-agent.per-message",
+            "partial": true,
+            "issues": [
+              "Docker Agent usage is a known lower bound; the complete total is unknown"
+            ]
+          },
+          "guestReceipt": {
+            "path": ".sheep/docker-mechanism-semantic-fixed-20260910/transcripts/sheep-docker-call-k1QavP/receipt.json",
+            "sha256": "235c85f4da6ad215c5cb457d576bf0490b8f0a11613c3001329d9880f6d94cd6"
+          }
+        },
+        {
+          "path": ".sheep/docker-mechanism-semantic-fixed-20260910/call-6.json",
+          "sha256": "b80f529d0d4bb75d56dea9bfa53e1ea40b75bd483c1cf13aa64a83d3fb37dec2",
+          "id": "call-6",
+          "target": "domains/domain-01/window.mjs",
+          "outcome": "received",
+          "readRequests": [],
+          "changedFiles": [
+            "domains/domain-01/window.mjs"
+          ],
+          "cleanupSucceeded": true,
+          "usageCompleteness": "complete",
+          "configuredModelEvidence": "chatgpt/gpt-5.6-luna",
+          "effectiveModelEvidence": null,
+          "tools": [
+            "edit_file",
+            "check_local",
+            "__structured_output__"
+          ],
+          "usage": {
+            "inputTokens": 8750,
+            "outputTokens": 540,
+            "cachedInputTokens": 4096,
+            "cacheWriteInputTokens": 0,
+            "reasoningOutputTokens": null,
+            "source": "docker-agent.per-message",
+            "partial": false,
+            "issues": []
+          },
+          "guestReceipt": {
+            "path": ".sheep/docker-mechanism-semantic-fixed-20260910/transcripts/sheep-docker-call-rpQCqy/receipt.json",
+            "sha256": "ffc0b9e3b95ccc1b49f52e7804e3cfd43c95b5341bc311f4687a73f047dd1c35"
+          }
+        }
+      ],
+      "acceptance": [
+        {
+          "path": ".sheep/docker-mechanism-semantic-fixed-20260910/acceptance/sheep-accept-cdcf5858-f248-49ec-b695-619f0f319d0a/receipt.json",
+          "sha256": "7336f03188767b43c543a57549d300cb090a5398be3d8ab3c3a1bedf752f5591",
+          "cleanupSucceeded": true,
+          "failure": null
+        }
+      ]
+    }
+  ],
+  "combinedKnownCreditsLower": 0.19078299999999998,
+  "combinedUnknownUsageCalls": 1,
+  "limitations": [
+    "Standard token-rate credit equivalents, not observed account debit or invoices.",
+    "agent_info and last_message.Model are configuration, not independently observed serving-model identity.",
+    "Original stopped run is immutable; reaudited usage does not relabel it as successful.",
+    "Actual Luna covers semantic, one domain, one stage, N4 C2, no upper intervention. Staged and ablations are controlled tests; full stage gold also ran in real verifier VMs."
+  ]
+}

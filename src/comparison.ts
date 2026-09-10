@@ -1,19 +1,22 @@
 import { createHash } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { callCodex, CodexWorkerError, type CodexCallOptions, type CodexCallResult, type CodexUsage } from "./codex-worker.ts";
+import { callCodex, CodexWorkerError, type CodexCallResult, type CodexUsage } from "./codex-worker.ts";
+import { callDockerAgent, dockerWorkspaceWrites, validateFiles, SANDBOX_TEMPLATE, type DockerAgentOptions, type DockerTranscript } from "./docker-agent-worker.ts";
+import { createDockerFixtureObserver } from "./docker-fixture-observer.ts";
+import type { FixtureObserver } from "./fixture.ts";
 import { createHeldoutFixture, discoverThermalDependencies, type FixtureEdge } from "./heldout-fixture.ts";
 import { KernelError, SwarmKernel, type Checkout, type Contents, type Verdict } from "./kernel.ts";
 import { WorkerPool, type WorkerAssignment, type WorkerStats } from "./worker-pool.ts";
 
-export const COMPARISON_METHODS = ["single-upper", "manager-local", "sheep-fixed", "sheep-full"] as const;
+export const COMPARISON_METHODS = ["single-luna", "single-upper", "manager-local", "sheep-fixed", "sheep-full"] as const;
 export type ComparisonMethod = typeof COMPARISON_METHODS[number];
 export interface ComparisonResponse {
   readonly writes: readonly { readonly id: string; readonly content: string }[];
   readonly targets: readonly string[];
   readonly note: string;
 }
-export type ComparisonCaller = (options: CodexCallOptions) => Promise<CodexCallResult<ComparisonResponse>>;
+export type ComparisonCaller = (options: DockerAgentOptions) => Promise<CodexCallResult<ComparisonResponse>>;
 export interface ComparisonOptions {
   readonly method: ComparisonMethod;
   readonly outputDirectory: string;
@@ -21,12 +24,15 @@ export interface ComparisonOptions {
   readonly workers?: number;
   readonly concurrency?: number;
   readonly maxCalls?: number;
+  readonly maxUpperCalls?: number;
   readonly maxTokens?: number;
   readonly reserveTokensPerCall?: number;
   readonly timeoutMs?: number;
   readonly maxRounds?: number;
   readonly maxAttempts?: number;
   readonly fault?: "none" | "rounded-guidance";
+  readonly runtime?: "codex" | "docker-agent";
+  readonly workerTools?: "none" | "local";
 }
 type Phase = "implementation" | "management" | "intervention";
 export interface ComparisonCall {
@@ -95,21 +101,34 @@ function countUsage(usage: readonly CodexUsage[]) {
 }
 
 /** Small paired-pilot runner. Every method uses the same pinned source, oracle and mutation boundary. */
-export async function runComparison(options: ComparisonOptions, caller: ComparisonCaller = callCodex<ComparisonResponse>): Promise<ComparisonReport> {
+export async function runComparison(options: ComparisonOptions,
+  caller: ComparisonCaller = options.runtime === "docker-agent" ? callDockerAgent<ComparisonResponse> : callCodex<ComparisonResponse>,
+  observe?: FixtureObserver,
+): Promise<ComparisonReport> {
   const start = performance.now();
   if (!COMPARISON_METHODS.includes(options.method)) throw new TypeError("unknown comparison method");
+  if (options.runtime !== undefined && !["codex", "docker-agent"].includes(options.runtime)) throw new Error("unknown runtime");
+  if (options.workerTools !== undefined && !["none", "local"].includes(options.workerTools)) throw new Error("unknown worker tools");
+  if (options.workerTools === "local" && options.runtime !== "docker-agent") throw new Error("Local tools require Docker Agent");
+  if (options.runtime === "docker-agent" && options.method === "single-upper") throw new Error("New Docker standalone trials use single-luna");
   const config: ComparisonReport["configuration"] = {
-    method: options.method, size: options.size ?? 8, workers: options.workers ?? 4, concurrency: options.concurrency ?? 4,
+    method: options.method, size: options.size ?? 8, workers: options.method === "single-luna" ? 1 : options.workers ?? 4,
+    concurrency: options.method === "single-luna" ? 1 : options.concurrency ?? 4,
     maxCalls: options.maxCalls ?? 48, maxTokens: options.maxTokens ?? 120_000,
+    maxUpperCalls: options.maxUpperCalls ?? options.maxCalls ?? 48,
     reserveTokensPerCall: options.reserveTokensPerCall ?? 12_000, timeoutMs: options.timeoutMs ?? 120_000,
     maxRounds: options.maxRounds ?? 24, maxAttempts: options.maxAttempts ?? 3, fault: options.fault ?? "none",
+    runtime: options.runtime ?? "codex", workerTools: options.workerTools ?? "none",
   };
   for (const key of ["size", "workers", "concurrency", "maxCalls", "maxTokens", "reserveTokensPerCall", "timeoutMs", "maxRounds", "maxAttempts"] as const)
     if (!Number.isSafeInteger(config[key]) || config[key] < 1) throw new RangeError(`${key} must be a positive integer`);
   if (config.reserveTokensPerCall > config.maxTokens) throw new RangeError("reservation exceeds total token budget");
+  if (!Number.isSafeInteger(config.maxUpperCalls) || config.maxUpperCalls < 0) throw new RangeError("maxUpperCalls must be nonnegative");
   if (!["none", "rounded-guidance"].includes(config.fault)) throw new TypeError("unknown comparison fault");
   const pool = new WorkerPool({ workers: config.workers, concurrency: config.concurrency });
-  const fixture = createHeldoutFixture({ size: config.size });
+  const observer = observe ?? (config.runtime === "docker-agent" ? createDockerFixtureObserver(join(options.outputDirectory, "acceptance")) : undefined);
+  const fixture = createHeldoutFixture({ size: config.size, ...(observer ? { observe: observer } : {}) });
+  if (config.runtime === "docker-agent") validateFiles({ ...fixture.artifacts, "visible.test.mjs": "" });
   const initialArtifacts = { ...fixture.artifacts };
   if (config.fault === "rounded-guidance") initialArtifacts[fixture.specId] = initialArtifacts[fixture.specId]!.replace(
     "Do not round or widen limits.", "Round returned kelvin and pascals down to whole integers; preserve the physical limits.");
@@ -120,7 +139,7 @@ export async function runComparison(options: ComparisonOptions, caller: Comparis
   const fingerprint = createHash("sha256").update(JSON.stringify({
     artifacts: initialArtifacts, change: fixture.changedSource, editable: [...fixture.writableIds, fixture.specId], fault: config.fault,
   })).digest("hex");
-  const kernel = new SwarmKernel({ artifacts: initialArtifacts, verificationPolicy: `${fixture.task}/size-${config.size}/node-${process.versions.node}` });
+  const kernel = new SwarmKernel({ artifacts: initialArtifacts, verificationPolicy: `${fixture.task}/size-${config.size}/${config.runtime === "docker-agent" ? SANDBOX_TEMPLATE : `node-${process.versions.node}`}` });
   const times = { preparationMs: 0, readingMs: 0, acceptanceMs: 0, discoveryMs: 0, modelMs: 0, retryModelMs: 0, elapsedMs: 0 };
   const discovery = { scans: 0, filesRead: 0, bytesRead: 0, edges: 0, missingDeclaredEdges: 0 };
   let graph: readonly FixtureEdge[] = [];
@@ -150,7 +169,10 @@ export async function runComparison(options: ComparisonOptions, caller: Comparis
   const semanticFailures = new Set<string>();
   const claims = new Map<string, string>();
   let lastInterventionFailureCount = 0;
-  const budgetOkay = () => !budget.exceeded && budget.unknownUsageCalls === 0;
+  let verificationUnavailable = false;
+  let runtimeCleanupFailed = false;
+  let upperAdmissionDenied = false;
+  const budgetOkay = () => !budget.exceeded && budget.unknownUsageCalls === 0 && !verificationUnavailable && !runtimeCleanupFailed && !upperAdmissionDenied;
   const slots = () => budgetOkay() ? Math.max(0, Math.min(config.maxCalls - calls.length,
     Math.floor((config.maxTokens - budget.observedTokens - reserved) / config.reserveTokensPerCall))) : 0;
   const serialize = async <T>(action: () => Promise<T>): Promise<T> => {
@@ -160,7 +182,11 @@ export async function runComparison(options: ComparisonOptions, caller: Comparis
   };
   const verify = async (contents: Contents, scope?: readonly string[]): Promise<Verdict> => {
     const before = performance.now(); acceptanceChecks++;
-    try { return await fixture.verify(contents, scope); } finally { times.acceptanceMs += performance.now() - before; }
+    try {
+      const verdict = await fixture.verify(contents, scope);
+      if (config.runtime === "docker-agent" && verdict.executionFailure) { verificationUnavailable = true; throw new Error(verdict.errors.join("\n")); }
+      return verdict;
+    } finally { times.acceptanceMs += performance.now() - before; }
   };
   const checkout = (agent: string, targets: readonly string[], global = false) => {
     const before = performance.now();
@@ -182,11 +208,18 @@ export async function runComparison(options: ComparisonOptions, caller: Comparis
   const invoke = async (agent: string, phase: Phase, target: string | null, context: Checkout,
     instruction: string, extra: Record<string, unknown> = {}, observation?: Checkout): Promise<{ value: ComparisonResponse | null; record: ComparisonCall } | null> => {
     if (!slots()) { budget.admissionDenied = true; return null; }
+    if (agent === "upper" && calls.filter(call => call.model === "gpt-6-astra").length >= config.maxUpperCalls) {
+      upperAdmissionDenied = true; return null;
+    }
     const readStart = performance.now();
     const planningObservation = observation ? { id: observation.id, contents: observation.contents, reads: observation.reads } : undefined;
     const suppliedExtra = planningObservation ? { ...extra, planningObservation } : extra;
     const observationBytes = planningObservation ? Buffer.byteLength(JSON.stringify(planningObservation)) : 0;
-    const prompt = `${instruction}\nReturn JSON {writes:[{id,content}],targets:[artifactId],note}. Use complete replacement files. All context is supplied; do not use tools or read other paths. The pinned source and external acceptance cannot be changed.\n\nCONTEXT_JSON\n${JSON.stringify(context.contents)}\nEXTRA_JSON\n${JSON.stringify(suppliedExtra)}`;
+    const localTools = config.workerTools === "local" && phase === "implementation";
+    const toolInstruction = localTools
+      ? "Supplied context is materialized in the workspace. Run check_local, edit only authorized targets using the filesystem tools, then rerun check_local. Never edit visible.test.mjs. Actual workspace changes are authoritative."
+      : "All context is supplied; do not use tools or read other paths.";
+    const prompt = `${instruction}\nReturn JSON {writes:[{id,content}],targets:[artifactId],note}. Use complete replacement files. ${toolInstruction} The pinned source and external acceptance cannot be changed.\n\nCONTEXT_JSON\n${JSON.stringify(context.contents)}\nEXTRA_JSON\n${JSON.stringify(suppliedExtra)}`;
     // Preserve the complete management input even when the model call fails. The
     // wider observation is paid-for input, but is not a future code dependency.
     const inputReceipt = planningObservation ? { input: { context, extra: suppliedExtra } } : {};
@@ -209,23 +242,31 @@ export async function runComparison(options: ComparisonOptions, caller: Comparis
     let usage: readonly CodexUsage[] = [];
     let value: ComparisonResponse | null = null;
     let returned = false;
+    let partialUsage = false;
     try {
       if (planningObservation) await writeFile(join(options.outputDirectory, `${record.id}.json`), JSON.stringify(inputReceipt, null, 2) + "\n");
       const result = await caller({ model: record.model, prompt, schema, cwd: workspace, timeoutMs: config.timeoutMs,
-        outputDirectory: join(options.outputDirectory, "transcripts") });
+        outputDirectory: join(options.outputDirectory, "transcripts"),
+        ...(localTools ? { tools: "local", maxTokens: config.reserveTokensPerCall,
+          files: { ...context.contents, "visible.test.mjs": fixture.visibleTest(target ? [target] : fixture.writableIds) } } : {}) });
       returned = true;
       usage = result.usage;
+      partialUsage = (result.transcript as Partial<DockerTranscript>).usageCompleteness === "partial-or-unknown";
       record.effectiveModelEvidence = result.transcript.effectiveModelEvidence ?? null;
       await writeFile(join(options.outputDirectory, `${record.id}.json`), JSON.stringify({ ...result, ...inputReceipt }, null, 2) + "\n");
       if (result.requestedModel !== record.model || (record.effectiveModelEvidence !== null && record.effectiveModelEvidence !== record.model))
         throw new Error("model identity does not match requested role");
       value = response(result.result); record.outcome = "received";
+      if (localTools) value = { ...value, writes: Object.entries(dockerWorkspaceWrites(result.transcript)).map(([id, content]) => ({ id, content })) };
     } catch (error) {
       record.outcome = "error"; record.errors = [String(error)];
       record.failureKind = returned ? "response" : "transport";
       if (error instanceof CodexWorkerError) {
         if (["malformed-events", "missing-output", "malformed-output"].includes(error.code)) record.failureKind = "response";
         usage = error.transcript.usage;
+        partialUsage = (error.transcript as Partial<DockerTranscript>).usageCompleteness === "partial-or-unknown";
+        if ((error.transcript as Partial<DockerTranscript>).runtime === "docker-agent" && (error.transcript as Partial<DockerTranscript>).cleanupSucceeded === false)
+          runtimeCleanupFailed = true;
         record.effectiveModelEvidence = error.transcript.effectiveModelEvidence ?? null;
         await writeFile(join(options.outputDirectory, `${record.id}.json`), JSON.stringify({ error: error.code, transcript: error.transcript, ...inputReceipt }, null, 2) + "\n");
       }
@@ -233,12 +274,12 @@ export async function runComparison(options: ComparisonOptions, caller: Comparis
       record.durationMs = performance.now() - calledAt; times.modelMs += record.durationMs;
       if (retry) times.retryModelMs += record.durationMs;
       const observed = countUsage(usage);
-      record.usageComplete = observed.complete;
+      record.usageComplete = observed.complete && !partialUsage;
       record.inputTokens = observed.inputComplete ? observed.input : null;
       record.outputTokens = observed.outputComplete ? observed.output : null;
       record.totalTokens = observed.totalComplete ? observed.total : null;
       budget.observedInputTokens += observed.input; budget.observedOutputTokens += observed.output; budget.observedTokens += observed.total;
-      if (!observed.complete) budget.unknownUsageCalls++;
+      if (!record.usageComplete) budget.unknownUsageCalls++;
       record.reservationOverrun = observed.total > record.reservedTokens;
       if (record.reservationOverrun) budget.reservationOverruns++;
       budget.exceeded = budget.observedTokens > config.maxTokens;
@@ -321,10 +362,11 @@ export async function runComparison(options: ComparisonOptions, caller: Comparis
       const pending = [...new Set(kernel.pending().map(item => item.consumer))].filter(id => fixture.writableIds.includes(id));
       if (!pending.length) break;
       if (!slots()) { budget.admissionDenied = true; break; }
-      if (config.method === "single-upper") {
+      if (config.method === "single-upper" || config.method === "single-luna") {
         if (pending.some(id => (attempts.get(id) ?? 0) >= config.maxAttempts)) break;
-        const context = checkout("upper", [...fixture.writableIds, fixture.specId], true);
-        const result = await invoke("upper", "implementation", null, context,
+        const singleAgent = config.method === "single-luna" ? "single" : "upper";
+        const context = checkout(singleAgent, [...fixture.writableIds, fixture.specId], true);
+        const result = await invoke(singleAgent, "implementation", null, context,
           "Solve the complete thermal API migration. You may edit all sensor files, regional files and the specification, but never the pinned library. You may return an incremental subset of replacement files; accepted files are retained for subsequent calls. Each submitted file and its dependencies must satisfy local acceptance; final success still requires the whole migration. targets must be empty.",
           { pending, previousErrors: [...failures] });
         // Charge actual submitted targets, not untouched files elsewhere in the task.
@@ -408,6 +450,9 @@ export async function runComparison(options: ComparisonOptions, caller: Comparis
   if (infrastructureError) finalErrors.push(`infrastructure-error: ${infrastructureError}`);
   if (budget.exceeded) finalErrors.push("total-token-budget-exceeded");
   if (budget.unknownUsageCalls) finalErrors.push("token-usage-incomplete");
+  if (verificationUnavailable) finalErrors.push("verification-unavailable");
+  if (runtimeCleanupFailed) finalErrors.push("sandbox-cleanup-failed");
+  if (upperAdmissionDenied) finalErrors.push("upper-call-limit");
   const discovered = new Set(graph.map(edge => `${edge.consumer}\0${edge.provider}`));
   discovery.missingDeclaredEdges = fixture.dependencies.filter(edge => !discovered.has(`${edge.consumer}\0${edge.provider}`)).length;
   times.elapsedMs = performance.now() - start;
@@ -423,7 +468,7 @@ export async function runComparison(options: ComparisonOptions, caller: Comparis
       "One synthetic held-out task with static imports and declared contract dependencies; not general-repository evidence.",
       "All methods share editable artifacts, external oracle, retries and the host's validation of already-correct artifacts. Role-specific write scopes differ intentionally.",
       "Sheep-full scans actual source bytes initially and after accepted changes. It does not discover arbitrary semantic dependencies.",
-      "The CLI has no enforced per-call token cap. Reservation controls admission only; usage is settled after the call. Overshoot or unknown usage prevents success.",
+      "Reservations control admission; Docker local-tool budgets are checked between turns. Overshoot or unknown usage prevents success.",
       "Token totals are observed CLI usage; they are not currency cost. Preparation, reading, discovery and acceptance times overlap some elapsed categories and must not be summed blindly.",
       "Single-upper is sequential; multi-agent methods use the same configured pool and concurrency. This is a pilot, not statistical significance or optimal tuning.",
       "Every artifact has the same attempt cap across methods. Only semantic acceptance rejections trigger Sheep guidance; transport and response failures retry without semantic escalation.",

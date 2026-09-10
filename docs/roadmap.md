@@ -73,6 +73,22 @@ DB選定とschemaは、この段階でruntimeの要件とローカルの互換�
 
 各NでC=8を固定した所要時間は約271/295/274秒。16/32体は上位が各1回介入し、その費用が約半分を占めた。人数だけの優位、介入の因果効果、一般的な意味依存発見は示していない。3段階のN比較、実モデルの記憶・上位なし対照、総記憶量を揃えた対照、timeout時の使用量保存は次の課題である。[実行ガイド](mechanism-experiment.md)と[実行計画](execplan-mechanism.md)に範囲を記録する。
 
+## Docker Agent Sandbox導入 — 実機pilot完了
+
+2026-09-10の利用者依頼により、Docker Agent v1.137.0＋sbx v0.42.1を導入した。`swarm --runtime docker-agent`は従来のkernelを維持してcallerを切り替える。mountless、新規VM/session、局所ファイルの明示投入、host側proxy認証、制限tool、timeout/取消後のVM削除とレシート保存を実装した。
+
+完了条件: CLIのhash/版を照合、実host/SSH/network隔離、timeout後削除と状態非継承、Lunaの編集・可視テスト失敗→成功、別VMの固定oracleとkernel確定、登録4体・C=2の5 artifact全体受入を確認した。失敗・打切りrunも別に残す。[結果](results/docker-agent-sandbox.md)を参照。
+
+継続実装: `swarm --worker-tools local`で局所編集・可視テストを接続。全差分のscope検査、別VMの受入実行とhostの固定採点、usage不明・検証基盤障害時の新規受付停止を実装した。通常gateにoracle互換・改変拒否・誤自己申告・停止条件を追加し、実VMのprobeを分けた。
+
+継続範囲の完了証拠: [道具付きの実Luna N=4/C=2](results/docker-agent-tools-swarm.md)で5call・5artifact・全体受入成功。全件の可視テスト失敗→成功と、worker 5台・受入6台の削除を確認した。
+
+追加の既知範囲: `compare`の単独Luna・Manager-local・Sheep-fixed/fullへ共通toolと独立VM受入を追加した。必須importと固定採点値を保持し、単独Astraの新規Docker実行を拒否する。比較系列の共通profileと使用量不明時の停止、Docker usageの費用見積、作成前の所有記録と復帰時のVM回収も実装した。[継続結果](results/docker-agent-comparison-recovery.md)
+
+`mechanism`への接続も実装した。課金付きreadRequests、未読policyを含まない可視feedback、版付きread set、stageごとの独立VM採点を検査する。終了指示と配信済みreadの説明を修正し、実Lunaのsemantic 6 module・18callとstaged 3段階・28callが全工程に成功した。両runの全callで終了tool、完全usage、cleanupを確認した。既存swarm自身も診断用2モジュールを3callで実装・自己修正し、固定91ケースを通して本体をそのまま採用した。通常gateは281検査。[完了と採用の記録](results/docker-agent-completion.md)、[以前の停止理由](results/docker-agent-mechanism.md)を参照。
+
+次の範囲: pool再利用と汚染検査、Node 24+のtemplate、Astra介入を含む実走、Docker条件での規模・対照実験。今回の復帰時回収は常駐watcherやrun再開ではない。一般repo・32 VM並列・費用優位・並列durabilityは本導入の完了条件に含まない。
+
 ## 再検討する条件
 
 - 下位が局所作業を完遂できない: 分割、context、道具、モデルの組を見直す。

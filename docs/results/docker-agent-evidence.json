@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "recordedAt": "2026-09-10",
+  "runtime": "docker-agent v1.137.0",
+  "sandbox": "sbx v0.42.1",
+  "privateLocalEvidence": true,
+  "files": [
+    {
+      "path": ".sheep/sandbox-probe-2026-09-10T01-24-37.551Z/result.json",
+      "sha256": "707839531e435f842c1bbe1499cb9b69ba81e5179bf97ae5d806fa091634be85"
+    },
+    {
+      "path": ".sheep/docker-agent-pilot-2026-09-10T01-22-17.155Z/sheep-docker-call-aPVzii/receipt.json",
+      "sha256": "deabf4e35b332e5a0721ccac7015e8cb17e7962b9845782b19d885121914815c"
+    },
+    {
+      "path": ".sheep/docker-agent-pilot-2026-09-10T01-26-09.835Z/response.json",
+      "sha256": "f46bd5cc4af51d14ec1999f70cccc577833226f349a8a67a5b11bcdee9dba94d"
+    },
+    {
+      "path": ".sheep/docker-agent-pilot-2026-09-10T01-29-21.691Z/result.json",
+      "sha256": "e6f686a0247f616026b3ee0fbb2b3b62fded8b528c77e530e01f3b0ca7bf6046"
+    },
+    {
+      "path": ".sheep/docker-agent-swarm-four-20260910/result.json",
+      "sha256": "acfd5c01bead0b22d1bfea28b022b1e29e50c37186137db97ef6ea537de5cf6e"
+    },
+    {
+      "path": ".sheep/docker-agent-swarm-four-complete-20260910/result.json",
+      "sha256": "b620ffbf049311e491e570bbf1dfc348fcea03a5b77eda5cc8adcd2e57d1e789"
+    }
+  ]
+}

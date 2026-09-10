@@ -100,7 +100,7 @@ function modelsFromEvent(event: Record<string, unknown>): string[] {
   return models;
 }
 
-function conforms(value: unknown, schema: Record<string, unknown>): boolean {
+export function conforms(value: unknown, schema: Record<string, unknown>): boolean {
   const type = schema.type;
   if (type === "object") {
     if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
@@ -127,7 +127,7 @@ function conforms(value: unknown, schema: Record<string, unknown>): boolean {
   return false;
 }
 
-function assertSupportedSchema(schema: unknown, path = "$ "): asserts schema is Record<string, unknown> {
+export function assertSupportedSchema(schema: unknown, path = "$ "): asserts schema is Record<string, unknown> {
   const record = asRecord(schema);
   if (record === undefined) throw new RangeError(`Unsupported JSON schema at ${path}`);
   const allowed = new Set(["type", "title", "description", "properties", "required", "additionalProperties", "items"]);

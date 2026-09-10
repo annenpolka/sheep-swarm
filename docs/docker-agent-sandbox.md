@@ -1,0 +1,159 @@
+# Docker AgentとSandboxの導入
+
+2026-09-10。Docker Agentはworker runtimeとして使い、割当・局所記憶・read set・lease・受入・確定はsheep-swarmに残す。`sub_agents`やhandoffで羊の制御を置換しない。
+
+## 導入した構成
+
+| 項目 | 固定値・境界 |
+|:---|:---|
+| Docker Agent | v1.137.0、公式releaseのSHA-256をhostとVM内で照合 |
+| Docker Sandboxes | sbx v0.42.1、ローカルmicroVM |
+| template | `docker/sandbox-templates:docker-agent@sha256:70b4bd213f644ec0e0d11621af84b26f406f6dc4155a0bf7dbefdc9d3c735de0` |
+| 計算資源 | 呼出しごとに2 CPU・4 GiB。新規VM、新規session DB |
+| workspace | mountless。明示的なファイル内容だけ投入、repoやGitをマウントしない |
+| 外向き通信 | `chatgpt.com:443`だけ。既存allowがある環境は起動を拒否し、global policyを自動変更しない |
+| 認証 | hostのCodex access tokenをsbx custom secret resolverからproxyへ。VMにはplaceholderのみ |
+| SSH・MCP | SSH転送無効、sbx MCP registryが空であることを事前検査。Docker AgentにはMCP toolを渡さない |
+| 局所道具 | filesystemの6 operationと、固定の`node --test visible.test.mjs`。汎用shell・Git・LSPは未公開 |
+| 終了 | 正常・失敗・timeout・AbortSignalの後に自分のVMだけ削除。失敗時は停止も試み、成功にはしない |
+
+template同梱のDocker Agentはv1.127.0だったため、起動後に検証済みv1.137.0を投入する。Node.jsはv22.22.1であり、host側のNode.js 24.12+という要件とは異なる。現pilotは`.mjs`のみ。任意のTypeScript repoをこのtemplateで実行できるとはしない。
+
+## 準備
+
+Node.js 24.12以上、macOS Apple Siliconまたは対応Linux/x64環境、認証済みCodex、sbxが必要。今回の実機検証はmacOS arm64のみ。
+
+```sh
+npm run sandbox:install
+# docker agentコマンドも更新する場合。従来のpluginをbackupへ保持する。
+node scripts/install-docker-agent.mjs --user-plugin
+docker agent version
+sbx version
+sbx login
+sbx settings set ssh.agentForwardingEnabled false
+sbx daemon restart
+```
+
+このMacではsbxをHomebrewでv0.42.1へ更新済み。将来のsbxは挙動を確認してからpinを更新する。既存sandboxがある環境でのdaemon再起動は、進行中作業を確認して行う。
+
+旧Docker Agent pluginは`~/.docker/sheep-swarm-backups/docker-agent`に保持する。Dockerのplugin探索ディレクトリにはbackupを置かない。
+
+`scripts/docker-agent-token.mjs`はsbxがhost側で呼ぶresolverで、手動実行しない。stdoutは秘密値のため通常ログへ出してはいけない。既定では`~/.codex/auth.json`の有効なaccess tokenだけを読み、refresh tokenは読まない・コピーしない・更新しない。認証が期限切れならCodex側で更新する。resolver自身には自動refreshも別providerへのfallbackもない。非標準の認証保存先はdaemon側の環境設定を含めた追加対応が必要。
+
+利用者は本導入のためのCodex認証のproxy利用を明示的に承認した。Sandboxには個別名のsecretのみ設定し、`sbx rm`でそのscopeも削除する。API費用への切替や別モデルへのfallbackは行わない。
+
+## 実行
+
+```sh
+# LLMを呼ばず実microVMの隔離・削除・oracleを検証
+npm run sandbox:probe
+
+# Lunaが読み、失敗テストを実行し、編集・再検証する
+npm run sandbox:pilot
+
+# 合成swarm fixtureの受入経路を実VMで検証（LLM呼出しなし）
+npm run sandbox:swarm-probe
+
+# 既存swarmのworkerへ局所ファイル編集と可視テストを付与
+npm run swarm -- --runtime docker-agent --worker-tools local \
+  --workers 4 --concurrency 2 --size 4 --max-calls 6 \
+  --max-meta-calls 0 --timeout-ms 240000
+```
+
+最後の例は4 consumerと1 reportを持つ既存fixture。登録4体は呼出し4回を意味しない。最大6呼出しの受付を与える。`--worker-tools`の既定値は`none`で、`local`にはDocker runtimeが必要。`--runtime`を省略すると従来のCodex adapterになる。
+
+`compare`でも同じflagsを使用できる。`single-luna`・`manager-local`・`sheep-fixed`・`sheep-full`の実装callに同じtoolを与え、管理・仕様介入callはtool-lessを保つ。各方式の編集権限と観測範囲は元のprotocolを維持する。単独Lunaは全体context、局所workerはcheckoutの範囲と固定可視検査を受け取り、全差分をそれぞれの権限で検査する。最終採点値・case・必須importは共通である。
+
+`scripts/compare-experiment.mjs --source <固定したsource> --output <新規run> --runtime docker-agent --worker-tools local`で12条件の系列を構成できる。sourceには今回のruntime対応が必要で、そこで`npm run sandbox:install`も準備する。既存の凍結sourceは書き換えない。今回の実機検証は小規模CLI runまでで、12条件の一括実走は行っていない。`durable`のruntime切替は後続範囲。
+
+`callDockerAgent`は既存のcaller interfaceに接続する。`files`を指定しない場合はcwdをコピーせず、prompt内contextだけで働く。局所道具を使うときは`tools: "local"`と`files`を明示する。JSON形式のYAML例は[configs/docker-agent-local.yaml](../configs/docker-agent-local.yaml)。`permissions`はconfigの最上位に置く。
+
+## 機構実験の追加読取と段階境界
+
+```sh
+npm run sandbox:mechanism-probe
+npm run mechanism -- --runtime docker-agent --worker-tools local \
+  --family semantic --method sheep --groups 1 --workers 4 --concurrency 2 \
+  --max-calls 24 --max-meta-calls 0 --max-credits 3 --luna-reservation 0.5 \
+  --max-tokens-per-call 60000 --timeout-ms 240000 \
+  --output .sheep/my-docker-mechanism
+npm run mechanism -- --runtime docker-agent --worker-tools local \
+  --family staged --method sheep --groups 1 --workers 4 --concurrency 2 \
+  --max-calls 48 --max-meta-calls 0 --max-credits 5 --luna-reservation 0.5 \
+  --max-tokens-per-call 60000 --timeout-ms 240000 \
+  --output .sheep/my-docker-staged
+```
+
+`static`・`semantic`・`staged`、群れ・単独Luna・記憶なし・上位なしに対応する。上位介入はtool-lessで共有guidanceだけを編集する。`single-astra`の新規Docker実行は拒否する。単独Lunaは全体context、局所workerは版付きcheckoutを受け取る。既定runtimeは従来のCodex、道具はnone。既存の`mechanism:experiment`の凍結系列や追加予算をDockerへ自動で移さず、今回のDocker runは個別CLIで記録する。
+
+`readRequests`は公開catalogのIDだけを指定できる。選択だけでは読了にならず、次の別の有料callで内容を渡し、正常な応答を得てから依存edgeを登録する。未読registryからpolicyの所有先を推定しない。読了したregistryで所有先を解決し、現stageの仕様・policy・必要なdecoderがcheckoutへ揃うまで、可視テストにはケースを含めず、採点エラーから値を返さず、編集も採用しない。要求中のファイルを可視verifierが先取りして自動確定することも禁止する。
+
+可視検査VMの入力は同じcheckoutのIDへ限定するため、別domainの未読JSONをruntime importから参照できない。段階を進めると、保持した依存edgeから新しい版をcheckoutし直す。最終検査は全候補を別VMで実行し、成功したstageだけを次へ進める。最終失敗の具体値は結果ファイルだけに保存する。可視テスト成功の自己申告、最終JSONのwrites、選択だけのreadは確定証拠にしない。
+
+`max-credits`は固定価格表によるcredit相当の受付上限、`luna-reservation`はcall予約。追加読取、toolループ内の各推論、再試行、上位を精算する。`max-tokens-per-call`はDocker Agent側のターン間token受付上限で、providerの強制上限ではない。部分usageやcleanup不明、検証基盤障害では後続の受付を止める。実Lunaのsemanticは18call、stagedは28callで完走し、完全usageと全stageの独立採点を確認した。[完了検証](results/docker-agent-completion.md)と[以前の停止記録](results/docker-agent-mechanism.md)を分けている。
+
+local tool時はシステム指示も`__structured_output__`による終了へ統一する。配信されたreadはrunnerが版とともに記録するため、現在の`context.contents`にあるファイルを再要求しない。`requiredReads`と`remainingReadCalls`は現在の状態、過去のエラーやmemoryは履歴として扱う。この説明の追加で固定oracleや回数上限は緩めていない。
+
+## 既存swarmに実装課題を渡す
+
+`runSwarm`の第4引数に、hostが定義する`SwarmTask`（固定IDと`CodeFixture` factory）を渡せる。既存のWorkerPool、版付きcheckout、lease、受入、commitを再利用する。factoryは信頼したhostコードであり、modelのJSONや自由なCLI入力からoracleを差し替える機能ではない。モデルなしの通常gateはobserverを注入して検査する。
+
+```sh
+# 実Lunaを呼ぶ。2 helper、N4/C2、最大8call、上位0、3 credits相当の受付
+npm run swarm:diagnostics
+# 実Lunaを1callだけ呼び、ingest編集・終了tool・独立受入を確認
+npm run sandbox:completion-probe
+# reportの終了形式を検査する場合
+npm run sandbox:completion-probe -- domains/domain-01/report.mjs
+# 保存済みの結果を読むだけ。モデルは呼ばない
+npm run summarize:docker-mechanism -- .sheep/YOUR_RUN/result.json
+```
+
+実装課題は[固定仕様](tasks/docker-goal-completion.md)と`experiments/docker-diagnostics-task.ts`。親がoracleを保持し、担当外や可視テストへの変更を拒否する。戻った本体は全体受入と差分レビューを経てから明示的に取り込む。一般repo全体をmountしたり、未検査のmodel差分を自動適用したりはしない。`swarm:diagnostics`の実装成果は`artifacts.json`、モデルレシートは`call-N.json`、credit相当は`credit-budget.json`へ保存する。
+
+## 候補をどう採用するか
+
+```mermaid
+flowchart LR
+  K[host kernelの版付きcontext] --> W[mountless worker VM]
+  W --> T[局所ファイル編集と可視テスト]
+  T --> E[実際のworkspace変更をJSONで回収]
+  E --> A[全変更のleaseとread setを照合]
+  A --> V[別の通信拒否VMで固定受入]
+  V --> C[kernel commit]
+```
+
+pilotと道具付きswarmはモデルが最終回答に書いた`content`より実際に編集されたファイルを採用する。最終回答で末尾改行が省略されても、実ファイルの内容は保持する。全変更をlease検査へ渡し、許可外ファイルを黙って捨てて成功にしない。削除・symlink・特殊file・不正path・件数/容量超過は現adapterの対応外として拒否する。
+
+可視テストはworkerが変更できるので、成功の証拠にはしない。pilotの独立oracleは新しい通信拒否VMで11ケースを検査し、null・undefined・Unicode・非stringの既存例外動作を確認する。固定oracleをworkerに渡さず、別VMを削除後にkernelへverdictを戻す。
+
+道具付きswarmには、版付きcheckoutの全内容と固定生成の`visible.test.mjs`を投入する。テストはfeedback用で、書換えは全差分検査で拒否される。consumerとreportを同じ局所手順で処理し、上位は引き続きtool-lessの仕様介入を担当する。
+
+Docker runtimeのswarm/compare受入では、候補と依存閉包を別の通信拒否VMへ送り、観測値だけをhostへ返す。従来のfixtureの期待値・case・比較式はhostに保持する。workerの可視テストや認証を受入VMにコピーしない。VM内の評価は供給済み`.mjs`の相対importと同期・Promise戻り値に対応する。機構fixtureのため、realm内で生成した`URL`と、供給済みJSONだけをUTF-8文字列として読む`node:fs`の`readFileSync`、`node:fs/promises`の`readFile`を追加した。これは限定した仮想読取で、実guest/hostのfilesystemや一般のNode builtin、外部import、汎用shellは公開しない。比較fixtureでは`SourceTextModule.dependencySpecifiers`で必須importを構文解析し、コメントによる偽装も拒否する。固定Node22とhost Node26の両方で確認した。一般repositoryの実行環境ではない。受入ごとのreceiptはrun内の`acceptance/`へ保存する。
+
+## 記録と失敗
+
+各呼出しは`.sheep/.../sheep-docker-call-*/receipt.json`に設定、入力ファイル、NDJSON、stderr、版、hash、sandbox名、各lifecycle操作、削除結果を保存する。timeoutでも既に届いたusageを残し、未完了の推論がある場合は`usageCompleteness: partial-or-unknown`とする。総費用0とは扱わない。
+
+swarm/compare/mechanismはusage不明が出たwaveを回収した後、新しいworkerと上位の呼出しを止める。受入VMの基盤障害とworkerのcleanup失敗も新規受付を止め、仕様の誤りを直すための上位介入を起こさない。既に並列で発行した呼出しの使用量とcleanupも記録する。offline費用見積器はDockerのper-message usageをcache込みで読む。部分usageの金額は下限だけを表示し、上限・総額は不明にする。CreditBudgetでも追加受付をlockする。
+
+`token_usage.usage`は実測とv1.137.0のコードでは直近のcontext snapshot。消費量は各`last_message`のinput・cache read/write・outputから集計する。`budget_usage`を加算せず、同一usage eventの重複も拒否する。`last_message.Model`はruntimeの設定IDに由来するため`configuredModelEvidence`に残し、`effectiveModelEvidence`はnullとする。
+
+Lunaのruntime価格は`unpriced`、costは0と表示された。これは無料の証明ではない。Docker Agentの`max_cost`はこの条件の費用上限に使わず、token上限・時間上限・外側の呼出し数で制御する。budgetはターン間の受付制御で、外側timeoutがVM削除を担う。既存価格表での集計や利用枠実測は別作業である。
+
+`sandbox:pilot -- --response <保存済みresponse.json>`はモデル再呼出しなしで、保存済み候補を別VMで検査する。新しい結果には元ファイルのpath・hashを残す。元runを成功へ書き換えない。
+
+作成前に`.sheep/sandbox-owners/<UUID名>.json`へhost・PID・templateを同期保存する。正常cleanup後は解放済みと記録する。SIGKILL後は次のruntime processの起動時、または`npm run sandbox:reap`で、同じhostの死んだ所有PIDに属する名前だけを照合・削除する。作成途中で死んだ記録はVMが不在でも保持し、後から現れた同じ名前を次のsweepで回収する。生存PID・PID再利用が疑われる場合・別host・未知のVMは削除しない。名前・image・mountの相違は拒否する。
+
+これは復帰時の資源回収である。常駐監視による即時削除、processが戻らない間の回収、モデルcallの再開、未保存usageの復元、電源断で失われた所有記録の復旧は保証しない。記録はhost管理のため、手でVM名を再利用しない。`sbx rm --all`や`reset`は本導入の手順では使わない。VMのpool再利用、32台の同時起動、上位のSandbox内tool利用は未検証。
+
+## 調査から修正した点と出典
+
+- RuntimeとSandboxは別。VM外でtool permissionsだけに依存しない。[Headless](https://docs.docker.com/ai/docker-agent/guides/headless/)
+- Clone modeでも元repoの未追跡・ignoredファイルが読める。局所性にはmountlessへの明示投入が適する。[Isolation](https://docs.docker.com/ai/sandboxes/security/isolation/)
+- 既定のSSH転送、共有skills、hostで実行されるMCPは別の権限境界。今回の実版で共有workspace mountの不在とSSH不在を検査する。[Credentials](https://docs.docker.com/ai/sandboxes/configuration/credentials/)
+- `restricted`とoperation制限は補助。固定test commandも編集したコードを実行するため、VM外では使わない。[Permissions](https://docs.docker.com/ai/docker-agent/configuration/permissions/)、[Script](https://docs.docker.com/ai/docker-agent/tools/script/)
+- toolを使った最終JSONには`structured_output.mode: tool`を使う。[Structured output](https://docs.docker.com/ai/docker-agent/configuration/structured-output/)
+- ChatGPT providerとSandboxの認証は自動で接続できると仮定せず、401から実確認した。[ChatGPT provider](https://docs.docker.com/ai/docker-agent/providers/chatgpt/)
+- budgetは進行中turnを中断しない。未価格モデルのcost上限にも注意が必要。[Budget](https://docs.docker.com/ai/docker-agent/configuration/budget/)
+- 固定した実装は[Docker Agent v1.137.0](https://github.com/docker/docker-agent/releases/tag/v1.137.0)と[sbx v0.42.1](https://github.com/docker/sbx-releases/releases/tag/v0.42.1)。

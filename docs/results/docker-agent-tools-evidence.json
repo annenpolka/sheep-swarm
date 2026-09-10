@@ -1,0 +1,130 @@
+{
+  "format": 1,
+  "recordedAt": "2026-09-10",
+  "runtime": "docker-agent v1.137.0",
+  "sandbox": "sbx v0.42.1",
+  "privateLocalEvidence": true,
+  "success": true,
+  "registeredWorkers": 4,
+  "maxConcurrentModelCalls": 2,
+  "lowerCalls": 5,
+  "upperCalls": 0,
+  "completedArtifacts": 5,
+  "durationMs": 318135,
+  "inputTokens": 44474,
+  "outputTokens": 3124,
+  "modelCalls": [
+    {
+      "file": "call-1.json",
+      "durationMs": 33021,
+      "changedPaths": [
+        "consumers/consumer-001.mjs"
+      ],
+      "observedFailThenPass": true,
+      "cleanupSucceeded": true,
+      "usageCompleteness": "complete"
+    },
+    {
+      "file": "call-2.json",
+      "durationMs": 30026,
+      "changedPaths": [
+        "consumers/consumer-002.mjs"
+      ],
+      "observedFailThenPass": true,
+      "cleanupSucceeded": true,
+      "usageCompleteness": "complete"
+    },
+    {
+      "file": "call-3.json",
+      "durationMs": 126252,
+      "changedPaths": [
+        "consumers/consumer-003.mjs"
+      ],
+      "observedFailThenPass": true,
+      "cleanupSucceeded": true,
+      "usageCompleteness": "complete"
+    },
+    {
+      "file": "call-4.json",
+      "durationMs": 127895,
+      "changedPaths": [
+        "consumers/consumer-004.mjs"
+      ],
+      "observedFailThenPass": true,
+      "cleanupSucceeded": true,
+      "usageCompleteness": "complete"
+    },
+    {
+      "file": "call-5.json",
+      "durationMs": 125506,
+      "changedPaths": [
+        "reports/report-001.mjs"
+      ],
+      "observedFailThenPass": true,
+      "cleanupSucceeded": true,
+      "usageCompleteness": "complete"
+    }
+  ],
+  "files": [
+    {
+      "path": ".sheep/docker-agent-swarm-tools-20260910/result.json",
+      "sha256": "1af7bbc7baf06541b067ffc3952f7d0092142a0cccd1845ae1b75622f8b1c9bf"
+    },
+    {
+      "path": ".sheep/docker-agent-swarm-tools-20260910/artifacts.json",
+      "sha256": "000e70c7432d1bd79c1752fd6e346dc6539ec8ee4e7f6a6071d3422f9c049d32"
+    },
+    {
+      "path": ".sheep/docker-agent-swarm-tools-20260910/kernel-state.json",
+      "sha256": "229a4045dca673dc89ea1b5344479d134b4d0f39e2a47a783a32346ac7dfdf0b"
+    },
+    {
+      "path": ".sheep/docker-swarm-probe-2026-09-10T01-53-28.551Z/result.json",
+      "sha256": "d1d9ed91f252a53b2bf6973a824169f39991e7142f88b87c8c81e9c667e601ec"
+    },
+    {
+      "path": ".sheep/docker-agent-swarm-tools-20260910/call-1.json",
+      "sha256": "c8c391363ecf25164462a6c3dc92f346b57beff95750ea4f264b2ec37f677f94"
+    },
+    {
+      "path": ".sheep/docker-agent-swarm-tools-20260910/call-2.json",
+      "sha256": "0a91bf202c112fbfdbe9dff8520e4eee32ffc874740398d577f03a2b09176083"
+    },
+    {
+      "path": ".sheep/docker-agent-swarm-tools-20260910/call-3.json",
+      "sha256": "c3c155667e3bf33e09cbb4b45b71f10beefe2480882cc7bc41d5f1d364cd70a3"
+    },
+    {
+      "path": ".sheep/docker-agent-swarm-tools-20260910/call-4.json",
+      "sha256": "f7295634f639d722c85b531184dca8a1c32aa25b495bc486642030cf687b6f86"
+    },
+    {
+      "path": ".sheep/docker-agent-swarm-tools-20260910/call-5.json",
+      "sha256": "369c04ebb3a87caf7461ad519df9509e3534122f591a98d0ccdb7a6edb31e850"
+    },
+    {
+      "path": ".sheep/docker-agent-swarm-tools-20260910/acceptance/sheep-accept-27b5575a-961d-4f1b-ba9b-669316917580/receipt.json",
+      "sha256": "aab48e433b916de2cddc8b6bb223274b6b5b075a02fbdb232429a3b19e3cbdca"
+    },
+    {
+      "path": ".sheep/docker-agent-swarm-tools-20260910/acceptance/sheep-accept-2d66da75-eedc-424c-9abc-b00875cf02d5/receipt.json",
+      "sha256": "d3664adf047045899a5d84d29b3dbca72b590145663fdc39e48f6e7c6a3c4dc4"
+    },
+    {
+      "path": ".sheep/docker-agent-swarm-tools-20260910/acceptance/sheep-accept-5c7d2f1e-181a-4ab2-bbfe-7858bf7c381e/receipt.json",
+      "sha256": "37be7fbdea0739effeb8e9e198b3cdb8c0630613d504efc0ebfd61168eb5edc1"
+    },
+    {
+      "path": ".sheep/docker-agent-swarm-tools-20260910/acceptance/sheep-accept-7e69bb19-c5cd-4c07-9383-562401f30251/receipt.json",
+      "sha256": "4a5e01136c907098ae66cdf258ece86d1c3df95fee8cace2826520e0c7f72a6d"
+    },
+    {
+      "path": ".sheep/docker-agent-swarm-tools-20260910/acceptance/sheep-accept-9c98b892-2d25-4f12-ac50-8ebf9dfc7617/receipt.json",
+      "sha256": "cb45d82634a31f6dda5db27b003485f9f5f8c3e97ead5ca1883d797d9ad9a9be"
+    },
+    {
+      "path": ".sheep/docker-agent-swarm-tools-20260910/acceptance/sheep-accept-9f27f351-a23b-46c2-ae67-d244b9cd04fa/receipt.json",
+      "sha256": "95e88540f1068af884b74bcdbb1ed9f241a742acc8af6228162198b8f47a69d3"
+    }
+  ]
+}

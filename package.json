@@ -19,7 +19,18 @@
     "compare": "node src/compare-cli.ts",
     "estimate:cost": "node scripts/estimate-costs.mjs",
     "mechanism": "node src/mechanism-cli.ts",
-    "mechanism:experiment": "node scripts/mechanism-experiment.mjs"
+    "mechanism:experiment": "node scripts/mechanism-experiment.mjs",
+    "sandbox:install": "node scripts/install-docker-agent.mjs",
+    "sandbox:probe": "node scripts/probe-docker-sandbox.mjs",
+    "sandbox:pilot": "node src/docker-agent-pilot.ts",
+    "sandbox:swarm-probe": "node scripts/probe-docker-swarm.mjs",
+    "sandbox:reap": "node scripts/reap-docker-sandboxes.mjs",
+    "sandbox:recovery-probe": "node scripts/probe-docker-recovery.mjs",
+    "sandbox:comparison-probe": "node scripts/probe-docker-comparison.mjs",
+    "sandbox:mechanism-probe": "node scripts/probe-docker-mechanism.mjs",
+    "sandbox:completion-probe": "node scripts/probe-docker-completion.mjs",
+    "swarm:diagnostics": "node scripts/swarm-docker-diagnostics.mjs",
+    "summarize:docker-mechanism": "node scripts/summarize-docker-mechanism.mjs"
   },
   "devDependencies": {
     "@types/node": "24.13.3",

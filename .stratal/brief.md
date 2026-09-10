@@ -122,6 +122,21 @@ Revisit when:
 - 評価対象の目的が変わる、または実測で指標が目的を捉えていないと分かったとき。
 Status: tentative
 
+### Docker Agentを局所作業runtimeとして導入する
+Authority: Human stated
+Evidence: Stated; 2026-09-10の利用者依頼「この議論をもとに調査・精緻化し、docker-agentをsandbox付きで導入して」。host proxyからChatGPT endpointへ既存Codex認証を使うことも明示承認された。
+Working default:
+- Docker Agent v1.137.0、sbx v0.42.1、digest付きtemplate。mountlessの新規VMに明示したファイルだけを渡す。
+- kernelのauthorityと局所記憶を維持し、上位への相談・Docker Agentのsub_agentsへ置換しない。
+- SSH転送を無効化し、MCP toolを渡さず、ネットワークはChatGPT宛てのみ。実トークンはhost proxyで扱う。
+- 実際のworkspace変更を回収してlease/read set/外側受入で確定する。modelの自己申告との差は保存する。
+Validation: [導入手順](../docs/docker-agent-sandbox.md)と[実測](../docs/results/docker-agent-sandbox.md)。一般repo、pool再利用、並列durability、費用優位は未確認。
+
+2026-09-10のPR化・継続依頼を受け、次の局所範囲を既存swarm fixtureのtool接続とした。可視テストは固定feedbackとして追加し、採点値を変えずに受入実行を独立VMへ移す。全workspace差分の検査を保ち、基盤障害を上位への意味的相談の材料にしない。
+
+「わかっているところまで進めて」に対し、`compare`の4方式への同一tool追加、単独Luna対照、所有process終了後の復帰時回収を進めた。機構実験のreadRequests・段階別oracleまで同じ形で移植できるとは仮定しない。Docker usageのper-message計上と中断時の既知下限を費用見積器へ接続し、資源回収や価格catalogの0から成功・総費用を推定しない。
+Status: active
+
 ## Open Questions And Discomfort
 
 - 未知の意味依存を何から発見するか。発見費用が局所化の利益を上回らないか。
@@ -139,3 +154,17 @@ Status: tentative
 ## Evidence Notes
 
 原文snapshotとSHA-256はdocs/references/manifest.jsonに保持。2026-09-09の現在の方針はdocs/current-direction.md、検証対象はdocs/testing-policy.md、実装の進捗はdocs/roadmap.mdを参照。このbriefはプロジェクト共通の判断を保持し、個別runのイベントログにはしない。
+
+### 機構実験のsandbox内readを版付きcontextへ閉じる
+
+Evidence: Stated / implementation; 利用者の継続指示により、`mechanism`のDocker tool経路を実装。読取要求は次の有料callで配信し、未配信の選択をverifierの自動確定に使わない。registryを読む前にpolicy所有先を明かさず、必要な現版policyが揃うまで可視ケース・値を含むフィードバック・編集採用を解禁しない。
+
+既存oracleの期待値と最終stage barrierを保持する。可視観測VMはそのcontextだけ、最終観測VMは全候補を受け取り、期待値はhostで比較する。旧Codex凍結系列の予算・結果をDocker条件へ流用せず、単独Lunaと上位のguidance権限を保つ。[検証](../docs/results/docker-agent-mechanism.md)
+
+### 完了goalとswarm自身による実装を区別して記録する
+
+Evidence: Stated; 2026-09-10の「一通り終わらせることをgoalとして。実装の際、今あるswarmを試すこともしてみて」。[固定した完了条件と実装課題](../docs/tasks/docker-goal-completion.md)を置き、下位Lunaの2 helper実装を、既存runSwarmのtrusted fixture接続口から実行する。親は接続口・独立oracle・CLIを実装し、helperを先に書かない。返却コードの受入、自己修正、採用時の変更有無を記録する。
+
+前回の使用量不明は保持したまま、goal内の終了形式・semantic全工程・3段階更新を別runで実行する。実行が重なる区間の所要時間は性能比較に使わない。完了には実Lunaの正常終了・完全usage・固定採点とkernel確定・cleanupが必要である。
+
+Evidence: Observed; semantic 18call、staged 28callで完走し、生成helperは3call・固定91ケース後に本体変更0で採用した。システム側の終了指示と、現在の配信済みreadと過去の要求を区別する説明を修正した。oracleや予算上限は維持し、以前のunknown usageを復元済みとは扱わない。[完了検証](../docs/results/docker-agent-completion.md)

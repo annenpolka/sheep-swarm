@@ -1,0 +1,275 @@
+{
+  "format": 1,
+  "recordedAt": "2026-09-10",
+  "privateLocalEvidence": true,
+  "runs": [
+    {
+      "method": "single-luna",
+      "success": true,
+      "qualityPass": true,
+      "fixtureFingerprint": "ee6ed8a9df22ff611b380378cc81fc1e80322f33d98dbb7561e3ef4b2fdbe054",
+      "configuration": {
+        "method": "single-luna",
+        "size": 2,
+        "workers": 1,
+        "concurrency": 1,
+        "maxCalls": 5,
+        "maxTokens": 200000,
+        "maxUpperCalls": 0,
+        "reserveTokensPerCall": 40000,
+        "timeoutMs": 240000,
+        "maxRounds": 24,
+        "maxAttempts": 3,
+        "fault": "none",
+        "runtime": "docker-agent",
+        "workerTools": "local"
+      },
+      "lowerCalls": 1,
+      "upperCalls": 0,
+      "budget": {
+        "maxTokens": 200000,
+        "reserveTokensPerCall": 40000,
+        "observedTokens": 20855,
+        "observedInputTokens": 19588,
+        "observedOutputTokens": 1267,
+        "unknownUsageCalls": 0,
+        "reservationOverruns": 0,
+        "exceeded": false,
+        "admissionDenied": false
+      },
+      "elapsedMs": 271158.153417,
+      "acceptanceVMs": 8,
+      "allAcceptanceCleanupSucceeded": true,
+      "modelCalls": [
+        {
+          "file": "compare-call-4.json",
+          "cleanupSucceeded": true,
+          "usageCompleteness": "complete",
+          "changedPaths": [
+            "sensors/sensor-2.mjs",
+            "sensors/sensor-1.mjs",
+            "regions/region-1.mjs"
+          ],
+          "visibleChecks": [
+            {
+              "pass": 0,
+              "fail": 3
+            },
+            {
+              "pass": 3,
+              "fail": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "method": "sheep-fixed",
+      "success": true,
+      "qualityPass": true,
+      "fixtureFingerprint": "ee6ed8a9df22ff611b380378cc81fc1e80322f33d98dbb7561e3ef4b2fdbe054",
+      "configuration": {
+        "method": "sheep-fixed",
+        "size": 2,
+        "workers": 2,
+        "concurrency": 2,
+        "maxCalls": 5,
+        "maxTokens": 200000,
+        "maxUpperCalls": 0,
+        "reserveTokensPerCall": 40000,
+        "timeoutMs": 240000,
+        "maxRounds": 24,
+        "maxAttempts": 3,
+        "fault": "none",
+        "runtime": "docker-agent",
+        "workerTools": "local"
+      },
+      "lowerCalls": 3,
+      "upperCalls": 0,
+      "budget": {
+        "maxTokens": 200000,
+        "reserveTokensPerCall": 40000,
+        "observedTokens": 25059,
+        "observedInputTokens": 23591,
+        "observedOutputTokens": 1468,
+        "unknownUsageCalls": 0,
+        "reservationOverruns": 0,
+        "exceeded": false,
+        "admissionDenied": false
+      },
+      "elapsedMs": 287673.35745799995,
+      "acceptanceVMs": 8,
+      "allAcceptanceCleanupSucceeded": true,
+      "modelCalls": [
+        {
+          "file": "compare-call-4.json",
+          "cleanupSucceeded": true,
+          "usageCompleteness": "complete",
+          "changedPaths": [
+            "sensors/sensor-1.mjs"
+          ],
+          "visibleChecks": [
+            {
+              "pass": 0,
+              "fail": 1
+            },
+            {
+              "pass": 1,
+              "fail": 0
+            }
+          ]
+        },
+        {
+          "file": "compare-call-5.json",
+          "cleanupSucceeded": true,
+          "usageCompleteness": "complete",
+          "changedPaths": [
+            "sensors/sensor-2.mjs"
+          ],
+          "visibleChecks": [
+            {
+              "pass": 0,
+              "fail": 1
+            },
+            {
+              "pass": 1,
+              "fail": 0
+            }
+          ]
+        },
+        {
+          "file": "compare-call-7.json",
+          "cleanupSucceeded": true,
+          "usageCompleteness": "complete",
+          "changedPaths": [
+            "regions/region-1.mjs"
+          ],
+          "visibleChecks": [
+            {
+              "pass": 0,
+              "fail": 1
+            },
+            {
+              "pass": 1,
+              "fail": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": ".sheep/docker-recovery-probe-1789006556675/result.json",
+      "sha256": "13d2101e9734a01a535479f628b3a6f93faf85c7d920843ae48f9797f6ed1dc5"
+    },
+    {
+      "path": ".sheep/docker-comparison-probe-1789006776634/result.json",
+      "sha256": "76e4ed2612ca6d4ad15c5999c47fbaa17b193a6d1b2acbae245b26b301c24993"
+    },
+    {
+      "path": ".sheep/docker-compare-single-luna-20260910/compare-call-4.json",
+      "sha256": "f62be15d101911be0641f00126c5026a194d7e03622f835846658113e360b40a"
+    },
+    {
+      "path": ".sheep/docker-compare-single-luna-20260910/acceptance/sheep-accept-33ff536d-0974-40f1-9a3f-193ff05a292a/receipt.json",
+      "sha256": "ccd1585ddbbbc16431bdbae193fc90c2fe88ff2b00a4fdd1083d1593c080f637"
+    },
+    {
+      "path": ".sheep/docker-compare-single-luna-20260910/acceptance/sheep-accept-45fa5e21-7c50-42a0-a38f-9bb81f4006c8/receipt.json",
+      "sha256": "eb6faea8a955ca4a470fbb9864b51aed6cbc8416662e9d7acd978e033418ade8"
+    },
+    {
+      "path": ".sheep/docker-compare-single-luna-20260910/acceptance/sheep-accept-594368c9-2cd3-4145-aa50-53e8f9b6ee64/receipt.json",
+      "sha256": "49a9fa058982145fc22f87f67bb3e33d3d7154a4d74451b274d86687a2dd768f"
+    },
+    {
+      "path": ".sheep/docker-compare-single-luna-20260910/acceptance/sheep-accept-64331f0d-2721-47b2-a34b-43f7afa72811/receipt.json",
+      "sha256": "6e49bff59996ccf7db9b032bdb18eded898403f6c31ed45f223dac975f84b148"
+    },
+    {
+      "path": ".sheep/docker-compare-single-luna-20260910/acceptance/sheep-accept-6aa41a42-56c2-4ec5-b622-39b0a47b49e3/receipt.json",
+      "sha256": "1be56a1469d61dd56d5aded74d6d6b8a8c22d7756eee6349bff39cd51c07ba7f"
+    },
+    {
+      "path": ".sheep/docker-compare-single-luna-20260910/acceptance/sheep-accept-a684ea16-192b-47f7-b63e-0376ddf5ad8f/receipt.json",
+      "sha256": "bb432051733cb427b2e73ea343398ce5091d686dde0deddb096587dba8ab3d4d"
+    },
+    {
+      "path": ".sheep/docker-compare-single-luna-20260910/acceptance/sheep-accept-b2e26e9a-87c2-4b0a-81b6-fd58302324ab/receipt.json",
+      "sha256": "3ed2cba150d2766276e41b80ad0f9f747cf872a889a49411609aca0f06bd3731"
+    },
+    {
+      "path": ".sheep/docker-compare-single-luna-20260910/acceptance/sheep-accept-cff80f4b-29a2-469d-9cd4-a11b7b7801b0/receipt.json",
+      "sha256": "46ac655bec78f1723c1d6736dd7bf850fb22ed97d0fc9204342453eb4100de1c"
+    },
+    {
+      "path": ".sheep/docker-compare-single-luna-20260910/result.json",
+      "sha256": "4fbaa4c084436e84f53674075a1b580961947f0b28381990a876fe7a7fa9f3b3"
+    },
+    {
+      "path": ".sheep/docker-compare-single-luna-20260910/artifacts.json",
+      "sha256": "0372cebeadd91d37ee17ab5fc5d3aec2e77cb859f4f1072037733dbe41662885"
+    },
+    {
+      "path": ".sheep/docker-compare-single-luna-20260910/kernel-state.json",
+      "sha256": "df5f332363d0856a81a21bb7791f63ed779f6df2cbcaa2dcac2f1720084e82e8"
+    },
+    {
+      "path": ".sheep/docker-compare-sheep-fixed-20260910/compare-call-4.json",
+      "sha256": "a33d269c823d6b2baa941a87e6a2ee39457ca857521970d3a669aff00fffbc74"
+    },
+    {
+      "path": ".sheep/docker-compare-sheep-fixed-20260910/compare-call-5.json",
+      "sha256": "cae3228f477e62a923a72ea5111af4dde3a1a7b4e0e6b8a1df370faa0a3ed3e3"
+    },
+    {
+      "path": ".sheep/docker-compare-sheep-fixed-20260910/compare-call-7.json",
+      "sha256": "b004eb82792d676058943551dca0a009209461f4298b486e1ddd36fc0479acb9"
+    },
+    {
+      "path": ".sheep/docker-compare-sheep-fixed-20260910/acceptance/sheep-accept-3649ae58-d174-4ddf-a3f2-77d2de0017ef/receipt.json",
+      "sha256": "c636ea9c0d30bfa0dad188334d8e0b684feaf714cd8c1c3091d8403878be446b"
+    },
+    {
+      "path": ".sheep/docker-compare-sheep-fixed-20260910/acceptance/sheep-accept-4e9259cb-9731-4763-a889-1b00c7479bc5/receipt.json",
+      "sha256": "897d971b3f0b52932983066227f1f9aee29caeebb57fc5d89ac7e3fd83f13329"
+    },
+    {
+      "path": ".sheep/docker-compare-sheep-fixed-20260910/acceptance/sheep-accept-8450371c-6d5f-40c9-8c9c-d47d717b9727/receipt.json",
+      "sha256": "9df935ca5e170560c569a0d5fbad6a46d83327a03a926e55e76776e706eb8c3d"
+    },
+    {
+      "path": ".sheep/docker-compare-sheep-fixed-20260910/acceptance/sheep-accept-b18a26d8-ba58-42c9-93c8-3ebbe2f6da6f/receipt.json",
+      "sha256": "aa1dfeac752229e3ef319ba2ea60e8b447aef0e917bcd3a3d91059d771fcbb50"
+    },
+    {
+      "path": ".sheep/docker-compare-sheep-fixed-20260910/acceptance/sheep-accept-cf4c69a0-b32d-41d2-8653-0b42bc21ce6b/receipt.json",
+      "sha256": "ef98552f2eee3c815305da7f6129d6ce4101275f45a0e543eb11ba1e1206195e"
+    },
+    {
+      "path": ".sheep/docker-compare-sheep-fixed-20260910/acceptance/sheep-accept-f08c745f-a0c3-4786-b107-cc81df9b1b8e/receipt.json",
+      "sha256": "2a2d622bfb5d060c40416905da91b1858d3366d5f5a9e9d59ec81d987ca62716"
+    },
+    {
+      "path": ".sheep/docker-compare-sheep-fixed-20260910/acceptance/sheep-accept-f9c2895e-9e78-430b-ae24-cee8e97751ca/receipt.json",
+      "sha256": "7152fe8286b7e40994e431af84c67bf476fd9a72d2d0b4873419a712ac247f2e"
+    },
+    {
+      "path": ".sheep/docker-compare-sheep-fixed-20260910/acceptance/sheep-accept-fadc60e7-0297-4f73-a161-c0104f3a2160/receipt.json",
+      "sha256": "45ce09f1b76003f1d6e3057bfc9aeb36d42dcb2a92dbf0f1983a1fa77197ded7"
+    },
+    {
+      "path": ".sheep/docker-compare-sheep-fixed-20260910/result.json",
+      "sha256": "b37bc9de5ecaddacfc43d4767b131cff2e6cdfd0b71e97e26f5162fe5522ec3b"
+    },
+    {
+      "path": ".sheep/docker-compare-sheep-fixed-20260910/artifacts.json",
+      "sha256": "c6bae85fa31d6cc009a2d13e0cad1e917e842ed26542f43312be5d206934023c"
+    },
+    {
+      "path": ".sheep/docker-compare-sheep-fixed-20260910/kernel-state.json",
+      "sha256": "00e3149a70ec6cd62b96f5323fddc5da1f1ee74aada605bb23af620d69f86910"
+    }
+  ]
+}

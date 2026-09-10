@@ -22,11 +22,13 @@
 | 継続する設計判断 | [.stratal/brief.md](.stratal/brief.md) |
 | kernelと独立受入テスト | [src/kernel.ts](src/kernel.ts)、[tests/kernel.test.ts](tests/kernel.test.ts) |
 | 実コードfixtureとCodex adapter | [src/fixture.ts](src/fixture.ts)、[src/codex-worker.ts](src/codex-worker.ts) |
+| Docker Agentとmountless microVMの導入 | [導入手順](docs/docker-agent-sandbox.md)、[実測](docs/results/docker-agent-sandbox.md)、[adapter](src/docker-agent-worker.ts) |
 | 実装の進捗と実行証拠 | [docs/execplan.md](docs/execplan.md)、[4体の実測](docs/results/luna-four-worker-pilot.md) |
 | 8・16・32体の反復と誤指示条件 | [規模比較の結果](docs/results/scaling-findings.md) |
 | SQLiteと実process中断・再開 | [src/durable-run.ts](src/durable-run.ts)、[実Luna再開の結果](docs/results/durable-restart.md) |
 | モデル別の費用概算・実行前の見積 | [使い方](pricing/README.md)、[キャッシュ反映の再集計](docs/results/cost-findings.md) |
 | 次の課題設定と対照実験 | [研究と設計案](docs/task-design.md)、[条件案JSON](experiments/task-design-v2.json) |
+| Docker機構実験の追加読取・段階別隔離 | [実装と検証](docs/results/docker-agent-mechanism.md)、[実行手順](docs/docker-agent-sandbox.md) |
 | 3課題・クレジット受付・追加のN比較 | [実測と限界](docs/results/mechanism-findings.md)、[実行ガイド](docs/mechanism-experiment.md)、[実行計画](docs/execplan-mechanism.md) |
 | 単一上位・中央管理・2種のSheep対照 | [4方式の結果](docs/results/comparison-findings.md)、[Manager修正後の追加試行](docs/results/manager-observation-fix.md)、[実装](src/comparison.ts) |
 | 初期protocolの型草案 | [src/protocol.ts](src/protocol.ts) |
@@ -58,6 +60,14 @@ TypeScriptの実行にはNode.jsのtype strippingを使い、型検査は別に 
 
 追加のruntime npm packageは使わない。実LLM呼出しには認証済みのCodex CLIを使う。下位は利用者指定の `gpt-5.6-luna`、上位の既定値は `gpt-6-astra`。
 
+`swarm --runtime docker-agent`ではDocker Agent v1.137.0＋sbx v0.42.1へ切り替えられる。各呼出しをhost repo未マウントの新規VMで実行し、承認済み認証をhost proxyから注入する。`npm run sandbox:probe`は実VMの隔離検査、`npm run sandbox:pilot`はLunaの局所編集・別VMでの受入・kernel確定を実行する。下位4体・C=2の既存fixtureも5呼出しで成功した。詳細と未対応範囲は[導入手順](docs/docker-agent-sandbox.md)を参照。
+
+`--worker-tools local`を併用すると、各workerへ版付きの局所ファイルと可視テストを投入し、read/edit/testを利用できる。全workspace差分をlease検査へ渡し、Docker runtimeの受入実行は独立した通信拒否VMで行う。`npm run sandbox:swarm-probe`で基準解・変異・禁止import・timeoutをモデル呼出しなしで検証する。可視テストの成功や最終回答のコードだけでは確定しない。
+
+`compare`にも同じruntime/toolを追加した。単独Luna・Manager-local・Sheep-fixed/fullで共通の可視検査と別VMの固定受入を使う。`npm run sandbox:comparison-probe`は必須importを含むoracle互換を、`npm run sandbox:recovery-probe`は所有processのSIGKILLとVM回収を検証する。次回のruntime起動時に死んだ所有processの残留VMを回収し、`npm run sandbox:reap`でも実行できる。[継続実装と検証](docs/results/docker-agent-comparison-recovery.md)
+
+`mechanism`も`--runtime docker-agent --worker-tools local`に対応する。追加の公開ファイルは別の有料呼出しで届け、現段階の読取が揃ってから可視検査と編集採用を許す。各stageの最終採点は別の通信拒否VMで行い、失敗を次のmodelへ戻さない。`npm run sandbox:mechanism-probe`でモデルなしの互換検査を実行できる。実Lunaでsemanticの6 moduleが18call、3段階更新が28callで完走した。終了tool・完全usage・独立採点・kernel完了・VM削除を確認し、[以前の失敗と今回の成功](docs/results/docker-agent-completion.md)を分けて残している。
+
 ```sh
 npm run swarm -- --workers 4 --concurrency 4 --size 4
 npm run swarm -- --workers 4 --concurrency 4 --size 4 --fault rounded-guidance
@@ -65,14 +75,20 @@ npm run swarm -- --workers 16 --concurrency 16 --size 32
 npm run durable -- --directory .sheep/durable-luna --size 4 --workers 4
 npm run durable -- --directory .sheep/durable-luna --resume
 npm run compare -- --method sheep-full --size 8 --workers 4 --concurrency 4 --max-tokens 500000 --reserve-tokens 30000
+npm run compare -- --runtime docker-agent --worker-tools local --method single-luna --size 2 --max-calls 5 --max-upper-calls 0 --max-tokens 200000 --reserve-tokens 40000 --timeout-ms 240000
+npm run mechanism -- --runtime docker-agent --worker-tools local --family semantic --method sheep --groups 1 --workers 4 --concurrency 2 --max-meta-calls 0 --max-credits 3 --luna-reservation 0.5 --max-calls 24 --max-tokens-per-call 60000 --timeout-ms 240000
 npm run mechanism -- --family staged --method sheep --groups 1 --workers 4 --concurrency 4 --output .sheep/my-mechanism-pilot
 ```
 
 これらは実モデルを呼び出す。結果・コード・使用量・失敗履歴は `.sheep/` の一意なrunディレクトリへ保存する。`--max-calls`、`--max-meta-calls`、`--max-rounds`、`--timeout-ms` で上限を指定できる。通常の `npm run check` はモデルを呼び出さない。
 
-`compare` の方式は `single-upper`、`manager-local`、`sheep-fixed`、`sheep-full`。token予約は呼出しの受付制御であり、providerの強制上限ではない。超過・使用量不明は予算付き比較の成功にしない。Sheep-fullが発見するのは実ファイルの静的importと明示された仕様依存であり、任意の意味依存ではない。
+`compare` の新規対照は `single-luna`、`manager-local`、`sheep-fixed`、`sheep-full`。`single-upper`は過去の再現用に保持し、Docker runtimeでの新規実行は拒否する。token予約は呼出しの受付制御であり、providerの強制上限ではない。超過・使用量不明は予算付き比較の成功にしない。`--max-upper-calls`で上位の受付数も制限できる。Sheep-fullが発見するのは実ファイルの静的importと明示された仕様依存であり、任意の意味依存ではない。
 
-今後の単独比較はLunaに統一し、費用の目安を得たAstra単独は新規試行から省く。Astraは群れへの必要時介入で継続する。`mechanism:experiment` はpilot 4条件・main 25条件、旧 `scripts/compare-experiment.mjs` の既定も単独上位を除外する。旧単独方式の実装は過去の再現用に残す。
+今後の単独比較はLunaに統一し、費用の目安を得たAstra単独は新規試行から省く。Astraは群れへの必要時介入で継続する。`mechanism:experiment` はpilot 4条件・main 25条件。`scripts/compare-experiment.mjs`の既定は単独Lunaを含む4方式×3条件で、共通runtime/toolを指定できる。使用量不明・検証基盤障害・cleanup失敗で系列の新規実行を止める。旧単独方式の実装は過去の再現用に残す。
+
+`mechanism:experiment`の既存系列はCodex/tool-lessのまま保持し、今回のDocker試行は個別CLIで記録する。
+
+`npm run swarm:diagnostics`は既存`runSwarm`へ信頼した実装課題を渡し、Lunaの群れが2つの集計モジュールを作る。可視検査と別VMの追加ケースを通してkernelで確定し、repoへは自動で書き戻さない。実際に3callで生成・自己修正し、固定91ケースと差分レビュー後に本体をそのまま採用した。`npm run summarize:docker-mechanism -- <result.json>`で機構runの完了状態・tool応答・usage欠落を集計できる。[固定した実装課題](docs/tasks/docker-goal-completion.md)、[実装と採用の記録](docs/results/docker-agent-completion.md)
 
 `mechanism` の方式は `sheep`、`single-luna`、`single-astra`、`no-memory`、`no-upper`。既定30 credits相当の中で、下位・上位・追加読取・再試行を精算する。使用量不明は0とせず停止する。今回の追加N16/32比較は23.729217／100 credits相当、今回の機構実験全体の既知下限は58.395228相当＋使用量不明1呼出し。N16/32の試行費用では上位介入が約半分を占め、Nを増やす明確な利点はまだ見えていない。各1回・合成課題の観測として[結果](docs/results/mechanism-findings.md)を参照する。
 
