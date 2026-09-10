@@ -1,0 +1,5297 @@
+{
+  "format": 1,
+  "generatedAt": "2026-09-09T23:50:20.689Z",
+  "rateCard": {
+    "file": "openai-2026-09-10.json",
+    "sha256": "e25991caebda1b840569e20a8774b11f9f14e95f3b365fe304dade7bf1ba1312",
+    "contents": {
+      "format": 1,
+      "verifiedOn": "2026-09-10",
+      "verifiedAt": "2026-09-09T22:20:54.176497+00:00",
+      "currency": "USD",
+      "usdPerCredit": null,
+      "assumptions": [
+        "API amounts are hypothetical Standard token costs for the recorded usage, not actual invoices for these ChatGPT-authenticated Codex runs.",
+        "Codex amounts are Standard token-rate credit equivalents, not observed debit of included usage or purchased credits.",
+        "Ordinary-context pricing is assumed. A turn total is not necessarily one API request; request-level >272K pricing is not inferred from cumulative turn totals.",
+        "Reasoning output is included in output tokens; cached reads and cache writes are subsets of input tokens, not additional tokens.",
+        "Credit purchase prices depend on plan/agreement. usdPerCredit remains null unless explicitly supplied from a purchase quote.",
+        "Tool charges, subscriptions, taxes, discounts, development work, and human setup are excluded."
+      ],
+      "models": {
+        "gpt-5.6-luna": {
+          "apiUsdPerMillion": {
+            "input": 0.2,
+            "cachedInput": 0.02,
+            "cacheWrite": 0.25,
+            "output": 1.2
+          },
+          "codexCreditsPerMillion": {
+            "input": 5,
+            "cachedInput": 0.5,
+            "cacheWrite": null,
+            "output": 30
+          },
+          "sources": {
+            "api": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+            "codex": "https://learn.chatgpt.com/docs/pricing"
+          },
+          "notes": [
+            "Codex cache-write credit rate is not separately listed; zero observed cache writes need no rate assumption."
+          ]
+        },
+        "gpt-6-astra": {
+          "apiUsdPerMillion": {
+            "input": 10,
+            "cachedInput": 1,
+            "cacheWrite": 12.5,
+            "output": 50
+          },
+          "codexCreditsPerMillion": {
+            "input": 250,
+            "cachedInput": 25,
+            "cacheWrite": null,
+            "output": 1250
+          },
+          "sources": {
+            "api": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+            "codex": "https://learn.chatgpt.com/docs/pricing"
+          },
+          "notes": [
+            "API Fast costs 2x applicable rates; Codex Fast costs 2.5x Standard credits. Neither multiplier is silently applied.",
+            "Codex cache-write credit rate is not separately listed; zero observed cache writes need no rate assumption."
+          ]
+        }
+      },
+      "rules": {
+        "apiLongContext": {
+          "thresholdInputTokens": 272000,
+          "uncachedAndCachedMultiplier": 2,
+          "outputMultiplier": 1.5,
+          "scope": "per request, not cumulative CLI turn"
+        },
+        "astraFast": {
+          "apiMultiplier": 2,
+          "codexCreditsMultiplier": 2.5,
+          "source": "https://learn.chatgpt.com/docs/agent-configuration/speed"
+        }
+      }
+    },
+    "appliedUsdPerCredit": null
+  },
+  "conditions": [
+    "Standard speed; ordinary per-request context. Receipt turn totals are not individual API requests.",
+    "API USD is hypothetical API pricing, not an invoice for ChatGPT-authenticated Codex.",
+    "Codex credits are token-rate equivalents, not measured debit from the account's included usage or purchased credits.",
+    "Input includes cached reads and cache writes; output includes reasoning. Components are not charged twice.",
+    "Unknown usage or applicable prices produce bounds; a null upper bound is unknown, not unlimited actual cost.",
+    "Tool charges, subscriptions, taxes, development calls, and human work are outside this estimate."
+  ],
+  "mode": "recorded-usage",
+  "scope": "Selected run or experiment directory only. All discovered calls, including retries and preliminary calls, are counted once per receipt path; no raw prompts or transcripts are exported.",
+  "missingFamilies": [],
+  "sourceManifests": [
+    {
+      "family": "custom-run",
+      "path": "experiment.json",
+      "sha256": "da5c9f61045dd3f1e48a7e6b8f0bbe4e5d8473092a520b9fad76db74aa03f258"
+    }
+  ],
+  "total": {
+    "calls": 135,
+    "receiptMissingCalls": 0,
+    "maxRecordedTurnInputTokens": 23234,
+    "modelIdentityUnverifiedCalls": 135,
+    "modelIdentityConflictingCalls": 0,
+    "observedTokens": {
+      "inputTokens": {
+        "knownSum": 2965225,
+        "unknownCalls": 1
+      },
+      "cachedInputTokens": {
+        "knownSum": 2261504,
+        "unknownCalls": 1
+      },
+      "cacheWriteInputTokens": {
+        "knownSum": 0,
+        "unknownCalls": 1
+      },
+      "outputTokens": {
+        "knownSum": 25712,
+        "unknownCalls": 1
+      },
+      "reasoningOutputTokens": {
+        "knownSum": 7260,
+        "unknownCalls": 1
+      }
+    },
+    "apiUsd": {
+      "lower": 0.21682867999999994,
+      "upper": null,
+      "exact": false,
+      "unknownReasons": [
+        "API USD: input token count is unknown",
+        "API USD: output token count is unknown"
+      ]
+    },
+    "codexCredits": {
+      "lower": 5.4207170000000025,
+      "upper": null,
+      "exact": false,
+      "unknownReasons": [
+        "Codex credits: input token count is unknown",
+        "Codex credits: output token count is unknown"
+      ]
+    },
+    "codexUsdAtAssumedCreditPrice": null
+  },
+  "byFamily": [
+    {
+      "family": "custom-run",
+      "calls": 135,
+      "receiptMissingCalls": 0,
+      "maxRecordedTurnInputTokens": 23234,
+      "modelIdentityUnverifiedCalls": 135,
+      "modelIdentityConflictingCalls": 0,
+      "observedTokens": {
+        "inputTokens": {
+          "knownSum": 2965225,
+          "unknownCalls": 1
+        },
+        "cachedInputTokens": {
+          "knownSum": 2261504,
+          "unknownCalls": 1
+        },
+        "cacheWriteInputTokens": {
+          "knownSum": 0,
+          "unknownCalls": 1
+        },
+        "outputTokens": {
+          "knownSum": 25712,
+          "unknownCalls": 1
+        },
+        "reasoningOutputTokens": {
+          "knownSum": 7260,
+          "unknownCalls": 1
+        }
+      },
+      "apiUsd": {
+        "lower": 0.21682867999999994,
+        "upper": null,
+        "exact": false,
+        "unknownReasons": [
+          "API USD: input token count is unknown",
+          "API USD: output token count is unknown"
+        ]
+      },
+      "codexCredits": {
+        "lower": 5.4207170000000025,
+        "upper": null,
+        "exact": false,
+        "unknownReasons": [
+          "Codex credits: input token count is unknown",
+          "Codex credits: output token count is unknown"
+        ]
+      },
+      "codexUsdAtAssumedCreditPrice": null
+    }
+  ],
+  "byModel": [
+    {
+      "requestedModel": "gpt-5.6-luna",
+      "calls": 135,
+      "receiptMissingCalls": 0,
+      "maxRecordedTurnInputTokens": 23234,
+      "modelIdentityUnverifiedCalls": 135,
+      "modelIdentityConflictingCalls": 0,
+      "observedTokens": {
+        "inputTokens": {
+          "knownSum": 2965225,
+          "unknownCalls": 1
+        },
+        "cachedInputTokens": {
+          "knownSum": 2261504,
+          "unknownCalls": 1
+        },
+        "cacheWriteInputTokens": {
+          "knownSum": 0,
+          "unknownCalls": 1
+        },
+        "outputTokens": {
+          "knownSum": 25712,
+          "unknownCalls": 1
+        },
+        "reasoningOutputTokens": {
+          "knownSum": 7260,
+          "unknownCalls": 1
+        }
+      },
+      "apiUsd": {
+        "lower": 0.21682867999999994,
+        "upper": null,
+        "exact": false,
+        "unknownReasons": [
+          "API USD: input token count is unknown",
+          "API USD: output token count is unknown"
+        ]
+      },
+      "codexCredits": {
+        "lower": 5.4207170000000025,
+        "upper": null,
+        "exact": false,
+        "unknownReasons": [
+          "Codex credits: input token count is unknown",
+          "Codex credits: output token count is unknown"
+        ]
+      },
+      "codexUsdAtAssumedCreditPrice": null
+    }
+  ],
+  "byRun": [
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "resultSha256": "8bd8732049290090959dec0a2b03d6b20d34a4cf20f7a693d9f4a4fbb1c2e5ec",
+      "success": true,
+      "method": null,
+      "configuration": {
+        "workers": 8,
+        "concurrency": 8,
+        "maxCalls": 400,
+        "maxMetaCalls": 3,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "workerModel": "gpt-5.6-luna",
+        "metaModel": "gpt-6-astra"
+      },
+      "calls": 134,
+      "receiptMissingCalls": 0,
+      "maxRecordedTurnInputTokens": 23234,
+      "modelIdentityUnverifiedCalls": 134,
+      "modelIdentityConflictingCalls": 0,
+      "observedTokens": {
+        "inputTokens": {
+          "knownSum": 2965225,
+          "unknownCalls": 0
+        },
+        "cachedInputTokens": {
+          "knownSum": 2261504,
+          "unknownCalls": 0
+        },
+        "cacheWriteInputTokens": {
+          "knownSum": 0,
+          "unknownCalls": 0
+        },
+        "outputTokens": {
+          "knownSum": 25712,
+          "unknownCalls": 0
+        },
+        "reasoningOutputTokens": {
+          "knownSum": 7260,
+          "unknownCalls": 0
+        }
+      },
+      "apiUsd": {
+        "lower": 0.21682867999999994,
+        "upper": 0.21682867999999994,
+        "exact": true,
+        "unknownReasons": []
+      },
+      "codexCredits": {
+        "lower": 5.4207170000000025,
+        "upper": 5.4207170000000025,
+        "exact": true,
+        "unknownReasons": []
+      },
+      "codexUsdAtAssumedCreditPrice": null
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-single-luna-n1-r1",
+      "resultSha256": "5e53a1bb9890a4c33b5f1574feb5efbcdea2771ef507f3c111f7fc61a905f9c0",
+      "success": false,
+      "method": null,
+      "configuration": {
+        "workers": 1,
+        "concurrency": 1,
+        "maxCalls": 400,
+        "maxMetaCalls": 3,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "workerModel": "gpt-5.6-luna",
+        "metaModel": "gpt-6-astra"
+      },
+      "calls": 1,
+      "receiptMissingCalls": 0,
+      "maxRecordedTurnInputTokens": 0,
+      "modelIdentityUnverifiedCalls": 1,
+      "modelIdentityConflictingCalls": 0,
+      "observedTokens": {
+        "inputTokens": {
+          "knownSum": 0,
+          "unknownCalls": 1
+        },
+        "cachedInputTokens": {
+          "knownSum": 0,
+          "unknownCalls": 1
+        },
+        "cacheWriteInputTokens": {
+          "knownSum": 0,
+          "unknownCalls": 1
+        },
+        "outputTokens": {
+          "knownSum": 0,
+          "unknownCalls": 1
+        },
+        "reasoningOutputTokens": {
+          "knownSum": 0,
+          "unknownCalls": 1
+        }
+      },
+      "apiUsd": {
+        "lower": 0,
+        "upper": null,
+        "exact": false,
+        "unknownReasons": [
+          "API USD: input token count is unknown",
+          "API USD: output token count is unknown"
+        ]
+      },
+      "codexCredits": {
+        "lower": 0,
+        "upper": null,
+        "exact": false,
+        "unknownReasons": [
+          "Codex credits: input token count is unknown",
+          "Codex credits: output token count is unknown"
+        ]
+      },
+      "codexUsdAtAssumedCreditPrice": null
+    }
+  ],
+  "byFamilyAndModel": [
+    {
+      "family": "custom-run",
+      "requestedModel": "gpt-5.6-luna",
+      "calls": 135,
+      "receiptMissingCalls": 0,
+      "maxRecordedTurnInputTokens": 23234,
+      "modelIdentityUnverifiedCalls": 135,
+      "modelIdentityConflictingCalls": 0,
+      "observedTokens": {
+        "inputTokens": {
+          "knownSum": 2965225,
+          "unknownCalls": 1
+        },
+        "cachedInputTokens": {
+          "knownSum": 2261504,
+          "unknownCalls": 1
+        },
+        "cacheWriteInputTokens": {
+          "knownSum": 0,
+          "unknownCalls": 1
+        },
+        "outputTokens": {
+          "knownSum": 25712,
+          "unknownCalls": 1
+        },
+        "reasoningOutputTokens": {
+          "knownSum": 7260,
+          "unknownCalls": 1
+        }
+      },
+      "apiUsd": {
+        "lower": 0.21682867999999994,
+        "upper": null,
+        "exact": false,
+        "unknownReasons": [
+          "API USD: input token count is unknown",
+          "API USD: output token count is unknown"
+        ]
+      },
+      "codexCredits": {
+        "lower": 5.4207170000000025,
+        "upper": null,
+        "exact": false,
+        "unknownReasons": [
+          "Codex credits: input token count is unknown",
+          "Codex credits: output token count is unknown"
+        ]
+      },
+      "codexUsdAtAssumedCreditPrice": null
+    }
+  ],
+  "calls": [
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-49",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-49.json",
+      "sha256": "0a43eee01381150e9ea890e5196b2f4db9f04c2608ff4fab632b6109b90ea37f",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21543,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 86,
+        "reasoningOutputTokens": 40,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00169308,
+          "upper": 0.00169308,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.042327000000000004,
+          "upper": 0.042327000000000004,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-50",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-50.json",
+      "sha256": "c52cf0e487062f5a559363d4635bf9bc075ca8e50f69d56357eea283d832c321",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21442,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 77,
+        "reasoningOutputTokens": 30,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0016620800000000002,
+          "upper": 0.0016620800000000002,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.041552,
+          "upper": 0.041552,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-51",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-51.json",
+      "sha256": "f1e300c13d0e77fb7ea03dde66dd758be3d55456e646de2ae75abc2cd11a5002",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21683,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 65,
+        "reasoningOutputTokens": 21,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00169588,
+          "upper": 0.00169588,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.042397,
+          "upper": 0.042397,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-52",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-52.json",
+      "sha256": "5feedec10c33cd9916d5cd2b36c7dcf92be3ab5a853c058be45863bd5cdc1f27",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21487,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 75,
+        "reasoningOutputTokens": 26,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00111572,
+          "upper": 0.00111572,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.027892999999999998,
+          "upper": 0.027892999999999998,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-53",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-53.json",
+      "sha256": "a9a99b189cc453e928a56dc6af3d4dc693012d8085d70028924b238bb38b2763",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21548,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 81,
+        "reasoningOutputTokens": 34,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00168808,
+          "upper": 0.00168808,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.042202,
+          "upper": 0.042202,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-54",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-54.json",
+      "sha256": "583d530fadda96dce692bca1d2ea770bdafe81916e6d3dc4f27eaa48319e8aae",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21407,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 174,
+        "reasoningOutputTokens": 129,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0017714800000000002,
+          "upper": 0.0017714800000000002,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.04428700000000001,
+          "upper": 0.04428700000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-55",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-55.json",
+      "sha256": "7c8e50e94032e4de31018fba2d203c652a17d7b57685a1fd174944384fad1c76",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21539,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 82,
+        "reasoningOutputTokens": 34,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0016874799999999999,
+          "upper": 0.0016874799999999999,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.042186999999999995,
+          "upper": 0.042186999999999995,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-56",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-56.json",
+      "sha256": "f0d42c68ce97ce368507d9085658d4df96fd4d5d1dc561b0e56e29cad7c344da",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21442,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 76,
+        "reasoningOutputTokens": 23,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0016608800000000002,
+          "upper": 0.0016608800000000002,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.041521999999999996,
+          "upper": 0.041521999999999996,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-57",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-57.json",
+      "sha256": "98813913a6ce54558de6e904129bedc4c4296e46bb48d1599a2084bb6657795b",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21900,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 82,
+        "reasoningOutputTokens": 27,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00175968,
+          "upper": 0.00175968,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.043991999999999996,
+          "upper": 0.043991999999999996,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-58",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-58.json",
+      "sha256": "12cd7ec71ea6ed91c7a0a7c45ea48fdbba23703e3cf9c9307b3882a1c56931e1",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21780,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 94,
+        "reasoningOutputTokens": 23,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00175008,
+          "upper": 0.00175008,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.043752,
+          "upper": 0.043752,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-59",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-59.json",
+      "sha256": "9c8b5dfdc78ecd01e8505dcb08a091ae5dd568bb04e7bc21e5a661673b819679",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22020,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 68,
+        "reasoningOutputTokens": 21,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00176688,
+          "upper": 0.00176688,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.044172,
+          "upper": 0.044172,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-60",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-60.json",
+      "sha256": "9abcf345edfb2977f9318375a0e9171d976f202637ebe8bbc4cd34411f40ea72",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21829,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 67,
+        "reasoningOutputTokens": 20,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00117452,
+          "upper": 0.00117452,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.029363000000000004,
+          "upper": 0.029363000000000004,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-61",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-61.json",
+      "sha256": "16e143fcfa0bf8feb1f800e76034950b0ca12072ea15cad60db24d83fb7c3396",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21886,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 84,
+        "reasoningOutputTokens": 27,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00120632,
+          "upper": 0.00120632,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030158000000000004,
+          "upper": 0.030158000000000004,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-62",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-62.json",
+      "sha256": "ad100f3a5f079d4c57bd787c9f90efb3714d1772551f7b93078ac3c75dd10aac",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21743,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 95,
+        "reasoningOutputTokens": 39,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00174388,
+          "upper": 0.00174388,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.043597000000000004,
+          "upper": 0.043597000000000004,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-63",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-63.json",
+      "sha256": "203da71d9b07d05c436428f76693db2998ff9597c2cf79e99f711ff8b7fb41fe",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21898,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 78,
+        "reasoningOutputTokens": 22,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00175448,
+          "upper": 0.00175448,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.043862000000000005,
+          "upper": 0.043862000000000005,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-64",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-64.json",
+      "sha256": "d43d2d913cfd34de7cb128d39435d13ef7b71b94ad3ab1ead9f7f805ba861966",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21786,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 76,
+        "reasoningOutputTokens": 19,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0017296800000000001,
+          "upper": 0.0017296800000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.043241999999999996,
+          "upper": 0.043241999999999996,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-65",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-65.json",
+      "sha256": "6f31725917625466f8134a687f6dfbf06aedea7a88b28cb86c269970fd036a9a",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22140,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 375,
+        "reasoningOutputTokens": 90,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00215928,
+          "upper": 0.00215928,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.053982,
+          "upper": 0.053982,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-66",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-66.json",
+      "sha256": "94dd196a91a834c1bf07632cb7d78c4d4ec82806b08cd036e300c268a110ed8c",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22016,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 286,
+        "reasoningOutputTokens": 58,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0014747200000000001,
+          "upper": 0.0014747200000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.036868,
+          "upper": 0.036868,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-67",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-67.json",
+      "sha256": "433b969ab8f19f58c9426a1dd90d9d40204ae396976aa4363e8821939dfb0c76",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22234,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 811,
+        "reasoningOutputTokens": 277,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00270128,
+          "upper": 0.00270128,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.06753200000000001,
+          "upper": 0.06753200000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-68",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-68.json",
+      "sha256": "cc88d534e8ce6b21349d31ae3c1e4423c907a3eee8e56f4d88c2e9464a8c982f",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22043,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 298,
+        "reasoningOutputTokens": 61,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00204748,
+          "upper": 0.00204748,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.051186999999999996,
+          "upper": 0.051186999999999996,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-69",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-69.json",
+      "sha256": "e96a75a65677fb5cb61f0c516a2736c2e0458617281854f4d32dcccfa513047d",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22108,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 312,
+        "reasoningOutputTokens": 79,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00152432,
+          "upper": 0.00152432,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.038108,
+          "upper": 0.038108,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-70",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-70.json",
+      "sha256": "c1323e71334c145f451b09558ddb65548258f658fa20388a5087e6424496b24e",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21964,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 373,
+        "reasoningOutputTokens": 83,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00212168,
+          "upper": 0.00212168,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.053042,
+          "upper": 0.053042,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-71",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-71.json",
+      "sha256": "80c4adc56de01d4fd3621e82bd5336da0f2b93f84f75cb27f83f148bdb8ad5b6",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22139,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 345,
+        "reasoningOutputTokens": 90,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00212308,
+          "upper": 0.00212308,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.053077,
+          "upper": 0.053077,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-72",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-72.json",
+      "sha256": "72d4e4045b63d18ff14e46d7d0433247662b24dd228834065a20ed9c3fc30355",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22008,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 295,
+        "reasoningOutputTokens": 64,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00148392,
+          "upper": 0.00148392,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.037098000000000006,
+          "upper": 0.037098000000000006,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-73",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-73.json",
+      "sha256": "252f21ad31b16610e3a2294a2cc4d8b35aca659de8ef5200c791d7a947320e86",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22113,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 88,
+        "reasoningOutputTokens": 25,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012565200000000001,
+          "upper": 0.0012565200000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031412999999999996,
+          "upper": 0.031412999999999996,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-74",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-74.json",
+      "sha256": "8b76a27d06ddfb5f96763113ed07cd31c9536b3f1502b004fa7a666c3d216b3e",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21842,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 86,
+        "reasoningOutputTokens": 22,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00119992,
+          "upper": 0.00119992,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.029997999999999997,
+          "upper": 0.029997999999999997,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-75",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-75.json",
+      "sha256": "067941bf9ec14c19d999991b90a5de5dbd0fca83e30a10e0d04222c695e0084e",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21903,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 72,
+        "reasoningOutputTokens": 26,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00174828,
+          "upper": 0.00174828,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.043707,
+          "upper": 0.043707,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-76",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-76.json",
+      "sha256": "cdd883d6cb0c678e1c5220044a94552596d643317ccc4bcd0515ba942c28bc52",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21763,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 371,
+        "reasoningOutputTokens": 86,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00152612,
+          "upper": 0.00152612,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.038153,
+          "upper": 0.038153,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-77",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-77.json",
+      "sha256": "791b0d305ec5f09cfac842bc2fa5132f5de5856f65874ae3d6e46098aea7b15a",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21952,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 75,
+        "reasoningOutputTokens": 28,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00176168,
+          "upper": 0.00176168,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.044042,
+          "upper": 0.044042,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-78",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-78.json",
+      "sha256": "c4226b9fe3a4f221a8c75b4b13bdb88aec221fc9188838f97267c060c0b26848",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21798,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 91,
+        "reasoningOutputTokens": 24,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00119712,
+          "upper": 0.00119712,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.029928,
+          "upper": 0.029928,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-79",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-79.json",
+      "sha256": "a171ec233da510eadf4ae43e656443244e3ac58e08872d35ed3e7bce0940955a",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22040,
+        "cachedInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 74,
+        "reasoningOutputTokens": 28,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0044968,
+          "upper": 0.0044968,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.11242,
+          "upper": 0.11242,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-80",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-80.json",
+      "sha256": "4f230a3f960f828eedd08a71f38949886826614de21565a758b5a3f5aa3c3467",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21846,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 91,
+        "reasoningOutputTokens": 39,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00175968,
+          "upper": 0.00175968,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.04399199999999999,
+          "upper": 0.04399199999999999,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-81",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-81.json",
+      "sha256": "ed10eb36a02bb78e2553fc7c2da8f5f26ba94927e72b22378d87e11656d01b15",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22563,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 549,
+        "reasoningOutputTokens": 161,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00189972,
+          "upper": 0.00189972,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.047493,
+          "upper": 0.047493,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-82",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-82.json",
+      "sha256": "c903dadf34c3c446c99eeff807de61286aca6e29ae35c7f9d1837650e40a0489",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22198,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 71,
+        "reasoningOutputTokens": 15,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00180608,
+          "upper": 0.00180608,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.045152000000000005,
+          "upper": 0.045152000000000005,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-83",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-83.json",
+      "sha256": "571c9aabfde647d05d92212343a33f443bde3f0e6fa5eeb178c1425cd1e88b60",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22239,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 80,
+        "reasoningOutputTokens": 24,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00182508,
+          "upper": 0.00182508,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.045627,
+          "upper": 0.045627,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-84",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-84.json",
+      "sha256": "15318ad7f87ad4a2fe5478a45f94cf19b60ece18e2504311ac5bf6283fa2349c",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22309,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 80,
+        "reasoningOutputTokens": 25,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00128612,
+          "upper": 0.00128612,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.032153,
+          "upper": 0.032153,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-85",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-85.json",
+      "sha256": "eb9b99d3d13dab5bb5f4933d37996985caf6ea5fdaa64e6b8785b38fb6e063eb",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22250,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 101,
+        "reasoningOutputTokens": 39,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00129952,
+          "upper": 0.00129952,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.032487999999999996,
+          "upper": 0.032487999999999996,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-86",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-86.json",
+      "sha256": "f59273169338f0f011596f123894266e413a830368c2fb54af33e0d42f91cd41",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22378,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 67,
+        "reasoningOutputTokens": 19,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00128432,
+          "upper": 0.00128432,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.032108,
+          "upper": 0.032108,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-87",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-87.json",
+      "sha256": "690b0b619fdfc447126dc679fab023156df866bdf5186d0592a5d7d4fa007e02",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22190,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 79,
+        "reasoningOutputTokens": 25,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012611200000000001,
+          "upper": 0.0012611200000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031528,
+          "upper": 0.031528,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-88",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-88.json",
+      "sha256": "56e56c03772b01f5d6a48a20cd7bb16a9f663d977e868cb9968928d1f32eae77",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22005,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 80,
+        "reasoningOutputTokens": 32,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00122532,
+          "upper": 0.00122532,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030633,
+          "upper": 0.030633,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-89",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-89.json",
+      "sha256": "df9746fefc7e4ea23de865e61f386cb8aa936192ad799a75ede402cde1638ed3",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22326,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 270,
+        "reasoningOutputTokens": 50,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00151752,
+          "upper": 0.00151752,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.037938,
+          "upper": 0.037938,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-90",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-90.json",
+      "sha256": "f989068c6574e64d66d262114756cf6ff99afd92008a37e6454406959f1d7c76",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22366,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 289,
+        "reasoningOutputTokens": 54,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00210128,
+          "upper": 0.00210128,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.052531999999999995,
+          "upper": 0.052531999999999995,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-91",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-91.json",
+      "sha256": "bf596bfe8480c1a7de41fb94bbbd5bbd8fec2c3e1a5cbe10322445fcc95e2b46",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22438,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 377,
+        "reasoningOutputTokens": 119,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00222128,
+          "upper": 0.00222128,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.055532,
+          "upper": 0.055532,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-92",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-92.json",
+      "sha256": "aafb667a78b730cb81bca359ee273495eef80018639366d0b60fa52c1ae53c05",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22405,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 303,
+        "reasoningOutputTokens": 66,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00157292,
+          "upper": 0.00157292,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.039323000000000004,
+          "upper": 0.039323000000000004,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-93",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-93.json",
+      "sha256": "e48e4b01942e153f74fb5d8271fd9cc3c4340d6992818de6434905b1f5b04816",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22505,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 747,
+        "reasoningOutputTokens": 237,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00212572,
+          "upper": 0.00212572,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.053143,
+          "upper": 0.053143,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-94",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-94.json",
+      "sha256": "17eb514a473477c4932aad370bc058c6ec50c99033df71bb847fc64d0d90b528",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22315,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 299,
+        "reasoningOutputTokens": 64,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00155012,
+          "upper": 0.00155012,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.038753,
+          "upper": 0.038753,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-95",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-95.json",
+      "sha256": "54025b639dd5600de5fb143acedeb1514aeb9f05720974f2df2ef60c2aa6ed98",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22244,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 81,
+        "reasoningOutputTokens": 31,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00127432,
+          "upper": 0.00127432,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031858000000000004,
+          "upper": 0.031858000000000004,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-96",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-96.json",
+      "sha256": "14856d95004e0bb521363cedac6b146d029d3c91e254caf3583c46b1940fe804",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22001,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 95,
+        "reasoningOutputTokens": 47,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00179548,
+          "upper": 0.00179548,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.044887,
+          "upper": 0.044887,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-97",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-97.json",
+      "sha256": "ed5f73276269dcba726f8ffbd331fc937bbc4294fd7e4bc51effbb28981e513b",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22353,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 309,
+        "reasoningOutputTokens": 69,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0015697200000000001,
+          "upper": 0.0015697200000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.039243,
+          "upper": 0.039243,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-98",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-98.json",
+      "sha256": "03bc7717ce720bcb2fbc6603b0a3cc3427e553afd4848f7840ab79378cf10777",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22202,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 74,
+        "reasoningOutputTokens": 18,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00125752,
+          "upper": 0.00125752,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031438,
+          "upper": 0.031438,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-99",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-99.json",
+      "sha256": "b9d14f0962a803ac1ed3a8b7d93dd0605c5d7833eb56244c334ea38f76368f88",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22093,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 81,
+        "reasoningOutputTokens": 32,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00124412,
+          "upper": 0.00124412,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031103000000000006,
+          "upper": 0.031103000000000006,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-100",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-100.json",
+      "sha256": "449884a3709a8b287257a88c65dee4ee1ca8bfa68c8cdcd3373c6e253bc08d66",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21937,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 108,
+        "reasoningOutputTokens": 37,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012453200000000003,
+          "upper": 0.0012453200000000003,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031133,
+          "upper": 0.031133,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-101",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-101.json",
+      "sha256": "b05238928ffde805be8c67e71d6ed5c2a05d15a9965bfdbc24ff5ec6cae2c8c2",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22179,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 88,
+        "reasoningOutputTokens": 40,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00126972,
+          "upper": 0.00126972,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.03174300000000001,
+          "upper": 0.03174300000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-102",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-102.json",
+      "sha256": "79dc4418cb9c12e4446a7e38652a956633039c2d34d302d1fd8016c031c7eac2",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22027,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 91,
+        "reasoningOutputTokens": 36,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00124292,
+          "upper": 0.00124292,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031073,
+          "upper": 0.031073,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-103",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-103.json",
+      "sha256": "6be769e5d95ba405f4a4025ee13f334439ecd15ed05c2da5b5976561a1e43646",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22050,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 86,
+        "reasoningOutputTokens": 37,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012415199999999999,
+          "upper": 0.0012415199999999999,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031037999999999996,
+          "upper": 0.031037999999999996,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-104",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-104.json",
+      "sha256": "4e4dd3a71f98854c998f5b5cfeed5bbf319aef2e51a1d69ec4f8e13ad59c0fa0",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21904,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 95,
+        "reasoningOutputTokens": 50,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00177608,
+          "upper": 0.00177608,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.044402000000000004,
+          "upper": 0.044402000000000004,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-105",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-105.json",
+      "sha256": "8848acb7fc9e022132d4d7c6cdbced6c357c3c33ed19a89c90c23c64f208422a",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22250,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 376,
+        "reasoningOutputTokens": 81,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00162952,
+          "upper": 0.00162952,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.040737999999999996,
+          "upper": 0.040737999999999996,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-106",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-106.json",
+      "sha256": "43520c11f8e915727cb02ba660267da3e1eb97cc26f0fc8d29d40dafc29461ee",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22303,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 81,
+        "reasoningOutputTokens": 22,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00128612,
+          "upper": 0.00128612,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.032153,
+          "upper": 0.032153,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-107",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-107.json",
+      "sha256": "d0ae7eea4d70fc4fa9d03890ad99aa06f2d346bc253d9b67539870722091f888",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22168,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 87,
+        "reasoningOutputTokens": 30,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00126632,
+          "upper": 0.00126632,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031658,
+          "upper": 0.031658,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-108",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-108.json",
+      "sha256": "cd7f83fea8be20d78d3859ae8cfc7520ca1c57cbe4502b123bb686bbb4f9fee8",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22370,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 97,
+        "reasoningOutputTokens": 41,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0013187200000000002,
+          "upper": 0.0013187200000000002,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.032968000000000004,
+          "upper": 0.032968000000000004,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-109",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-109.json",
+      "sha256": "e0a0331ce369c9c3a765c539d0dec047b49211a80d062abb7ebb9899fcab1fb7",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22238,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 96,
+        "reasoningOutputTokens": 30,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00129112,
+          "upper": 0.00129112,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.032278,
+          "upper": 0.032278,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-110",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-110.json",
+      "sha256": "26fbdd595d9cd47dc4a743330b7085a6ab371f1a768f5d54a25ce59fc72e9128",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22256,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 83,
+        "reasoningOutputTokens": 35,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00127912,
+          "upper": 0.00127912,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031978,
+          "upper": 0.031978,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-111",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-111.json",
+      "sha256": "1542ac0d823f5a79cabdaaf0ef4e2012db0d22a2665452fbfcd961e39f9abbe1",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22106,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 67,
+        "reasoningOutputTokens": 22,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00122992,
+          "upper": 0.00122992,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030748,
+          "upper": 0.030748,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-112",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-112.json",
+      "sha256": "9666c4e574d2e459e2beb19359fa3986809f1a86b05a42f88ded7a7905647184",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21972,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 75,
+        "reasoningOutputTokens": 28,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00121272,
+          "upper": 0.00121272,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030318,
+          "upper": 0.030318,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-113",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-113.json",
+      "sha256": "d13f4326ae659ec7833919b8bc611430c4e04c39f763d4b23e65a5b89aecd539",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22432,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 348,
+        "reasoningOutputTokens": 83,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00163232,
+          "upper": 0.00163232,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.040808,
+          "upper": 0.040808,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-114",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-114.json",
+      "sha256": "1d7195e70b3411eaf6b5b050a448e5164239c4dc9f7fe7029f8f72882759d601",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22276,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 298,
+        "reasoningOutputTokens": 62,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00154112,
+          "upper": 0.00154112,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.03852800000000001,
+          "upper": 0.03852800000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-115",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-115.json",
+      "sha256": "1c0150cd2b447a33413ac8734c473dfd86948d02b668d759ec689c70e99d637a",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22499,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 684,
+        "reasoningOutputTokens": 226,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00204892,
+          "upper": 0.00204892,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.051223000000000005,
+          "upper": 0.051223000000000005,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-116",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-116.json",
+      "sha256": "64f600c5fee82ff962a16fa39e949f1acaeaaf1c76d3d7a88374d14c85db9c9d",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22364,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 366,
+        "reasoningOutputTokens": 119,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00164032,
+          "upper": 0.00164032,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.041008,
+          "upper": 0.041008,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-117",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-117.json",
+      "sha256": "a68be81c6bf6b08d523b95b32298d9b1dd4dfb64e1a672663e84efb33f7bcdef",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22373,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 312,
+        "reasoningOutputTokens": 75,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0015773200000000001,
+          "upper": 0.0015773200000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.039433,
+          "upper": 0.039433,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-118",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-118.json",
+      "sha256": "b40187ac6951e52a9d9f755d412d23d6255bf9ab80f4e4e534b223893558a4fb",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22214,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 366,
+        "reasoningOutputTokens": 69,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00161032,
+          "upper": 0.00161032,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.040258,
+          "upper": 0.040258,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-119",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-119.json",
+      "sha256": "50b056bf53cdaeabc18203bc8f12aaebe9edc643bb360ea187688319922f13eb",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22230,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 65,
+        "reasoningOutputTokens": 18,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00125232,
+          "upper": 0.00125232,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031308,
+          "upper": 0.031308,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-120",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-120.json",
+      "sha256": "fe72df9ec5cc97e2501f73c3b20b6b18294c08df4ffa5e3560c4818f151f0992",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21948,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 82,
+        "reasoningOutputTokens": 34,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012163200000000001,
+          "upper": 0.0012163200000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030408,
+          "upper": 0.030408,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-121",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-121.json",
+      "sha256": "d9c875be5509dad7bd6cf4f66e22f1223ee504e44ef38fb0f0e83ac441148057",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22366,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 368,
+        "reasoningOutputTokens": 105,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0016431199999999999,
+          "upper": 0.0016431199999999999,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.041078,
+          "upper": 0.041078,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-122",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-122.json",
+      "sha256": "0e9cc8be5207df7bc4fbe69c71401fc700cef87d8cfda1958a4711f0c4078508",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22131,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 85,
+        "reasoningOutputTokens": 29,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012565200000000001,
+          "upper": 0.0012565200000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031412999999999996,
+          "upper": 0.031412999999999996,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-123",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-123.json",
+      "sha256": "adf8ff52d9cb90351b72c5088f366d495257fed234d9978c19bcc889aada6de1",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22072,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 76,
+        "reasoningOutputTokens": 28,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00178688,
+          "upper": 0.00178688,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.044671999999999996,
+          "upper": 0.044671999999999996,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-124",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-124.json",
+      "sha256": "825cf31a96e1969eab1b8295380e6e0a256338ba59399c95f4d83ddba1859bc9",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21983,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 77,
+        "reasoningOutputTokens": 28,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012173200000000003,
+          "upper": 0.0012173200000000003,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030433,
+          "upper": 0.030433,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-125",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-125.json",
+      "sha256": "51bea298897e3560f3634f0d3d71c5d6fc20033d359cd588324d9e494ed9eb52",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22055,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 74,
+        "reasoningOutputTokens": 25,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00122812,
+          "upper": 0.00122812,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030703,
+          "upper": 0.030703,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-126",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-126.json",
+      "sha256": "3097c8e75235ca389544f5c8509e1e8478ff427d32ccb664147e323e189004a1",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21945,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 89,
+        "reasoningOutputTokens": 41,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012241200000000002,
+          "upper": 0.0012241200000000002,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030602999999999998,
+          "upper": 0.030602999999999998,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-127",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-127.json",
+      "sha256": "59fac76fa001125d79b0256647d3b6acc7813f21f23b5e5ef86aa72668f1c1b5",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22045,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 93,
+        "reasoningOutputTokens": 47,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0018018799999999998,
+          "upper": 0.0018018799999999998,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.045047000000000004,
+          "upper": 0.045047000000000004,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-128",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-128.json",
+      "sha256": "09377ff2077e703b239a1c00b48f316870e22490f1ba57b1c10a4d324cea32c0",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21934,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 65,
+        "reasoningOutputTokens": 19,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00119312,
+          "upper": 0.00119312,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.029828,
+          "upper": 0.029828,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-129",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-129.json",
+      "sha256": "ae8abd163694fdb01eacd6c3a79aa1946a5604147d9dec4e8937ac19efd3e773",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22256,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 361,
+        "reasoningOutputTokens": 123,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0016127199999999998,
+          "upper": 0.0016127199999999998,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.040318,
+          "upper": 0.040318,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-130",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-130.json",
+      "sha256": "b2cd1bdf1eaa64cfc744248635a95ae7bd3ca3366a2b9d42452d7817144e2757",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22429,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 88,
+        "reasoningOutputTokens": 32,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00131972,
+          "upper": 0.00131972,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.032992999999999995,
+          "upper": 0.032992999999999995,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-131",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-131.json",
+      "sha256": "a3c9799d8c911cd686df91c9a36f65f958a82e4f09534bcabad05f9d516f87d0",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22194,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 77,
+        "reasoningOutputTokens": 21,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00125952,
+          "upper": 0.00125952,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031488,
+          "upper": 0.031488,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-132",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-132.json",
+      "sha256": "031b9760ec063064c1560da279cafdf275487036142d80b630d6ea5f0065d5a7",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22262,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 83,
+        "reasoningOutputTokens": 24,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012803200000000002,
+          "upper": 0.0012803200000000002,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.032008,
+          "upper": 0.032008,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-133",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-133.json",
+      "sha256": "6e5857f1cb69f78209a942a0fbdf605f9f44db992140466cdab957878baa2f20",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22125,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 91,
+        "reasoningOutputTokens": 30,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012625200000000003,
+          "upper": 0.0012625200000000003,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031562999999999994,
+          "upper": 0.031562999999999994,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-134",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-134.json",
+      "sha256": "66530f9549b9d1f7f48264741f9884b9fe29b443f96cba9ec9ba45f85a94f922",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22241,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 75,
+        "reasoningOutputTokens": 28,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00126652,
+          "upper": 0.00126652,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031663000000000004,
+          "upper": 0.031663000000000004,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-135",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-135.json",
+      "sha256": "fb5cf7ab2c768300787b577c0569415cdb9aabbe069b2cdf65c16578981642e1",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22125,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 67,
+        "reasoningOutputTokens": 19,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012337200000000002,
+          "upper": 0.0012337200000000002,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030843,
+          "upper": 0.030843,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-136",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-136.json",
+      "sha256": "cad8ce3106cf9d1fcbac0e277b086f56b185fbf18ce973d5ecf3d53adc4a74a0",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22228,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 81,
+        "reasoningOutputTokens": 35,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012711200000000001,
+          "upper": 0.0012711200000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031778,
+          "upper": 0.031778,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-137",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-137.json",
+      "sha256": "1f82557c524812cd119674c0199c0ed50dfed38136b2e8c1bdeecd9f6e06a23d",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22535,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 805,
+        "reasoningOutputTokens": 287,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00220132,
+          "upper": 0.00220132,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.055033,
+          "upper": 0.055033,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-138",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-138.json",
+      "sha256": "4c0bc984a9b2c0cc23f8d079528ff5b15c07a9ceafa6f0f7ea0bd46b68f80a51",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22298,
+        "cachedInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 312,
+        "reasoningOutputTokens": 62,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.004834,
+          "upper": 0.004834,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.12085000000000001,
+          "upper": 0.12085000000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-139",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-139.json",
+      "sha256": "01221f393a15edab9a06ae501d4362d2b6c55be6861ad32d2021ccca86ee45bd",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22388,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 339,
+        "reasoningOutputTokens": 78,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0016127200000000002,
+          "upper": 0.0016127200000000002,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.040318,
+          "upper": 0.040318,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-140",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-140.json",
+      "sha256": "d1bce4004e663f143a2f0c90dcbcd85e8d151689e3bed0a2958b5794c6771454",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22246,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 346,
+        "reasoningOutputTokens": 56,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00214568,
+          "upper": 0.00214568,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.053641999999999995,
+          "upper": 0.053641999999999995,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-141",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-141.json",
+      "sha256": "46067530887cc86d57805278f21ecbed89cfc9b1db84a346ed60f45838ed22be",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22381,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 335,
+        "reasoningOutputTokens": 67,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00160652,
+          "upper": 0.00160652,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.040163000000000004,
+          "upper": 0.040163000000000004,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-142",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-142.json",
+      "sha256": "622050f5e98d8e5e9a6e444cc40c1cd78a7cf85a03386f6db979f3cb7a91a64d",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22250,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 283,
+        "reasoningOutputTokens": 52,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00151792,
+          "upper": 0.00151792,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.037947999999999996,
+          "upper": 0.037947999999999996,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-143",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-143.json",
+      "sha256": "67f71ccb318e879dcc9321697823cc498a2d555a89e6457aff9b0b284228eb80",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22434,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 66,
+        "reasoningOutputTokens": 19,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00129432,
+          "upper": 0.00129432,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.032358000000000005,
+          "upper": 0.032358000000000005,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-144",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-144.json",
+      "sha256": "274bbf1bf8fb308c010c97d756970ae9f3385e4c6750c36d21a4ff2351df6d4c",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21985,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 80,
+        "reasoningOutputTokens": 31,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00122132,
+          "upper": 0.00122132,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030532999999999998,
+          "upper": 0.030532999999999998,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-145",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-145.json",
+      "sha256": "d6a7f7a577d781b6fe5d54df6e6ba592c51466ee75102b8c07bf903c08725892",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22538,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 709,
+        "reasoningOutputTokens": 180,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0020867200000000002,
+          "upper": 0.0020867200000000002,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.052168000000000006,
+          "upper": 0.052168000000000006,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-146",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-146.json",
+      "sha256": "a6212ddb88ce0c9b95daf6f2f1ad100a895f5fd8949f48136c5530a13eaff9ef",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22183,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 76,
+        "reasoningOutputTokens": 20,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012561200000000001,
+          "upper": 0.0012561200000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031403,
+          "upper": 0.031403,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-147",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-147.json",
+      "sha256": "6e650823b62748904b5d0bc12614af5a5be9a6a484355dbdaefa004b2bedbc1e",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22081,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 78,
+        "reasoningOutputTokens": 29,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00123812,
+          "upper": 0.00123812,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030953,
+          "upper": 0.030953,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-148",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-148.json",
+      "sha256": "5a065f9b570d3a7154f621ada1ff0a48e1b4f7a85f8406c36de1db1b7c2d119c",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21928,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 363,
+        "reasoningOutputTokens": 74,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00154952,
+          "upper": 0.00154952,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.038737999999999995,
+          "upper": 0.038737999999999995,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-149",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-149.json",
+      "sha256": "910a396f6f0c6e9a737e5fa13df22b5bdb7f492a84e6bdcc6969e213ee069eda",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22081,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 73,
+        "reasoningOutputTokens": 25,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00178508,
+          "upper": 0.00178508,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.044627,
+          "upper": 0.044627,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-150",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-150.json",
+      "sha256": "5294d22b195f80ca4c67029071d437c55262d34d4593c660428c344cfc20e7c0",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21954,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 76,
+        "reasoningOutputTokens": 28,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00121032,
+          "upper": 0.00121032,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030258000000000004,
+          "upper": 0.030258000000000004,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-151",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-151.json",
+      "sha256": "b85b6a34b838bb7c2057804967c01734fabfa8b00d4118f7cd568be922caf8ab",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22195,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 474,
+        "reasoningOutputTokens": 136,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0017361199999999999,
+          "upper": 0.0017361199999999999,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.043403,
+          "upper": 0.043403,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-152",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-152.json",
+      "sha256": "59cc14dc025a27b6c4a945f366d8c3638e98de7c5255d23da4f8023f108c4d1f",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21971,
+        "cachedInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 65,
+        "reasoningOutputTokens": 19,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0044722,
+          "upper": 0.0044722,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.11180499999999999,
+          "upper": 0.11180499999999999,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-153",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-153.json",
+      "sha256": "073ec983bcaa827fdb6ba27a7535b0f57682f429e97896f621de69f3f6ffdfc0",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22315,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 301,
+        "reasoningOutputTokens": 66,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00155252,
+          "upper": 0.00155252,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.038813,
+          "upper": 0.038813,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-154",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-154.json",
+      "sha256": "0fdeeca71d354b569aca412ca3bdafd4ec28006a760aa43440cc7a87065534ba",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22261,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 74,
+        "reasoningOutputTokens": 18,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00126932,
+          "upper": 0.00126932,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031733,
+          "upper": 0.031733,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-155",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-155.json",
+      "sha256": "bdcc2e7eac4e99bdc3bc3a2c3e34b34d9ddec9517be352bd4de7665dc17b23be",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22306,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 89,
+        "reasoningOutputTokens": 25,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00129632,
+          "upper": 0.00129632,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.032408,
+          "upper": 0.032408,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-156",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-156.json",
+      "sha256": "8da3a1bd24badee43eece098a8ee1ffae2427ec88d8ca072305010468e3fc86f",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22136,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 77,
+        "reasoningOutputTokens": 18,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00124792,
+          "upper": 0.00124792,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031198000000000004,
+          "upper": 0.031198000000000004,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-157",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-157.json",
+      "sha256": "1a383b2963e57bbc8524142b666f657a32eca2d1b29346a1fd8e6928cde8a950",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22168,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 90,
+        "reasoningOutputTokens": 34,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012699200000000001,
+          "upper": 0.0012699200000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031748,
+          "upper": 0.031748,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-158",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-158.json",
+      "sha256": "b86fd1e45d464eae98d38bd29c1e002012e408eb6d333364d3c5aee7be904f6c",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22057,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 72,
+        "reasoningOutputTokens": 26,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012261199999999998,
+          "upper": 0.0012261199999999998,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030652999999999996,
+          "upper": 0.030652999999999996,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-159",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-159.json",
+      "sha256": "3ac38bb83daeb9fd5b9eafbb15158df86ba6d7d288016f424189f5ff3a02f868",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21877,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 355,
+        "reasoningOutputTokens": 66,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0015297199999999998,
+          "upper": 0.0015297199999999998,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.038243,
+          "upper": 0.038243,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-160",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-160.json",
+      "sha256": "62c4605f161be75d8256bc14e09f2146fbb75136216e67e737664d44de313bce",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21998,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 68,
+        "reasoningOutputTokens": 23,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012095200000000002,
+          "upper": 0.0012095200000000002,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030238,
+          "upper": 0.030238,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-161",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-161.json",
+      "sha256": "edf8730b0153b9c8ab5e48a773b3a2178509a9e33ba30db44d638582b37773c7",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22389,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 294,
+        "reasoningOutputTokens": 57,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00155892,
+          "upper": 0.00155892,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.038973,
+          "upper": 0.038973,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-162",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-162.json",
+      "sha256": "82df23a31970be7eda3c2e66d19abb9bb717f0b103a94a39d4428fa654fa4fa3",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22446,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 361,
+        "reasoningOutputTokens": 89,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00165072,
+          "upper": 0.00165072,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.041268,
+          "upper": 0.041268,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-163",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-163.json",
+      "sha256": "ba223af6abaf3870267dcbc9cb1f3602b2c9ba14e2f88b247117c42761ea19f5",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22268,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 318,
+        "reasoningOutputTokens": 93,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0015635199999999999,
+          "upper": 0.0015635199999999999,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.039088,
+          "upper": 0.039088,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-164",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-164.json",
+      "sha256": "54f605802de57e410c84eb3192c8d00de1d240517a56c61284481f3f45097531",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22302,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 278,
+        "reasoningOutputTokens": 53,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0015223199999999997,
+          "upper": 0.0015223199999999997,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.038058,
+          "upper": 0.038058,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-165",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-165.json",
+      "sha256": "b4139c1417d7b289c60afbe6ea7447390b10770f320544dcbf812b8201a40892",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22237,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 66,
+        "reasoningOutputTokens": 19,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0012549199999999999,
+          "upper": 0.0012549199999999999,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031373000000000005,
+          "upper": 0.031373000000000005,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-166",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-166.json",
+      "sha256": "f66e483c09e16297ac156ada4fd92334a8b919a520100a5cac1a66663d4ccd39",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22257,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 84,
+        "reasoningOutputTokens": 31,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0018334800000000002,
+          "upper": 0.0018334800000000002,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.045836999999999996,
+          "upper": 0.045836999999999996,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-167",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-167.json",
+      "sha256": "fd27650091b595e00a3e1d235726801045a6dae839064866cbd2712fa63f2b1c",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21944,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 93,
+        "reasoningOutputTokens": 45,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00122872,
+          "upper": 0.00122872,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030718000000000002,
+          "upper": 0.030718000000000002,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-168",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-168.json",
+      "sha256": "e543ba0e6c463dbc8233fd5ce0894a9f15c9db3cef8e0d9dea21601b1ce1add4",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22171,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 152,
+        "reasoningOutputTokens": 36,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00134492,
+          "upper": 0.00134492,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.033623,
+          "upper": 0.033623,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-169",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-169.json",
+      "sha256": "1f43f8c87203dc931652302006fb99c65e0f3614a74d6f45ec8f77087ddc2991",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22358,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 312,
+        "reasoningOutputTokens": 72,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0015743200000000001,
+          "upper": 0.0015743200000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.039358000000000004,
+          "upper": 0.039358000000000004,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-170",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-170.json",
+      "sha256": "75de8c401e5950e927fc7cb31c275a62fd12232b5afe5c74a89a226ae04208d8",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22372,
+        "cachedInputTokens": 0,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 351,
+        "reasoningOutputTokens": 77,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.004895600000000001,
+          "upper": 0.004895600000000001,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.12239,
+          "upper": 0.12239,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-171",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-171.json",
+      "sha256": "ea4566d0d4996ef94bfa9a980cea58a15016293ffac58a07b2a57d98b1513bab",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22143,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 88,
+        "reasoningOutputTokens": 28,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00126252,
+          "upper": 0.00126252,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031562999999999994,
+          "upper": 0.031562999999999994,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-172",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-172.json",
+      "sha256": "59cf7b82eb5204af28a44749b861c61b7bae411a3b7008d80875b0e99b47565d",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 23234,
+        "cachedInputTokens": 15104,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 753,
+        "reasoningOutputTokens": 243,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00283168,
+          "upper": 0.00283168,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.070792,
+          "upper": 0.070792,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-173",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-173.json",
+      "sha256": "a559f28e5ee31759995d9b9c6b88fb9fb462a0605425dae83ce7165730402a2d",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21991,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 75,
+        "reasoningOutputTokens": 26,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00121652,
+          "upper": 0.00121652,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030413,
+          "upper": 0.030413,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-174",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-174.json",
+      "sha256": "12d95f0f98390034cbe7d9020d339dc4c1c720361e861c6b2ca2791bc41cd192",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22138,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 68,
+        "reasoningOutputTokens": 20,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00123752,
+          "upper": 0.00123752,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030938,
+          "upper": 0.030938,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-175",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-175.json",
+      "sha256": "108ffc21249ae3471409536c38095ddff4103f9d2d170e0782b5b307f87432d7",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 21884,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 88,
+        "reasoningOutputTokens": 42,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00121072,
+          "upper": 0.00121072,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.030268,
+          "upper": 0.030268,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-176",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-176.json",
+      "sha256": "1c72205c12b2815073790f44336883ff03826d5db06f1538b49300041abd2e7a",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22287,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 308,
+        "reasoningOutputTokens": 70,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0015553199999999998,
+          "upper": 0.0015553199999999998,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.038883,
+          "upper": 0.038883,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-177",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-177.json",
+      "sha256": "a4509d250ef51cc6acff758c25922fd7ef4a2478bbcd07fbae4cb8df4c1e5ae6",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22177,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 102,
+        "reasoningOutputTokens": 45,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00128612,
+          "upper": 0.00128612,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.032153,
+          "upper": 0.032153,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-178",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-178.json",
+      "sha256": "4221968a6104f5c7414efde242aa0b7d10ec3a64aae810a2621db4f7ccc0ef93",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22315,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 75,
+        "reasoningOutputTokens": 19,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00128132,
+          "upper": 0.00128132,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.032033000000000006,
+          "upper": 0.032033000000000006,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-179",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-179.json",
+      "sha256": "1ee4996efdb46c6b703e8647c4faa7764b1b4595892a4ef73e96b13e7ffe487a",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22087,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 97,
+        "reasoningOutputTokens": 48,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00126212,
+          "upper": 0.00126212,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.031553000000000005,
+          "upper": 0.031553000000000005,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-180",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-180.json",
+      "sha256": "81190638cb2d3f7da02ab889ce25b1ed526164f43d81764fc8f079012437ace1",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22312,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 254,
+        "reasoningOutputTokens": 39,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0014955200000000002,
+          "upper": 0.0014955200000000002,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.037388000000000005,
+          "upper": 0.037388000000000005,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-181",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-181.json",
+      "sha256": "9bd398d1caa1565e48977e67b531174bd0fac7d3dc26ad87f0eef1551e1b6636",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22406,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 282,
+        "reasoningOutputTokens": 52,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.00154792,
+          "upper": 0.00154792,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.038698,
+          "upper": 0.038698,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-sheep-n8-r1",
+      "callId": "call-182",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-sheep-n8-r1/call-182.json",
+      "sha256": "5c77d341797486372943c25f71ab8258d19db4f2bfa094a1a9a0d5698be00a2f",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": 22232,
+        "cachedInputTokens": 18176,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 371,
+        "reasoningOutputTokens": 66,
+        "source": "turn.completed",
+        "issues": []
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0.0016199200000000002,
+          "upper": 0.0016199200000000002,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexCredits": {
+          "lower": 0.040498,
+          "upper": 0.040498,
+          "exact": true,
+          "unknownReasons": []
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    },
+    {
+      "family": "custom-run",
+      "run": "semantic-single-luna-n1-r1",
+      "callId": "call-49",
+      "requestedModel": "gpt-5.6-luna",
+      "effectiveModelEvidence": null,
+      "modelIdentityVerified": false,
+      "modelIdentityConflict": false,
+      "path": "semantic-single-luna-n1-r1/call-49.json",
+      "sha256": "8582f717749790196791352d2055a43084d0c291002747ccb5d620b686d53d41",
+      "receiptPresent": true,
+      "usage": {
+        "inputTokens": null,
+        "cachedInputTokens": null,
+        "cacheWriteInputTokens": null,
+        "outputTokens": null,
+        "reasoningOutputTokens": null,
+        "source": "missing",
+        "issues": [
+          "Missing or invalid input token count",
+          "Missing or invalid output token count",
+          "Cached input token count is unknown",
+          "Cache write input token count is unknown"
+        ]
+      },
+      "cost": {
+        "apiUsd": {
+          "lower": 0,
+          "upper": null,
+          "exact": false,
+          "unknownReasons": [
+            "API USD: input token count is unknown",
+            "API USD: output token count is unknown"
+          ]
+        },
+        "codexCredits": {
+          "lower": 0,
+          "upper": null,
+          "exact": false,
+          "unknownReasons": [
+            "Codex credits: input token count is unknown",
+            "Codex credits: output token count is unknown"
+          ]
+        },
+        "codexUsdAtAssumedCreditPrice": null
+      }
+    }
+  ]
+}

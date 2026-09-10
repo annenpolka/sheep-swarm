@@ -1,0 +1,782 @@
+{
+  "format": 1,
+  "kind": "mechanism-registered-worker-comparison",
+  "mode": "scaling-followup",
+  "conditions": [
+    "48 modules, semantic fixture; same frozen src and pricing; C=8; per-run30 Standardcredit-equivalent.",
+    "One observation perN; originalN8 followed by separatelyauthorizedN16/N32.",
+    "Not a paired randomized or statisticallypowered comparison.",
+    "Onlythese3 completedSheep runs are plotted; stopped/unexecuted controlswere retained inoriginal summary."
+  ],
+  "sources": [
+    {
+      "file": "mechanism-study-v1-summary.json",
+      "sha256": "477adf7bcb47dad6541d7af6a36144014140236f08a21a4252284372a6b9a3dd"
+    },
+    {
+      "file": "mechanism-scaling-followup-v1-summary.json",
+      "sha256": "1ef259554f8bf201d0b8239c503a3b5ee50ea019f224dd6f798f27ae059914e0"
+    }
+  ],
+  "rows": [
+    {
+      "id": "semantic-sheep-n8-r1",
+      "family": "semantic",
+      "method": "sheep",
+      "workers": 8,
+      "concurrency": 8,
+      "groups": 8,
+      "replicate": 1,
+      "configuration": {
+        "groups": 8,
+        "workers": 8,
+        "concurrency": 8,
+        "maxCredits": 30,
+        "lunaReservation": 0.25,
+        "astraReservation": 15,
+        "maxCalls": 400,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 3,
+        "memoryLimit": 4
+      },
+      "integrity": "verified",
+      "resultSha256": "8bd8732049290090959dec0a2b03d6b20d34a4cf20f7a693d9f4a4fbb1c2e5ec",
+      "fixtureFingerprint": "1dc6b72a8153a566d3c2d4436adf4aab715b28ca0499e80bf6084e8f0b6476a3",
+      "recordedSuccess": true,
+      "success": true,
+      "qualityPass": true,
+      "completionReason": "completed",
+      "recordedTerminationReason": "completed",
+      "durationMs": 270682.028375,
+      "lowerCalls": 134,
+      "upperCalls": 0,
+      "upperInterventions": 0,
+      "boundaryViolationCount": 0,
+      "maxActiveModelCalls": 8,
+      "reservationOverruns": 0,
+      "runnerUnknownUsageCalls": 0,
+      "budgetExceeded": false,
+      "budgetAdmissionDenied": false,
+      "observedRunnerCredits": 5.4207170000000025,
+      "stagesExpected": 1,
+      "stages": [
+        {
+          "stage": 0,
+          "success": true,
+          "qualityPass": true,
+          "terminationReason": "completed",
+          "protocolClean": true,
+          "durationMs": 270654.927333,
+          "calls": 134,
+          "lowerCalls": 134,
+          "upperCalls": 0,
+          "readCalls": 86,
+          "interventions": 0
+        }
+      ],
+      "participation": {
+        "registered": 8,
+        "active": 8,
+        "minCalls": 16,
+        "maxCalls": 17,
+        "perWorker": [
+          {
+            "id": "sheep-1",
+            "actualCalls": 17,
+            "scheduledAssignments": 17,
+            "committedPatches": 6,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-2",
+            "actualCalls": 16,
+            "scheduledAssignments": 16,
+            "committedPatches": 7,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-3",
+            "actualCalls": 17,
+            "scheduledAssignments": 17,
+            "committedPatches": 5,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-4",
+            "actualCalls": 17,
+            "scheduledAssignments": 17,
+            "committedPatches": 7,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-5",
+            "actualCalls": 17,
+            "scheduledAssignments": 17,
+            "committedPatches": 7,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-6",
+            "actualCalls": 17,
+            "scheduledAssignments": 17,
+            "committedPatches": 5,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-7",
+            "actualCalls": 17,
+            "scheduledAssignments": 17,
+            "committedPatches": 5,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-8",
+            "actualCalls": 16,
+            "scheduledAssignments": 16,
+            "committedPatches": 6,
+            "finalMemoryEntries": 4
+          }
+        ]
+      },
+      "discovery": {
+        "deliveredEdges": 96,
+        "totalEdges": 200,
+        "readCalls": 86,
+        "requestedReadArtifacts": 96
+      },
+      "memory": {
+        "callsWithMemory": 126,
+        "deliveredEntries": 456,
+        "finalEntries": 32
+      },
+      "accounting": {
+        "calls": 134,
+        "missingReceipts": 0,
+        "extraReceipts": 0,
+        "unknownUsageCalls": 0,
+        "identityConflicts": 0,
+        "identityUnverifiedCalls": 134,
+        "complete": true,
+        "receiptManifestSha256": "2d3d4992c59ce8f7d0ac00edf92fd4b4f442732ee0b9d2c3d5e355c3e2381bf0",
+        "apiUsd": {
+          "lower": 0.21682867999999994,
+          "upper": 0.21682867999999994,
+          "exact": true
+        },
+        "codexCredits": {
+          "lower": 5.4207170000000025,
+          "upper": 5.4207170000000025,
+          "exact": true
+        },
+        "byModel": [
+          {
+            "model": "gpt-5.6-luna",
+            "calls": 134,
+            "apiUsd": {
+              "lower": 0.21682867999999994,
+              "upper": 0.21682867999999994,
+              "exact": true
+            },
+            "codexCredits": {
+              "lower": 5.4207170000000025,
+              "upper": 5.4207170000000025,
+              "exact": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "semantic-sheep-n16-r1",
+      "family": "semantic",
+      "method": "sheep",
+      "workers": 16,
+      "concurrency": 8,
+      "groups": 8,
+      "replicate": 1,
+      "configuration": {
+        "groups": 8,
+        "workers": 16,
+        "concurrency": 8,
+        "maxCredits": 30,
+        "lunaReservation": 0.25,
+        "astraReservation": 15,
+        "maxCalls": 400,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 3,
+        "memoryLimit": 4
+      },
+      "integrity": "verified",
+      "resultSha256": "7811f00807cb1152fd2e126fa68d5ce3aed4c7718f40585da970c5a2d7023d49",
+      "fixtureFingerprint": "1dc6b72a8153a566d3c2d4436adf4aab715b28ca0499e80bf6084e8f0b6476a3",
+      "recordedSuccess": true,
+      "success": true,
+      "qualityPass": true,
+      "completionReason": "completed",
+      "recordedTerminationReason": "completed",
+      "durationMs": 295448.64816700004,
+      "lowerCalls": 138,
+      "upperCalls": 1,
+      "upperInterventions": 1,
+      "boundaryViolationCount": 0,
+      "maxActiveModelCalls": 8,
+      "reservationOverruns": 0,
+      "runnerUnknownUsageCalls": 0,
+      "budgetExceeded": false,
+      "budgetAdmissionDenied": false,
+      "observedRunnerCredits": 12.03176099999999,
+      "stagesExpected": 1,
+      "stages": [
+        {
+          "stage": 0,
+          "success": true,
+          "qualityPass": true,
+          "terminationReason": "completed",
+          "protocolClean": true,
+          "durationMs": 295403.66337499995,
+          "calls": 139,
+          "lowerCalls": 138,
+          "upperCalls": 1,
+          "readCalls": 88,
+          "interventions": 1
+        }
+      ],
+      "participation": {
+        "registered": 16,
+        "active": 16,
+        "minCalls": 8,
+        "maxCalls": 9,
+        "perWorker": [
+          {
+            "id": "sheep-1",
+            "actualCalls": 8,
+            "scheduledAssignments": 8,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-2",
+            "actualCalls": 8,
+            "scheduledAssignments": 8,
+            "committedPatches": 4,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-3",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-4",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-5",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-6",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-7",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-8",
+            "actualCalls": 8,
+            "scheduledAssignments": 8,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-9",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 4,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-10",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 5,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-11",
+            "actualCalls": 8,
+            "scheduledAssignments": 8,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-12",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-13",
+            "actualCalls": 8,
+            "scheduledAssignments": 8,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-14",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 4,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-15",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-16",
+            "actualCalls": 8,
+            "scheduledAssignments": 8,
+            "committedPatches": 4,
+            "finalMemoryEntries": 4
+          }
+        ]
+      },
+      "discovery": {
+        "deliveredEdges": 98,
+        "totalEdges": 202,
+        "readCalls": 88,
+        "requestedReadArtifacts": 98
+      },
+      "memory": {
+        "callsWithMemory": 122,
+        "deliveredEntries": 392,
+        "finalEntries": 64
+      },
+      "accounting": {
+        "calls": 139,
+        "missingReceipts": 0,
+        "extraReceipts": 0,
+        "unknownUsageCalls": 0,
+        "identityConflicts": 0,
+        "identityUnverifiedCalls": 139,
+        "complete": true,
+        "receiptManifestSha256": "ea65367ae5f31c2cd8d17bbaf91c91e79b55b71aa5a468cef96c0bb6963c5b6c",
+        "apiUsd": {
+          "lower": 0.48127044,
+          "upper": 0.48127044,
+          "exact": true
+        },
+        "codexCredits": {
+          "lower": 12.03176099999999,
+          "upper": 12.03176099999999,
+          "exact": true
+        },
+        "byModel": [
+          {
+            "model": "gpt-5.6-luna",
+            "calls": 138,
+            "apiUsd": {
+              "lower": 0.22835044000000002,
+              "upper": 0.22835044000000002,
+              "exact": true
+            },
+            "codexCredits": {
+              "lower": 5.708760999999999,
+              "upper": 5.708760999999999,
+              "exact": true
+            }
+          },
+          {
+            "model": "gpt-6-astra",
+            "calls": 1,
+            "apiUsd": {
+              "lower": 0.25292,
+              "upper": 0.25292,
+              "exact": true
+            },
+            "codexCredits": {
+              "lower": 6.323,
+              "upper": 6.323,
+              "exact": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "semantic-sheep-n32-r1",
+      "family": "semantic",
+      "method": "sheep",
+      "workers": 32,
+      "concurrency": 8,
+      "groups": 8,
+      "replicate": 1,
+      "configuration": {
+        "groups": 8,
+        "workers": 32,
+        "concurrency": 8,
+        "maxCredits": 30,
+        "lunaReservation": 0.25,
+        "astraReservation": 15,
+        "maxCalls": 400,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 3,
+        "memoryLimit": 4
+      },
+      "integrity": "verified",
+      "resultSha256": "20c78da6c177c318421651ddccd482bd2fa283591ffd52ec70517f50f753ea13",
+      "fixtureFingerprint": "1dc6b72a8153a566d3c2d4436adf4aab715b28ca0499e80bf6084e8f0b6476a3",
+      "recordedSuccess": true,
+      "success": true,
+      "qualityPass": true,
+      "completionReason": "completed",
+      "recordedTerminationReason": "completed",
+      "durationMs": 273922.78820799995,
+      "lowerCalls": 137,
+      "upperCalls": 1,
+      "upperInterventions": 1,
+      "boundaryViolationCount": 0,
+      "maxActiveModelCalls": 8,
+      "reservationOverruns": 0,
+      "runnerUnknownUsageCalls": 0,
+      "budgetExceeded": false,
+      "budgetAdmissionDenied": false,
+      "observedRunnerCredits": 11.697455999999995,
+      "stagesExpected": 1,
+      "stages": [
+        {
+          "stage": 0,
+          "success": true,
+          "qualityPass": true,
+          "terminationReason": "completed",
+          "protocolClean": true,
+          "durationMs": 273880.99750000006,
+          "calls": 138,
+          "lowerCalls": 137,
+          "upperCalls": 1,
+          "readCalls": 87,
+          "interventions": 1
+        }
+      ],
+      "participation": {
+        "registered": 32,
+        "active": 32,
+        "minCalls": 4,
+        "maxCalls": 5,
+        "perWorker": [
+          {
+            "id": "sheep-1",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 0,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-2",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-3",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-4",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-5",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-6",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-7",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-8",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-9",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-10",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-11",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-12",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-13",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-14",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 0,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-15",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-16",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-17",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-18",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-19",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-20",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-21",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-22",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-23",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-24",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-25",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-26",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-27",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 0,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-28",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-29",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-30",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 0,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-31",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-32",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 0,
+            "finalMemoryEntries": 4
+          }
+        ]
+      },
+      "discovery": {
+        "deliveredEdges": 88,
+        "totalEdges": 192,
+        "readCalls": 87,
+        "requestedReadArtifacts": 88
+      },
+      "memory": {
+        "callsWithMemory": 105,
+        "deliveredEntries": 228,
+        "finalEntries": 128
+      },
+      "accounting": {
+        "calls": 138,
+        "missingReceipts": 0,
+        "extraReceipts": 0,
+        "unknownUsageCalls": 0,
+        "identityConflicts": 0,
+        "identityUnverifiedCalls": 138,
+        "complete": true,
+        "receiptManifestSha256": "7e839a791640ad127b6f1611de795971b8218224560329f8ef3eda16957d8b7d",
+        "apiUsd": {
+          "lower": 0.4678982400000001,
+          "upper": 0.4678982400000001,
+          "exact": true
+        },
+        "codexCredits": {
+          "lower": 11.697455999999995,
+          "upper": 11.697455999999995,
+          "exact": true
+        },
+        "byModel": [
+          {
+            "model": "gpt-5.6-luna",
+            "calls": 137,
+            "apiUsd": {
+              "lower": 0.2149282400000001,
+              "upper": 0.2149282400000001,
+              "exact": true
+            },
+            "codexCredits": {
+              "lower": 5.373206,
+              "upper": 5.373206,
+              "exact": true
+            }
+          },
+          {
+            "model": "gpt-6-astra",
+            "calls": 1,
+            "apiUsd": {
+              "lower": 0.25297000000000003,
+              "upper": 0.25297000000000003,
+              "exact": true
+            },
+            "codexCredits": {
+              "lower": 6.32425,
+              "upper": 6.32425,
+              "exact": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

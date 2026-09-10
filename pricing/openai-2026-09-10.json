@@ -1,0 +1,73 @@
+{
+  "format": 1,
+  "verifiedOn": "2026-09-10",
+  "verifiedAt": "2026-09-09T22:20:54.176497+00:00",
+  "currency": "USD",
+  "usdPerCredit": null,
+  "assumptions": [
+    "API amounts are hypothetical Standard token costs for the recorded usage, not actual invoices for these ChatGPT-authenticated Codex runs.",
+    "Codex amounts are Standard token-rate credit equivalents, not observed debit of included usage or purchased credits.",
+    "Ordinary-context pricing is assumed. A turn total is not necessarily one API request; request-level >272K pricing is not inferred from cumulative turn totals.",
+    "Reasoning output is included in output tokens; cached reads and cache writes are subsets of input tokens, not additional tokens.",
+    "Credit purchase prices depend on plan/agreement. usdPerCredit remains null unless explicitly supplied from a purchase quote.",
+    "Tool charges, subscriptions, taxes, discounts, development work, and human setup are excluded."
+  ],
+  "models": {
+    "gpt-5.6-luna": {
+      "apiUsdPerMillion": {
+        "input": 0.2,
+        "cachedInput": 0.02,
+        "cacheWrite": 0.25,
+        "output": 1.2
+      },
+      "codexCreditsPerMillion": {
+        "input": 5,
+        "cachedInput": 0.5,
+        "cacheWrite": null,
+        "output": 30
+      },
+      "sources": {
+        "api": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+        "codex": "https://learn.chatgpt.com/docs/pricing"
+      },
+      "notes": [
+        "Codex cache-write credit rate is not separately listed; zero observed cache writes need no rate assumption."
+      ]
+    },
+    "gpt-6-astra": {
+      "apiUsdPerMillion": {
+        "input": 10,
+        "cachedInput": 1,
+        "cacheWrite": 12.5,
+        "output": 50
+      },
+      "codexCreditsPerMillion": {
+        "input": 250,
+        "cachedInput": 25,
+        "cacheWrite": null,
+        "output": 1250
+      },
+      "sources": {
+        "api": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+        "codex": "https://learn.chatgpt.com/docs/pricing"
+      },
+      "notes": [
+        "API Fast costs 2x applicable rates; Codex Fast costs 2.5x Standard credits. Neither multiplier is silently applied.",
+        "Codex cache-write credit rate is not separately listed; zero observed cache writes need no rate assumption."
+      ]
+    }
+  },
+  "rules": {
+    "apiLongContext": {
+      "thresholdInputTokens": 272000,
+      "uncachedAndCachedMultiplier": 2,
+      "outputMultiplier": 1.5,
+      "scope": "per request, not cumulative CLI turn"
+    },
+    "astraFast": {
+      "apiMultiplier": 2,
+      "codexCreditsMultiplier": 2.5,
+      "source": "https://learn.chatgpt.com/docs/agent-configuration/speed"
+    }
+  }
+}

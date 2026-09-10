@@ -4,11 +4,13 @@
 
 下位モデルの群れが局所作業を進め、上位モデルが群れを観測して必要時に介入する。下位から上位への相談経路は設けない。個体数を増やしたときの分業、情報伝播、混雑、収束を、品質・費用とともに確かめる。既存製品から設計を借り、小さなprotocolから始める。
 
-現在の方針は [docs/current-direction.md](docs/current-direction.md) にまとめている。下位4体は動作確認、最初の本実験は下位16体＋上位1体、初期比較は8・16・32体、64体は次の探索候補。具体的な人数は検証前の作業上の既定値である。
+現在の方針は [docs/current-direction.md](docs/current-direction.md) にまとめている。下位4体の動作確認から16体へ進み、8・16・32体の初期比較を実行した。64体は次の探索候補で、最適人数や成功の境目はまだ示していない。
 
 ## 現在の状態
 
-**初期化済み。kernel、LLM worker、メタ管理、規模比較は未実装。**
+**kernel、実Luna worker、選択的な上位介入、8・16・32体の実測、SQLiteからの再開を実装し、別taskで4方式の初期比較まで完了した。**
+
+静的変更・公開レジストリを使う意味依存・3段階の仕様変更も実装し、クレジット相当による実行受付を追加した。新しい48モジュール課題はN8/16/32、C=8で各1回成功した。元の28条件の比較は使用量不明で2条件目に停止し、その後の承認された追加2条件と分けて記録している。
 
 | あるもの | 位置 |
 |:---|:---|
@@ -18,10 +20,19 @@
 | 実装順序と各段階の完了条件 | [docs/roadmap.md](docs/roadmap.md) |
 | 検証方針と故障シナリオ | [docs/testing-policy.md](docs/testing-policy.md) |
 | 継続する設計判断 | [.stratal/brief.md](.stratal/brief.md) |
-| protocolの型の草案 | [src/protocol.ts](src/protocol.ts) |
+| kernelと独立受入テスト | [src/kernel.ts](src/kernel.ts)、[tests/kernel.test.ts](tests/kernel.test.ts) |
+| 実コードfixtureとCodex adapter | [src/fixture.ts](src/fixture.ts)、[src/codex-worker.ts](src/codex-worker.ts) |
+| 実装の進捗と実行証拠 | [docs/execplan.md](docs/execplan.md)、[4体の実測](docs/results/luna-four-worker-pilot.md) |
+| 8・16・32体の反復と誤指示条件 | [規模比較の結果](docs/results/scaling-findings.md) |
+| SQLiteと実process中断・再開 | [src/durable-run.ts](src/durable-run.ts)、[実Luna再開の結果](docs/results/durable-restart.md) |
+| モデル別の費用概算・実行前の見積 | [使い方](pricing/README.md)、[キャッシュ反映の再集計](docs/results/cost-findings.md) |
+| 次の課題設定と対照実験 | [研究と設計案](docs/task-design.md)、[条件案JSON](experiments/task-design-v2.json) |
+| 3課題・クレジット受付・追加のN比較 | [実測と限界](docs/results/mechanism-findings.md)、[実行ガイド](docs/mechanism-experiment.md)、[実行計画](docs/execplan-mechanism.md) |
+| 単一上位・中央管理・2種のSheep対照 | [4方式の結果](docs/results/comparison-findings.md)、[Manager修正後の追加試行](docs/results/manager-observation-fix.md)、[実装](src/comparison.ts) |
+| 初期protocolの型草案 | [src/protocol.ts](src/protocol.ts) |
 | write skewの有限反例と検証 | [experiments](experiments/README.md) |
 
-型の存在はruntimeの入力検証や権限制御を意味しない。反例実験が通ることも、羊型が実コードを修正できることを意味しない。次に実装する対象は [M1: 小さなin-memory kernel](docs/roadmap.md) である。その後、実worker接続と規模比較へ進む。
+実測は合成fixtureでの結果。個体数だけを増やす効果、創発、一般repositoryでの費用優位は未確認。永続化runnerはC=1で、並列の規模比較runnerの再開対応とは区別する。詳細は [実装計画](docs/roadmap.md) を参照。
 
 ## 開発を始める
 
@@ -33,7 +44,7 @@ npm run check
 npm run demo
 ```
 
-`check` は型検査、反例モデルのテスト、資料snapshotのハッシュ照合を行う。`demo` は全6スケジュールの遷移と次の集計をJSONで表示する。
+`check` は型検査、kernel・fixture・adapter・scheduler・SQLite・process中断再開・比較方式・反例モデルのテスト、資料snapshotのハッシュ照合を行う。`demo` は全6スケジュールの遷移と次の集計をJSONで表示する。
 
 ```json
 {
@@ -45,7 +56,27 @@ npm run demo
 
 TypeScriptの実行にはNode.jsのtype strippingを使い、型検査は別に `tsc` で行う。[Node.jsの公式説明](https://nodejs.org/api/typescript.html)
 
-runtime依存はまだない。SQLite、LLM adapter、worktree操作、message brokerを初期化のためだけに追加しない。
+追加のruntime npm packageは使わない。実LLM呼出しには認証済みのCodex CLIを使う。下位は利用者指定の `gpt-5.6-luna`、上位の既定値は `gpt-6-astra`。
+
+```sh
+npm run swarm -- --workers 4 --concurrency 4 --size 4
+npm run swarm -- --workers 4 --concurrency 4 --size 4 --fault rounded-guidance
+npm run swarm -- --workers 16 --concurrency 16 --size 32
+npm run durable -- --directory .sheep/durable-luna --size 4 --workers 4
+npm run durable -- --directory .sheep/durable-luna --resume
+npm run compare -- --method sheep-full --size 8 --workers 4 --concurrency 4 --max-tokens 500000 --reserve-tokens 30000
+npm run mechanism -- --family staged --method sheep --groups 1 --workers 4 --concurrency 4 --output .sheep/my-mechanism-pilot
+```
+
+これらは実モデルを呼び出す。結果・コード・使用量・失敗履歴は `.sheep/` の一意なrunディレクトリへ保存する。`--max-calls`、`--max-meta-calls`、`--max-rounds`、`--timeout-ms` で上限を指定できる。通常の `npm run check` はモデルを呼び出さない。
+
+`compare` の方式は `single-upper`、`manager-local`、`sheep-fixed`、`sheep-full`。token予約は呼出しの受付制御であり、providerの強制上限ではない。超過・使用量不明は予算付き比較の成功にしない。Sheep-fullが発見するのは実ファイルの静的importと明示された仕様依存であり、任意の意味依存ではない。
+
+今後の単独比較はLunaに統一し、費用の目安を得たAstra単独は新規試行から省く。Astraは群れへの必要時介入で継続する。`mechanism:experiment` はpilot 4条件・main 25条件、旧 `scripts/compare-experiment.mjs` の既定も単独上位を除外する。旧単独方式の実装は過去の再現用に残す。
+
+`mechanism` の方式は `sheep`、`single-luna`、`single-astra`、`no-memory`、`no-upper`。既定30 credits相当の中で、下位・上位・追加読取・再試行を精算する。使用量不明は0とせず停止する。今回の追加N16/32比較は23.729217／100 credits相当、今回の機構実験全体の既知下限は58.395228相当＋使用量不明1呼出し。N16/32の試行費用では上位介入が約半分を占め、Nを増やす明確な利点はまだ見えていない。各1回・合成課題の観測として[結果](docs/results/mechanism-findings.md)を参照する。
+
+価格とクレジットは2026-09-10の公式レートを保存し、キャッシュを含む994呼出しから再計算した。通常taskのSheep-fixedは平均0.540282 credits相当、単体Astraは7.283 credits相当。実際の請求額・Proの利用枠消費とは区別する。実行前の概算は `npm run estimate:cost -- --rates pricing/openai-2026-09-10.json --scenario pricing/planned-run.example.json --output .sheep/planned-cost.json` で試せる。
 
 ## 守る設計
 

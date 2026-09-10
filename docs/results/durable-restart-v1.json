@@ -1,0 +1,59 @@
+{
+  "format": 1,
+  "auditedAt": "2026-09-09T18:00:00.105Z",
+  "note": "Original probe receipts retained. Fixed an overstrict assertion of exactly one committed proposal per artifact: a later guidance change can legitimately require a new no-op validation. The durable committed proposal IDs were preserved exactly once.",
+  "runs": [
+    {
+      "boundary": "after-commit",
+      "originalProbeStatus": "passed",
+      "success": true,
+      "lowerCalls": 5,
+      "upperCalls": 0,
+      "interventions": 0,
+      "resumes": 1,
+      "unknownCalls": 0,
+      "usageUnknownCalls": 0,
+      "inputTokens": 94858,
+      "outputTokens": 1191,
+      "interruptedCall": {
+        "id": "call-1",
+        "status": "committed"
+      },
+      "versions": {
+        "lib/measure.mjs": 1,
+        "docs/contract.md": 0,
+        "consumers/consumer-001.mjs": 1,
+        "consumers/consumer-002.mjs": 1,
+        "consumers/consumer-003.mjs": 1,
+        "consumers/consumer-004.mjs": 1,
+        "reports/report-001.mjs": 1
+      }
+    },
+    {
+      "boundary": "after-intervention",
+      "originalProbeStatus": "failed",
+      "success": true,
+      "lowerCalls": 8,
+      "upperCalls": 1,
+      "interventions": 1,
+      "resumes": 1,
+      "unknownCalls": 0,
+      "usageUnknownCalls": 0,
+      "inputTokens": 177091,
+      "outputTokens": 2902,
+      "interruptedCall": {
+        "id": "call-4",
+        "status": "committed"
+      },
+      "versions": {
+        "lib/measure.mjs": 1,
+        "docs/contract.md": 1,
+        "consumers/consumer-001.mjs": 1,
+        "consumers/consumer-002.mjs": 1,
+        "consumers/consumer-003.mjs": 1,
+        "consumers/consumer-004.mjs": 1,
+        "reports/report-001.mjs": 1
+      }
+    }
+  ]
+}

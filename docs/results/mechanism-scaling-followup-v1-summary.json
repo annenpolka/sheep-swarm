@@ -1,0 +1,785 @@
+{
+  "format": 1,
+  "kind": "mechanism-summary",
+  "generatedAt": "2026-09-10T00:11:39.232Z",
+  "mode": "scaling-followup",
+  "status": "completed",
+  "stopReason": null,
+  "sourceManifestSha256": "693c09d75b0af976988abe5cc8de56fe86593fd2c456f7fe021762e390fa467c",
+  "experimentSha256": "78834c05d7abd8b4094f60c5635f65a03c03178c93e61e553871f15544b14edc",
+  "rateCardSha256": "e25991caebda1b840569e20a8774b11f9f14e95f3b365fe304dade7bf1ba1312",
+  "estimatorSha256": "b03d77a7ba2143a47897aa0ee0504910e36ca79d3fa4c7679edf78b1f2b696d6",
+  "summarizerSha256": "40812cd56f6eecb6cd3ded2df671197b8d08487f5010a8089a1b0040df7db6ce",
+  "sourceFilesVerified": 56,
+  "seed": 20260910,
+  "standardCreditCap": 100,
+  "perRunCreditCap": 30,
+  "configuration": {
+    "lunaReservation": 0.25,
+    "astraReservation": 15,
+    "maxCalls": 400,
+    "timeoutMs": 90000,
+    "maxAttempts": 3,
+    "maxReadCalls": 2,
+    "maxMetaCalls": 3
+  },
+  "previousStudy": {
+    "experimentSha256": "da5c9f61045dd3f1e48a7e6b8f0bbe4e5d8473092a520b9fad76db74aa03f258",
+    "knownCreditsLower": 34.666011,
+    "recordedCalls": 194,
+    "unknownUsageCalls": 1,
+    "recordedRuns": 2,
+    "plannedRuns": 28
+  },
+  "additionalBudgetAuthorization": {
+    "kind": "user-approved-additional-standard-credits",
+    "maxCredits": 100,
+    "priorUnknownUsageCalls": 1,
+    "scope": "semantic-n16-n32"
+  },
+  "conditions": [
+    "Published Standard-rate equivalents with observed cached-input splits; neither observed account debits nor invoices.",
+    "API USD is the hypothetical API price for these tokens, not a Codex subscription charge.",
+    "All discovered call receipts count, including failed calls. Missing receipts produce unknown upper costs.",
+    "Never-started planned conditions remain in rows; their lack of a result is not a quality failure or a measured zero-cost success.",
+    "Numbers compare this frozen synthetic development experiment; case-level repeats do not establish generalization or emergence.",
+    "Semantic tasks exercise registry/JSON policy dependencies absent from the initial static graph; arbitrary semantic discovery is not established.",
+    "Private-memory measurements count entries, not tokens; worker participation counts actual model calls including read requests.",
+    "Registered-worker minima include idle workers; a single baseline counts its actual single actor, not the unused worker-pool slot.",
+    "Totals cover this additional campaign only. Previous-study known credit lower bounds and unknown usage remain separate historical metadata.",
+    "The additional authorization does not resolve, erase, or charge unknown previous usage to this campaign's observed total."
+  ],
+  "total": {
+    "plannedRuns": 2,
+    "recordedRuns": 2,
+    "successfulRuns": 2,
+    "unexecutedRuns": 0,
+    "callReceipts": 277,
+    "missingReceipts": 0,
+    "unknownUsageCalls": 0,
+    "apiUsd": {
+      "lower": 0.9491686800000004,
+      "upper": 0.9491686800000004,
+      "exact": true
+    },
+    "codexCredits": {
+      "lower": 23.729217000000016,
+      "upper": 23.729217000000016,
+      "exact": true
+    }
+  },
+  "groupMetrics": [
+    {
+      "family": "semantic",
+      "method": "sheep",
+      "workers": 16,
+      "concurrency": 8,
+      "groups": 8,
+      "plannedRuns": 1,
+      "verifiedResults": 1,
+      "successfulRuns": 1,
+      "qualityPasses": 1,
+      "unexecutedRuns": 0,
+      "allRunDurationMs": {
+        "samples": 1,
+        "mean": 295448.64816700004,
+        "min": 295448.64816700004,
+        "max": 295448.64816700004
+      },
+      "successfulDurationMs": {
+        "samples": 1,
+        "mean": 295448.64816700004,
+        "min": 295448.64816700004,
+        "max": 295448.64816700004
+      },
+      "exactCredits": {
+        "samples": 1,
+        "mean": 12.03176099999999,
+        "min": 12.03176099999999,
+        "max": 12.03176099999999
+      },
+      "exactApiUsd": {
+        "samples": 1,
+        "mean": 0.48127044,
+        "min": 0.48127044,
+        "max": 0.48127044
+      },
+      "minCallsPerRegisteredWorker": {
+        "samples": 1,
+        "mean": 8,
+        "min": 8,
+        "max": 8
+      },
+      "readCalls": {
+        "samples": 1,
+        "mean": 88,
+        "min": 88,
+        "max": 88
+      },
+      "memoryEntriesDelivered": {
+        "samples": 1,
+        "mean": 392,
+        "min": 392,
+        "max": 392
+      },
+      "upperInterventions": {
+        "samples": 1,
+        "mean": 1,
+        "min": 1,
+        "max": 1
+      }
+    },
+    {
+      "family": "semantic",
+      "method": "sheep",
+      "workers": 32,
+      "concurrency": 8,
+      "groups": 8,
+      "plannedRuns": 1,
+      "verifiedResults": 1,
+      "successfulRuns": 1,
+      "qualityPasses": 1,
+      "unexecutedRuns": 0,
+      "allRunDurationMs": {
+        "samples": 1,
+        "mean": 273922.78820799995,
+        "min": 273922.78820799995,
+        "max": 273922.78820799995
+      },
+      "successfulDurationMs": {
+        "samples": 1,
+        "mean": 273922.78820799995,
+        "min": 273922.78820799995,
+        "max": 273922.78820799995
+      },
+      "exactCredits": {
+        "samples": 1,
+        "mean": 11.697455999999995,
+        "min": 11.697455999999995,
+        "max": 11.697455999999995
+      },
+      "exactApiUsd": {
+        "samples": 1,
+        "mean": 0.4678982400000001,
+        "min": 0.4678982400000001,
+        "max": 0.4678982400000001
+      },
+      "minCallsPerRegisteredWorker": {
+        "samples": 1,
+        "mean": 4,
+        "min": 4,
+        "max": 4
+      },
+      "readCalls": {
+        "samples": 1,
+        "mean": 87,
+        "min": 87,
+        "max": 87
+      },
+      "memoryEntriesDelivered": {
+        "samples": 1,
+        "mean": 228,
+        "min": 228,
+        "max": 228
+      },
+      "upperInterventions": {
+        "samples": 1,
+        "mean": 1,
+        "min": 1,
+        "max": 1
+      }
+    }
+  ],
+  "rows": [
+    {
+      "id": "semantic-sheep-n16-r1",
+      "family": "semantic",
+      "method": "sheep",
+      "workers": 16,
+      "concurrency": 8,
+      "groups": 8,
+      "replicate": 1,
+      "configuration": {
+        "groups": 8,
+        "workers": 16,
+        "concurrency": 8,
+        "maxCredits": 30,
+        "lunaReservation": 0.25,
+        "astraReservation": 15,
+        "maxCalls": 400,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 3,
+        "memoryLimit": 4
+      },
+      "integrity": "verified",
+      "resultSha256": "7811f00807cb1152fd2e126fa68d5ce3aed4c7718f40585da970c5a2d7023d49",
+      "fixtureFingerprint": "1dc6b72a8153a566d3c2d4436adf4aab715b28ca0499e80bf6084e8f0b6476a3",
+      "recordedSuccess": true,
+      "success": true,
+      "qualityPass": true,
+      "completionReason": "completed",
+      "recordedTerminationReason": "completed",
+      "durationMs": 295448.64816700004,
+      "lowerCalls": 138,
+      "upperCalls": 1,
+      "upperInterventions": 1,
+      "boundaryViolationCount": 0,
+      "maxActiveModelCalls": 8,
+      "reservationOverruns": 0,
+      "runnerUnknownUsageCalls": 0,
+      "budgetExceeded": false,
+      "budgetAdmissionDenied": false,
+      "observedRunnerCredits": 12.03176099999999,
+      "stagesExpected": 1,
+      "stages": [
+        {
+          "stage": 0,
+          "success": true,
+          "qualityPass": true,
+          "terminationReason": "completed",
+          "protocolClean": true,
+          "durationMs": 295403.66337499995,
+          "calls": 139,
+          "lowerCalls": 138,
+          "upperCalls": 1,
+          "readCalls": 88,
+          "interventions": 1
+        }
+      ],
+      "participation": {
+        "registered": 16,
+        "active": 16,
+        "minCalls": 8,
+        "maxCalls": 9,
+        "perWorker": [
+          {
+            "id": "sheep-1",
+            "actualCalls": 8,
+            "scheduledAssignments": 8,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-2",
+            "actualCalls": 8,
+            "scheduledAssignments": 8,
+            "committedPatches": 4,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-3",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-4",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-5",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-6",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-7",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-8",
+            "actualCalls": 8,
+            "scheduledAssignments": 8,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-9",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 4,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-10",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 5,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-11",
+            "actualCalls": 8,
+            "scheduledAssignments": 8,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-12",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-13",
+            "actualCalls": 8,
+            "scheduledAssignments": 8,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-14",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 4,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-15",
+            "actualCalls": 9,
+            "scheduledAssignments": 9,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-16",
+            "actualCalls": 8,
+            "scheduledAssignments": 8,
+            "committedPatches": 4,
+            "finalMemoryEntries": 4
+          }
+        ]
+      },
+      "discovery": {
+        "deliveredEdges": 98,
+        "totalEdges": 202,
+        "readCalls": 88,
+        "requestedReadArtifacts": 98
+      },
+      "memory": {
+        "callsWithMemory": 122,
+        "deliveredEntries": 392,
+        "finalEntries": 64
+      },
+      "accounting": {
+        "calls": 139,
+        "missingReceipts": 0,
+        "extraReceipts": 0,
+        "unknownUsageCalls": 0,
+        "identityConflicts": 0,
+        "identityUnverifiedCalls": 139,
+        "complete": true,
+        "receiptManifestSha256": "ea65367ae5f31c2cd8d17bbaf91c91e79b55b71aa5a468cef96c0bb6963c5b6c",
+        "apiUsd": {
+          "lower": 0.48127044,
+          "upper": 0.48127044,
+          "exact": true
+        },
+        "codexCredits": {
+          "lower": 12.03176099999999,
+          "upper": 12.03176099999999,
+          "exact": true
+        },
+        "byModel": [
+          {
+            "model": "gpt-5.6-luna",
+            "calls": 138,
+            "apiUsd": {
+              "lower": 0.22835044000000002,
+              "upper": 0.22835044000000002,
+              "exact": true
+            },
+            "codexCredits": {
+              "lower": 5.708760999999999,
+              "upper": 5.708760999999999,
+              "exact": true
+            }
+          },
+          {
+            "model": "gpt-6-astra",
+            "calls": 1,
+            "apiUsd": {
+              "lower": 0.25292,
+              "upper": 0.25292,
+              "exact": true
+            },
+            "codexCredits": {
+              "lower": 6.323,
+              "upper": 6.323,
+              "exact": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "semantic-sheep-n32-r1",
+      "family": "semantic",
+      "method": "sheep",
+      "workers": 32,
+      "concurrency": 8,
+      "groups": 8,
+      "replicate": 1,
+      "configuration": {
+        "groups": 8,
+        "workers": 32,
+        "concurrency": 8,
+        "maxCredits": 30,
+        "lunaReservation": 0.25,
+        "astraReservation": 15,
+        "maxCalls": 400,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 3,
+        "memoryLimit": 4
+      },
+      "integrity": "verified",
+      "resultSha256": "20c78da6c177c318421651ddccd482bd2fa283591ffd52ec70517f50f753ea13",
+      "fixtureFingerprint": "1dc6b72a8153a566d3c2d4436adf4aab715b28ca0499e80bf6084e8f0b6476a3",
+      "recordedSuccess": true,
+      "success": true,
+      "qualityPass": true,
+      "completionReason": "completed",
+      "recordedTerminationReason": "completed",
+      "durationMs": 273922.78820799995,
+      "lowerCalls": 137,
+      "upperCalls": 1,
+      "upperInterventions": 1,
+      "boundaryViolationCount": 0,
+      "maxActiveModelCalls": 8,
+      "reservationOverruns": 0,
+      "runnerUnknownUsageCalls": 0,
+      "budgetExceeded": false,
+      "budgetAdmissionDenied": false,
+      "observedRunnerCredits": 11.697455999999995,
+      "stagesExpected": 1,
+      "stages": [
+        {
+          "stage": 0,
+          "success": true,
+          "qualityPass": true,
+          "terminationReason": "completed",
+          "protocolClean": true,
+          "durationMs": 273880.99750000006,
+          "calls": 138,
+          "lowerCalls": 137,
+          "upperCalls": 1,
+          "readCalls": 87,
+          "interventions": 1
+        }
+      ],
+      "participation": {
+        "registered": 32,
+        "active": 32,
+        "minCalls": 4,
+        "maxCalls": 5,
+        "perWorker": [
+          {
+            "id": "sheep-1",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 0,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-2",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-3",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-4",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-5",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-6",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-7",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-8",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-9",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-10",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-11",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-12",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-13",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-14",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 0,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-15",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-16",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-17",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-18",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-19",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-20",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-21",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-22",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-23",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-24",
+            "actualCalls": 5,
+            "scheduledAssignments": 5,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-25",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-26",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-27",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 0,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-28",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-29",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-30",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 0,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-31",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-32",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 0,
+            "finalMemoryEntries": 4
+          }
+        ]
+      },
+      "discovery": {
+        "deliveredEdges": 88,
+        "totalEdges": 192,
+        "readCalls": 87,
+        "requestedReadArtifacts": 88
+      },
+      "memory": {
+        "callsWithMemory": 105,
+        "deliveredEntries": 228,
+        "finalEntries": 128
+      },
+      "accounting": {
+        "calls": 138,
+        "missingReceipts": 0,
+        "extraReceipts": 0,
+        "unknownUsageCalls": 0,
+        "identityConflicts": 0,
+        "identityUnverifiedCalls": 138,
+        "complete": true,
+        "receiptManifestSha256": "7e839a791640ad127b6f1611de795971b8218224560329f8ef3eda16957d8b7d",
+        "apiUsd": {
+          "lower": 0.4678982400000001,
+          "upper": 0.4678982400000001,
+          "exact": true
+        },
+        "codexCredits": {
+          "lower": 11.697455999999995,
+          "upper": 11.697455999999995,
+          "exact": true
+        },
+        "byModel": [
+          {
+            "model": "gpt-5.6-luna",
+            "calls": 137,
+            "apiUsd": {
+              "lower": 0.2149282400000001,
+              "upper": 0.2149282400000001,
+              "exact": true
+            },
+            "codexCredits": {
+              "lower": 5.373206,
+              "upper": 5.373206,
+              "exact": true
+            }
+          },
+          {
+            "model": "gpt-6-astra",
+            "calls": 1,
+            "apiUsd": {
+              "lower": 0.25297000000000003,
+              "upper": 0.25297000000000003,
+              "exact": true
+            },
+            "codexCredits": {
+              "lower": 6.32425,
+              "upper": 6.32425,
+              "exact": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

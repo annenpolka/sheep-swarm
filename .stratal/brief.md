@@ -6,7 +6,7 @@
 
 ## Current Working Contract
 
-現在は資料、開発基盤、型草案、独立した有限反例のみ。小さなin-memory kernel、実worker4体＋上位1体、16体と8・32体の規模比較、永続化、有用性比較の順で進める。方針全体は [docs/current-direction.md](../docs/current-direction.md)、実装順序は [docs/roadmap.md](../docs/roadmap.md) を参照。
+現在はkernel、Luna4体、8・16・32体の規模比較、C=1の永続化と実process再開を確認済み。別taskで4方式の初期比較も完了し、失敗と実装修正後の追加試行を分けて保存した。公式価格・cacheによる見積器に加え、静的・レジストリ意味依存・3段階変更とcredit相当受付を実装した。新しい主比較はtimeoutの使用量不明で停止し、承認された追加100相当の枠でN16/32を実行した。N8/16/32はC=8で各1回成功したが、増員の明確な利益は未確認。詳細は [実測](../docs/results/mechanism-findings.md) に残す。方針全体は [docs/current-direction.md](../docs/current-direction.md)、実装順序は [docs/roadmap.md](../docs/roadmap.md) を参照。
 
 ## Fit Conditions
 
@@ -17,6 +17,8 @@
 - 明示された利用者の方針を、Agentの推測で上書きしない。
 - referencesの既存snapshotを書き換えない。
 - 実装していない機能や試験していない性能を完了として報告しない。
+- 実動作の下位モデルは利用者が2026-09-10に指定したgpt-5.6-lunaを用いる。利用できない場合も黙って置換しない。
+- 2026-09-10の利用者方針により、Astra単独のコスト感は概ね把握できたため、今後の単独対照はLunaのみとする。群れへの必要時のAstra介入と、過去の実測・凍結記録は維持する。
 
 ## Preference Gradients
 
@@ -108,9 +110,9 @@ Status: tentative
 
 ### 成功品質を先に固定する
 Authority: Working default
-Evidence: Derived; 調査レポート第10節の評価提案と、上下モデルを分ける現在の利用者の意図。
+Evidence: Derived; 調査レポート第10節の評価提案。Observed; 2026-09-10の利用者によるAstra単独の新規試行を省く方針と、上下モデルを分ける意図。
 Working default:
-- 単一Agentには上位モデル、Manager-localには同じ上下モデルの組を使う。規模探索と総予算を揃える有用性比較を分ける。
+- 今後の単独対照にはLuna、Manager-localには同じ上下モデルの組を使う。Astra単独の新規試行は利用者方針により省く。規模探索と総予算を揃える有用性比較を分ける。
 - 外側の受入条件をrun前に固定し、上位が作業仕様を直しても採点条件を緩めない。上位の観測・読み直し・介入、依存発見、監査を費用から落とさない。
 Why it matters:
 - 通知削減や少ないtokenだけで成功を装わないため。
@@ -124,7 +126,7 @@ Status: tentative
 
 - 未知の意味依存を何から発見するか。発見費用が局所化の利益を上回らないか。
 - 一つのartifactが多数のconsumerを持つとき、どの粒度で検証するか。
-- 具体的な上下モデル、provider、費用上限、観測間隔、兆候の閾値は未選定。
+- 下位はgpt-5.6-lunaを利用者指定として固定。上位gpt-6-astraとCodex CLIは現在の作業上の既定値。費用上限、観測間隔、兆候の閾値は実験ごとに記録して見直す。
 - 上位が全件を読み直さず、全員共通の誤解を何から発見するか。
 - Commit policy: recommend commit（共有のrepo規約のみ）。初期化では未stageとし、commitの依頼時に含める。
 

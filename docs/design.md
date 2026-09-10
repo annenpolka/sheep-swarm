@@ -1,6 +1,6 @@
 # 設計草案
 
-状態: 2026-09-09 方針更新。ここにあるkernel、実worker、メタ管理の動作は未実装。
+状態: 2026-09-10。kernel、実Lunaによる局所修正と上位介入、8・16・32体の初期比較を検証した。永続化はC=1の専用runnerで実process再開まで確認済み。本文中の広い設計案と、末尾の実装済み境界を区別する。
 
 現在の役割分担と規模比較は [現在の方針](current-direction.md) を参照。基礎資料は [調査レポート](references/raw--deep-research-sheep-agent-swarm-theory-20260909.md) の第5・7・9節。資料中の設計案は、現在の利用者の方針と区別する。
 
@@ -56,7 +56,7 @@ flowchart LR
 10. authority leaseの古いepochは、artifact版が同じでも確定に使用できない。
 11. 全員idleだけでは成功としない。処理義務・proposal・retry・claim・受入証拠を同一状態で確認する。
 
-これらは目標条件であり、初期化時の3テストが全条件を検証したことにはならない。
+in-memoryの条件はtests/kernel.test.tsとtests/kernel-fixture.test.tsで検証する。durabilityはC=1の専用runnerとSIGKILL再開試験で検証済み。並列runnerの再開は未対応。型草案や初期化時の3テストだけで全条件の成立を主張しない。
 
 ## 完了
 
@@ -85,3 +85,20 @@ M1はin-memoryの決定論的モデル。M2で実workerを接続し、M3で人�
 Git branch更新とDB更新が一体で原子的に成功するとは仮定しない。immutableな候補objectを先に作り、DBで採用snapshot参照とeventを確定する案を検証する。linked worktreeは作業領域の分離に使えるが、OSのアクセス制御にはならない。
 
 runtime schema、capability設定、外部副作用broker、複数snapshotのmerge、証拠の失効規則は未確定。実装時に小さな反例で条件を固定する。
+
+## 実装で確定した境界
+
+実行APIはsrc/kernel.tsのSwarmKernel。checkoutが読取版と根拠epochを保持し、prepare→trusted verifierによるvalidate→commitで候補snapshotと権限を検査する。内容不変の訂正にも根拠epochを使う。依存登録は観測した内容版と根拠epochの両方から追いつく。完了検査のawait中に始まって終わった作業も、遷移世代の変化として拒否する。
+
+上位は現在の仕様・APIと不変な失敗call/validation履歴を読む。修復中consumerの将来の内容に対する永続的な依存へ、過去の失敗観測を変換しない。仕様の訂正自体のread set検査は維持する。受入条件や実行環境の識別子はhostが保持し、上位の仕様変更では書き換えられない。
+
+
+M4の実行系はsrc/durable-run.ts。SQLiteの世代比較と短いtransactionへkernel状態・outbox・呼出予約を保存し、保存失敗後のkernelをfenceする。復元時は旧leaseと未確定候補を失効させ、確定済みIDを保持する。同じartifactを新しい前提でnoop再検証することと、同じproposalの二重確定を区別する。
+
+現行kernelは履歴を含む依存graphに対して保守的に根拠を失効させる。原案のsupportSetsによる最小のAND/OR証拠更新、外部副作用broker、任意repositoryのmerge、並列runのdurabilityを全て実装したものではない。上位の実介入は現在、共有仕様の変更に限定する。
+
+
+比較fixtureの必須importは、固定oracleのNode子processで [SourceTextModule.moduleRequests](https://nodejs.org/api/vm.html#sourcetextmodulemodulerequests) を使って構文解析する。コメント上のimport文字列だけでは要件を満たしたと扱わない。値の等価性に加えて、このtaskで明示された依存維持条件も検査する。
+
+
+中央管理の計画観測も不変snapshotとして保持する。計画を適用する直前に観測した全体のread stampsを検査し、仕様変更の継続的な依存は仕様/APIの文脈だけへ限定する。読んだ全文・版・入力量はcall receiptへ残し、読み直し費用を隠さない。広く読んだコードを全て仕様の将来の依存へ変換すると、workerの正当な修正が他のworkerの前提まで失効させることを実走で確認した。

@@ -1,0 +1,67 @@
+{
+  "format": 1,
+  "kind": "mechanism-campaign-accounting",
+  "scope": "Five mechanism experiment series only; excludes earlier 994 calls and development agents.",
+  "sourceSummaries": [
+    {
+      "summary": "mechanism-dev-v1-summary.json",
+      "sha256": "09e2afb2a9076183c50f447aa13c7cc6c62e07d58038281c7800d97babe43bb0",
+      "calls": 1,
+      "unknownUsageCalls": 0,
+      "knownCreditEquivalent": "8.273500",
+      "knownApiUsdEquivalent": "0.33094000"
+    },
+    {
+      "summary": "mechanism-dev-v2-summary.json",
+      "sha256": "a539da33565fb86ea5b6e6bba1e8a3608ab551ef79bb1ce432581c9e5affe777",
+      "calls": 6,
+      "unknownUsageCalls": 0,
+      "knownCreditEquivalent": "0.668285",
+      "knownApiUsdEquivalent": "0.02673140"
+    },
+    {
+      "summary": "mechanism-dev-v3-summary.json",
+      "sha256": "e4b54571d751aad5b954976628b7eacafa2d1ab0db82df0d6f831987cb7b5bc6",
+      "calls": 52,
+      "unknownUsageCalls": 0,
+      "knownCreditEquivalent": "20.303509",
+      "knownApiUsdEquivalent": "0.81214036"
+    },
+    {
+      "summary": "mechanism-study-v1-summary.json",
+      "sha256": "477adf7bcb47dad6541d7af6a36144014140236f08a21a4252284372a6b9a3dd",
+      "calls": 135,
+      "unknownUsageCalls": 1,
+      "knownCreditEquivalent": "5.420717",
+      "knownApiUsdEquivalent": "0.21682868"
+    },
+    {
+      "summary": "mechanism-scaling-followup-v1-summary.json",
+      "sha256": "1ef259554f8bf201d0b8239c503a3b5ee50ea019f224dd6f798f27ae059914e0",
+      "calls": 277,
+      "unknownUsageCalls": 0,
+      "knownCreditEquivalent": "23.729217",
+      "knownApiUsdEquivalent": "0.94916868"
+    }
+  ],
+  "calls": 471,
+  "pricedCalls": 470,
+  "unknownUsageCalls": 1,
+  "knownCreditEquivalentLowerBound": "58.395228",
+  "knownApiUsdEquivalentLowerBound": "2.33580912",
+  "totalUpperBound": null,
+  "additionalAuthorization": {
+    "limitCreditEquivalent": "100",
+    "spentCreditEquivalent": "23.729217",
+    "calls": 277,
+    "unknownUsageCalls": 0,
+    "priorCostsChargedToAdditionalBudget": false
+  },
+  "conditions": [
+    "Conditional Standard public-rate equivalents, not actual billing.",
+    "Summary sums rounded to six credit and eight USD decimal places; totals independently matched against raw terminal usage.",
+    "Unknown usage is retained and is not treated as free."
+  ],
+  "rateCard": "../../pricing/openai-2026-09-10.json",
+  "rateCardSha256": "e25991caebda1b840569e20a8774b11f9f14e95f3b365fe304dade7bf1ba1312"
+}

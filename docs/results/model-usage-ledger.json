@@ -1,0 +1,119 @@
+{
+  "format": 1,
+  "generatedAt": "2026-09-09T18:35:19.868Z",
+  "scope": "Actual experiment CLI receipts in the named directories. Includes discarded preliminary runs; excludes development agents and the initial adapter connectivity probe.",
+  "ledger": [
+    {
+      "family": "m2-normal",
+      "model": "gpt-5.6-luna",
+      "calls": 5,
+      "inputTokens": 94650,
+      "outputTokens": 1172,
+      "unknownUsageCalls": 0
+    },
+    {
+      "family": "m2-fault",
+      "model": "gpt-5.6-luna",
+      "calls": 9,
+      "inputTokens": 172444,
+      "outputTokens": 2208,
+      "unknownUsageCalls": 0
+    },
+    {
+      "family": "m2-fault",
+      "model": "gpt-6-astra",
+      "calls": 1,
+      "inputTokens": 22207,
+      "outputTokens": 390,
+      "unknownUsageCalls": 0
+    },
+    {
+      "family": "m3-pretrial",
+      "model": "gpt-5.6-luna",
+      "calls": 40,
+      "inputTokens": 763691,
+      "outputTokens": 9414,
+      "unknownUsageCalls": 0
+    },
+    {
+      "family": "m3-primary",
+      "model": "gpt-5.6-luna",
+      "calls": 707,
+      "inputTokens": 13566845,
+      "outputTokens": 168410,
+      "unknownUsageCalls": 0
+    },
+    {
+      "family": "m3-primary",
+      "model": "gpt-6-astra",
+      "calls": 5,
+      "inputTokens": 111171,
+      "outputTokens": 2030,
+      "unknownUsageCalls": 0
+    },
+    {
+      "family": "m4-restart",
+      "model": "gpt-5.6-luna",
+      "calls": 13,
+      "inputTokens": 250224,
+      "outputTokens": 3639,
+      "unknownUsageCalls": 0
+    },
+    {
+      "family": "m4-restart",
+      "model": "gpt-6-astra",
+      "calls": 1,
+      "inputTokens": 21725,
+      "outputTokens": 454,
+      "unknownUsageCalls": 0
+    },
+    {
+      "family": "m5-preliminary",
+      "model": "gpt-6-astra",
+      "calls": 4,
+      "inputTokens": 90100,
+      "outputTokens": 1603,
+      "unknownUsageCalls": 0
+    },
+    {
+      "family": "m5-preliminary",
+      "model": "gpt-5.6-luna",
+      "calls": 38,
+      "inputTokens": 721973,
+      "outputTokens": 9709,
+      "unknownUsageCalls": 0
+    },
+    {
+      "family": "m5-primary",
+      "model": "gpt-6-astra",
+      "calls": 18,
+      "inputTokens": 454536,
+      "outputTokens": 8433,
+      "unknownUsageCalls": 0
+    },
+    {
+      "family": "m5-primary",
+      "model": "gpt-5.6-luna",
+      "calls": 105,
+      "inputTokens": 2012755,
+      "outputTokens": 26181,
+      "unknownUsageCalls": 0
+    },
+    {
+      "family": "m5-manager-followup",
+      "model": "gpt-6-astra",
+      "calls": 12,
+      "inputTokens": 294493,
+      "outputTokens": 2702,
+      "unknownUsageCalls": 0
+    },
+    {
+      "family": "m5-manager-followup",
+      "model": "gpt-5.6-luna",
+      "calls": 36,
+      "inputTokens": 690788,
+      "outputTokens": 8903,
+      "unknownUsageCalls": 0
+    }
+  ]
+}
