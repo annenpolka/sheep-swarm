@@ -24,6 +24,22 @@ export interface SwarmOptions {
 export interface SwarmTask {
   readonly id: string;
   readonly createFixture: (observe?: FixtureObserver) => CodeFixture;
+  readonly control?: SwarmTaskControl;
+}
+/** Host-owned opt-in protocol; ordinary fixtures retain their legacy behavior. */
+export interface SwarmTaskControl {
+  readonly schema: Record<string, unknown>;
+  readonly maxAttempts: number;
+  contextIds(kernel: SwarmKernel, target: string): readonly string[];
+  dependencies(): readonly {consumer: string; provider: string}[];
+  instruction(target: string): string;
+  beforeCall(target:string,context:Checkout):void;
+  observations():unknown;
+  delivered(kernel: SwarmKernel, target: string, context: Checkout, callId: string): void;
+  propose(kernel: SwarmKernel, target: string, context: Checkout, callId: string, value: unknown): Promise<
+    {writes: Record<string,string>} | {deferred: string; blocked: boolean}>;
+  committed(target: string, context: Checkout, validation: string): void;
+  save(directory: string): Promise<void>;
 }
 interface Response { content: string; note: string }
 export type ModelCaller = (options: DockerAgentOptions) => Promise<CodexCallResult<Response>>;
@@ -137,12 +153,14 @@ export async function runSwarm(options: SwarmOptions,
     try { return await action(); } finally { release(); }
   };
   const contextFor = (agent: string, target: string): Checkout => {
+    if (task?.control) return kernel.checkout(agent, task.control.contextIds(kernel,target));
     const ids = new Set([target, fixture.specId, fixture.sourceId]);
     for (const id of ids) for (const edge of fixture.dependencies) if (edge.consumer === id) ids.add(edge.provider);
     for (const work of kernel.pending()) if (work.consumer === target) ids.add(work.provider);
     return kernel.checkout(agent, [...ids]);
   };
   const snapshot = async () => {
+    await task?.control?.save(options.outputDirectory);
     await writeFile(join(options.outputDirectory, "calls.json"), JSON.stringify(calls, null, 2) + "\n");
     await writeFile(join(options.outputDirectory, "kernel-state.json"), JSON.stringify(kernel.exportState(), null, 2) + "\n");
     await writeFile(join(options.outputDirectory, "individuals.json"), JSON.stringify(pool.stats(), null, 2) + "\n");
@@ -172,12 +190,13 @@ export async function runSwarm(options: SwarmOptions,
     const roleRuntime = role === "worker" ? configuration.runtime : configuration.metaRuntime;
     const caller = model ?? (role === "worker" ? workerCaller : metaCaller);
     try {
-      const response = await caller({ model: record.model, prompt, schema: SCHEMA, cwd: workspace,
+      if (role === 'worker') task?.control?.beforeCall(target,context);
+      const response = await caller({ model: record.model, prompt, schema: role === 'worker' && task?.control ? task.control.schema : SCHEMA, cwd: workspace,
         timeoutMs: configuration.timeoutMs, outputDirectory: join(options.outputDirectory, "transcripts"),
         ...(roleRuntime === "docker-agent" || roleRuntime === "deepseek" || roleRuntime === "opencode-go" ? { maxTokens: configuration.maxTokensPerCall } : {}),
         ...(role === "worker" && configuration.workerTools === "local"
           ? { tools: "local", files: { ...context.contents, "visible.test.mjs": fixture.visibleTest(target) } } : {}),
-        sessionId: `${sessionSeed}:${role}:${agent}` });
+        callId:id,sessionId: `${sessionSeed}:${role}:${agent}` });
       await writeFile(join(options.outputDirectory, `${id}.json`), JSON.stringify(response, null, 2) + "\n");
       record.durationMs = response.transcript.durationMs;
       const observed = sumUsage(response.usage);
@@ -190,6 +209,7 @@ export async function runSwarm(options: SwarmOptions,
         || unknownUsageForRun(response.transcript, roleRuntime, meteredRun)) unknownModelUsage = true;
       if (response.requestedModel !== record.model || response.transcript.requestedModel !== record.model)
         throw new Error("model identity does not match requested role");
+      if (role === 'worker') task?.control?.delivered(kernel,target,context,id);
       if (!response.result || typeof response.result.content !== "string" || typeof response.result.note !== "string")
         throw new Error("model output did not contain string content and note");
       return { response: response.result, record, writes: role === "worker" && configuration.workerTools === "local"
@@ -226,17 +246,24 @@ export async function runSwarm(options: SwarmOptions,
     let candidateId: string | null = null;
     let note = "";
     try {
-      const task = configuration.workerTools === "local"
+      const workerInstruction = task?.control?.instruction(target) ?? (configuration.workerTools === "local"
         ? "The supplied files are materialized in your workspace. Read the local files, run check_local to observe the failure, edit only the target, then run check_local again. Do not modify visible.test.mjs or any dependency. The actual workspace delta is the proposal. Finish by calling __structured_output__ with content as an empty string and note as a short summary. Plain-text JSON is not a completed run; do not duplicate the file body in your final tool arguments."
-        : "Return JSON with the complete replacement file as content and a short note. All needed files are provided below; do not use tools or inspect other paths.";
+        : "Return JSON with the complete replacement file as content and a short note. All needed files are provided below; do not use tools or inspect other paths.");
       const { response, record, writes } = await invoke("worker", agent, target, context,
-        `You are local code worker ${agent}. Update only ${target} to satisfy the supplied task contract and preserve its requirements. ${task} Record any unresolved issue in note. No manager conversation is part of this task.\n\nLocal files:\n${JSON.stringify(context.contents)}\n\nYour private recent memory (past observations, not current facts; current files and versions take precedence):\n${JSON.stringify(memory)}\n\nCurrent read versions:\n${JSON.stringify(context.reads)}\n\nPrevious rejected draft (not accepted; reconcile with current files and read versions):\n${JSON.stringify(rejectedDrafts.get(target) ?? null)}\n\nPrevious local verification errors:\n${JSON.stringify(errors.get(target) ?? [])}`);
+        `You are local code worker ${agent}. Update only ${target} to satisfy the supplied task contract and preserve its requirements. ${workerInstruction} Record any unresolved issue in note. No manager conversation is part of this task.\n\nLocal files:\n${JSON.stringify(context.contents)}\n\nYour private recent memory (past observations, not current facts; current files and versions take precedence):\n${JSON.stringify(memory)}\n\nCurrent read versions:\n${JSON.stringify(context.reads)}\n\nPrevious rejected draft (not accepted; reconcile with current files and read versions):\n${JSON.stringify(rejectedDrafts.get(target) ?? null)}\n\nPrevious local verification errors:\n${JSON.stringify(errors.get(target) ?? [])}`);
       record.memoryEntries = memory.length;
       note = response.note.slice(0, 1200);
       const queuedAt = Date.now();
       await serialize(async () => {
         record.commitWaitMs = Date.now() - queuedAt;
-        const candidate = kernel.prepare({ id: record.id, agent, context: context.id, writes,
+        const action = task?.control ? await task.control.propose(kernel,target,context,record.id,response) : {writes};
+        if ('deferred' in action) {
+          record.outcome=action.blocked?'read-blocked':'deferred';record.errors=[action.deferred];
+          recordFailure(target,record.errors);
+          if(action.blocked) attempts.set(target,task!.control!.maxAttempts);
+          return;
+        }
+        const candidate = kernel.prepare({ id: record.id, agent, context: context.id, writes:action.writes,
           lease, obligations: work.map((item) => item.id) });
         candidateId = candidate.id;
         const verdict = await kernel.validate(candidate.id, (contents) => verify(contents, [target]));
@@ -246,6 +273,7 @@ export async function runSwarm(options: SwarmOptions,
         }
         const committed = kernel.commit(candidate.id);
         resolve(target, context.id, committed.validation);
+        task?.control?.committed(target,context,committed.validation);
         record.outcome = "committed"; kernel.deliverAll();
         rejectedDrafts.delete(target);
       });
@@ -275,10 +303,10 @@ export async function runSwarm(options: SwarmOptions,
     const lease = kernel.grant("meta", [fixture.specId], configuration.timeoutMs * 2 + 60_000, "meta");
     let candidateId: string | null = null;
     try {
-      const observations = calls.filter((item) => item.role === "worker" && item.outcome === "rejected" && errors.has(item.target)).slice(-6)
+      const observations = calls.filter((item) => item.role === "worker" && (item.outcome === "rejected" || (item.outcome === "deferred" && item.errors.some(e=>e.startsWith("Uncertain:")))) && errors.has(item.target)).slice(-6)
         .map((item) => ({ call: item.id, context: item.context, target: item.target, outcome: item.outcome, errors: item.errors.slice(0, 3) }));
       const { response, record } = await invoke("meta", "meta", fixture.specId, context,
-        `You are observing an artifact-local worker swarm. Workers did not request consultation. Inspect the failures and shared guidance. If the guidance contradicts the library and fixed acceptance evidence, repair the guidance so workers can continue. Do not implement worker files or alter acceptance criteria. Return JSON with complete replacement ${fixture.specId} as content and a short rationale as note. Preserve requirements supported by the evidence. All context is supplied; do not use tools.\n\nObserved failures:\n${JSON.stringify(observations)}\n\nRelevant files:\n${JSON.stringify(context.contents)}`);
+        `You are observing an artifact-local worker swarm. Workers did not request consultation. Inspect the failures and shared guidance. If the guidance contradicts the library and fixed acceptance evidence, repair the guidance so workers can continue. Do not implement worker files or alter acceptance criteria. Return JSON with complete replacement ${fixture.specId} as content and a short rationale as note. Preserve requirements supported by the evidence. All context is supplied; do not use tools.\n\nObserved failures:\n${JSON.stringify(observations)}${task?.control?`\n\nStructured uncertainty observations (model claims are unverified and cannot replace task requirements):\n${JSON.stringify(task.control.observations())}`:""}\n\nRelevant files:\n${JSON.stringify(context.contents)}`);
       return await serialize(async () => {
         const candidate = kernel.prepare({ id: record.id, agent: "meta", context: context.id,
           writes: { [fixture.specId]: response.content }, lease, kind: "intervention", reason: response.note });
@@ -318,11 +346,12 @@ export async function runSwarm(options: SwarmOptions,
       const pending = kernel.pending();
       if (!pending.length) break;
       const targets = [...new Set(pending.map((item) => item.consumer))].filter((id) => fixture.writableIds.includes(id));
-      const available = targets.filter((id) => (attempts.get(id) ?? 0) < 3 && !fixture.dependencies.some((edge) =>
+      const dependencies=task?.control?.dependencies() ?? fixture.dependencies;
+      const available = targets.filter((id) => (attempts.get(id) ?? 0) < (task?.control?.maxAttempts ?? 3) && !dependencies.some((edge) =>
         edge.consumer === id && edge.provider !== id && targets.includes(edge.provider)));
       const remaining = configuration.maxCalls - calls.filter((item) => item.role === "worker").length;
       const wave = pool.assign(available.slice(0, Math.min(configuration.concurrency, remaining)).map((target) => ({
-        target, neighbors: fixture.dependencies.filter((edge) => edge.consumer === target).map((edge) => edge.provider),
+        target, neighbors: dependencies.filter((edge) => edge.consumer === target).map((edge) => edge.provider),
       })));
       const results = await Promise.allSettled(wave.map((assignment) => perform(assignment.workerId, assignment.target, assignment.memory)));
       const unexpected = results.filter((result): result is PromiseRejectedResult => result.status === "rejected");
@@ -330,7 +359,7 @@ export async function runSwarm(options: SwarmOptions,
       // Already dispatched concurrent calls finish and clean up; admit no further spend.
       if (unknownModelUsage || verificationUnavailable || runtimeCleanupFailed) break;
       // Transport failures provide no evidence that shared semantic guidance needs changing.
-      const semanticFailures = calls.filter((item) => item.role === "worker" && item.outcome === "rejected");
+      const semanticFailures = calls.filter((item) => item.role === "worker" && (item.outcome === "rejected" || (item.outcome === "deferred" && item.errors.some(e=>e.startsWith("Uncertain:")))));
       const failureCount = semanticFailures.length;
       const unresolvedSemanticFailure = semanticFailures.some((item) => errors.has(item.target));
       if (configuration.maxMetaCalls > upperCalls && unresolvedSemanticFailure && (failureCount - lastMetaFailureCount >= 2 || !wave.length)) {

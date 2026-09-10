@@ -16,6 +16,8 @@ export interface CodexCallOptions {
   readonly signal?: AbortSignal;
   /** Stable conversation identifier forwarded to providers that support routing/caching. */
   readonly sessionId?: string;
+  /** Host-local evidence correlation; never a model identity or provider session. */
+  readonly callId?: string;
   readonly outputDirectory?: string;
 }
 

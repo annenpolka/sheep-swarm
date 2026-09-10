@@ -8,6 +8,8 @@
 
 現在はkernel、Luna4体、8・16・32体の規模比較、C=1の永続化と実process再開を確認済み。別taskで4方式の初期比較も完了し、失敗と実装修正後の追加試行を分けて保存した。公式価格・cacheによる見積器に加え、静的・レジストリ意味依存・3段階変更とcredit相当受付を実装した。新しい主比較はtimeoutの使用量不明で停止し、承認された追加100相当の枠でN16/32を実行した。N8/16/32はC=8で各1回成功したが、増員の明確な利益は未確認。詳細は [実測](../docs/results/mechanism-findings.md) に残す。方針全体は [docs/current-direction.md](../docs/current-direction.md)、実装順序は [docs/roadmap.md](../docs/roadmap.md) を参照。
 
+今回の実装範囲は[CLI整理とrepoの依存発見計画](../docs/execplan-repository-discovery.md)。2026-09-10の利用者のCLI整理追加を含む。既存入口・task v1・固定受入を保ち、opt-inで読取依存を発見する。書込範囲は自動拡張せず、全runner再設計を前提にしない。A–Dと初期gateを実装し、利用者指定のGo DeepSeek swarmで部品生成とv2疎通を確認した。親の補修・初回失敗・実走範囲は[結果](../docs/results/repository-discovery.md)に残す。新しいLuna疎通とN比較・有用性比較は未実行。[判断の根拠](../docs/discussion-review-20260910.md)。
+
 ## Fit Conditions
 
 次のAgentがREADMEから実装済み範囲を把握でき、`npm run check`で確認できること。実験の不利な結果と、未解決の仕様を残すこと。

@@ -230,7 +230,7 @@ export async function captureRepository(repository: string, task: RepoTask): Pro
 
   const targetPaths = task.files.map((file) => file.path);
   const targetSet = new Set(targetPaths);
-  const explicitPaths = new Set<string>([...task.context, ...task.protected]);
+  const explicitPaths = new Set<string>([...task.context, ...task.protected, ...(task.discovery?.readable ?? [])]);
 
   const tracked = await listTrackedFiles(root);
   const captured = new Map<string, CapturedEntry>();
@@ -288,7 +288,7 @@ export async function captureRepository(repository: string, task: RepoTask): Pro
     }
   }
 
-  for (const relative of task.context) {
+  for (const relative of new Set([...task.context,...(task.discovery?.readable ?? [])])) {
     const entry = captured.get(relative);
     if (entry === undefined) throw new Error(`context path is missing: ${relative}`);
     decodeStrictUtf8(entry.bytes, `context ${relative}`);

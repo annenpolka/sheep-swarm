@@ -1,0 +1,180 @@
+import {createHash} from 'node:crypto';
+import {writeFile} from 'node:fs/promises';
+import {join} from 'node:path';
+import type {Checkout, SwarmKernel} from './kernel.ts';
+import type {RepoSnapshot} from './repo-types.ts';
+import type {SwarmTaskControl} from './swarm.ts';
+import {discoverRepoDependencies, type RepoDependencyScan} from './repo-dependencies.ts';
+import {REPO_WORKER_SCHEMA, parseWorkerResponse} from './worker-proposal.ts';
+
+export const REPO_GOAL='.sheep-internal/goal.md';
+export const REPO_GUIDANCE='.sheep-internal/guidance.md';
+const hash=(s:string)=>createHash('sha256').update(s).digest('hex');
+type Stamp={version:number;evidenceEpoch:number};
+interface Evidence {consumer:string;provider:string;source:'static-import'|'delivered-read';evidenceId:string;consumerStamp:Stamp;providerStamp:Stamp|null;sourceHash:string}
+interface Delivery {callId:string;target:string;path:string;stamp:Stamp;sha256:string;bytes:number}
+interface Uncertainty {callId:string;target:string;reads:Checkout['reads'];source:'model-claim'|'host-observation';observed:readonly string[];missing:readonly string[];hypothesis:string|null;open:boolean;resolution:string|null}
+
+/** An explicit public catalog and delivery ledger; never a capability issuer. */
+export class RepositoryDiscovery implements SwarmTaskControl {
+  readonly schema=REPO_WORKER_SCHEMA;
+  readonly maxAttempts:number;
+  readonly artifacts:Record<string,string>={};
+  readonly instructions=new Map<string,string>();
+  readonly scans:RepoDependencyScan[]=[];
+  readonly #snapshot:RepoSnapshot;
+  readonly #public:Set<string>;
+  readonly #targets:Set<string>;
+  readonly #selected=new Map<string,Set<string>>();
+  readonly #edges=new Map<string,{consumer:string;provider:string}>();
+  readonly #deliveredBytes=new Map<string,number>();
+  readonly #requested=new Map<string,number>();
+  readonly #evidence:Evidence[]=[];
+  readonly #deliveries:Delivery[]=[];
+  readonly #requests:{callId:string;target:string;paths:readonly string[];accepted:boolean;reason:string|null}[]=[];
+  readonly #uncertainties:Uncertainty[]=[];
+  readonly #pendingScans=new Map<string,RepoDependencyScan>();
+  #scan:RepoDependencyScan;
+
+  private constructor(snapshot:RepoSnapshot,scan:RepoDependencyScan) {
+    this.#snapshot=snapshot;this.#scan=scan;this.scans.push(scan);
+    const options=snapshot.task.discovery!;
+    this.maxAttempts=3+options.maxReadCalls;
+    this.#targets=new Set(snapshot.task.files.map(f=>f.path));
+    this.#public=new Set([...this.#targets,...snapshot.task.context,...options.readable]);
+    for(const path of this.#public)this.artifacts[path]=snapshot.initialTargets[path]??snapshot.entries.get(path)!.bytes.toString('utf8');
+    snapshot.task.files.forEach((file,i)=>{
+      const instruction=`.sheep-internal/instructions/${i}.md`;
+      this.instructions.set(file.path,instruction);this.artifacts[instruction]=file.instructions;
+      const selected=this.closure([file.path,...snapshot.task.context,...file.dependsOn]);selected.delete(file.path);
+      this.#selected.set(file.path,selected);
+      for(const provider of selected)this.edge(file.path,provider);
+      for(const provider of [REPO_GOAL,REPO_GUIDANCE,instruction])this.edge(file.path,provider);
+    });
+  }
+
+  static async create(snapshot:RepoSnapshot):Promise<RepositoryDiscovery> {
+    if(!snapshot.task.discovery)throw new Error('repository discovery requires task v2');
+    const paths=[...new Set([...snapshot.task.files.map(f=>f.path),...snapshot.task.context,...snapshot.task.discovery.readable])];
+    const contents=Object.fromEntries(paths.map(p=>[p,snapshot.initialTargets[p]??snapshot.entries.get(p)!.bytes.toString('utf8')]));
+    const scan=await discoverRepoDependencies(contents,paths);
+    return new RepositoryDiscovery(snapshot,scan);
+  }
+
+  private edge(consumer:string,provider:string):void {
+    if(consumer!==provider)this.#edges.set(`${consumer}\0${provider}`,{consumer,provider});
+  }
+  private closure(paths:readonly string[],scan=this.#scan):Set<string> {
+    const ids=new Set(paths);
+    for(const id of ids) {
+      if(!this.#public.has(id))throw new Error(`read outside public catalog: ${id}`);
+      const issue=scan.issues.find(i=>i.consumer===id);
+      if(issue)throw new Error(`unresolved dependency in ${id}: ${issue.reason}`);
+      if(scan.cycles.some(c=>c.includes(id)))throw new Error(`unsupported-cycle: ${id}`);
+      for(const edge of scan.edges)if(edge.consumer===id)ids.add(edge.provider);
+    }
+    return ids;
+  }
+  dependencies():readonly {consumer:string;provider:string}[]{return [...this.#edges.values()];}
+  contextIds(_kernel:SwarmKernel,target:string):readonly string[] {
+    if(this.#targets.has(target)){
+      const selected=this.closure([target,...(this.#selected.get(target)??[])]);selected.delete(target);this.#selected.set(target,selected);
+    }
+    return [...new Set([target,REPO_GOAL,REPO_GUIDANCE,...(this.instructions.has(target)?[this.instructions.get(target)!]:[]),...(this.#selected.get(target)??[])])];
+  }
+  instruction(_target:string):string {
+    return `Choose one action: kind="write" to replace your assigned file, kind="read" to request public paths in a separate call, or kind="uncertain" to record missing information. Return all fields {kind,content,paths,observed,missing,hypothesis,note}; unused strings must be "" and unused arrays []. A read request changes no files; requested contents arrive in the NEXT separately metered call. Exact wire shapes by action:
+WRITE: {"kind":"write","content":"<complete replacement>","paths":[],"observed":[],"missing":[],"hypothesis":"","note":"<summary>"}
+READ: {"kind":"read","content":"","paths":["<requested public path>"],"observed":[],"missing":[],"hypothesis":"","note":"<reason>"}
+UNCERTAIN: {"kind":"uncertain","content":"","paths":[],"observed":["<observation>"],"missing":["<unresolved information>"],"hypothesis":"<optional unverified hypothesis, or empty string>","note":"<summary>"}
+A write MUST NOT put its target in paths. On write/read, observed and missing MUST be [] and hypothesis MUST be "". Put explanatory prose only in note. Current Local files are already delivered. Never claim a requested file was read before delivery. Public catalog (names only): ${JSON.stringify([...this.#public])}. No tools or upper consultation. ${this.#snapshot.task.discovery!.mode==='static'?'Additional model read requests are disabled in static mode.':''}`;
+  }
+  private additionalBytes(target:string,context:Checkout):number {
+    return [...(this.#selected.get(target)??[])].filter(p=>!this.#snapshot.task.context.includes(p)).reduce((n,p)=>n+Buffer.byteLength(context.contents[p]!),0);
+  }
+  beforeCall(target:string,context:Checkout):void {
+    if((this.#deliveredBytes.get(target)??0)+this.additionalBytes(target,context)>this.#snapshot.task.discovery!.maxDeliveredBytes){
+      this.defer(target,context,context.id,'read-byte-limit: cumulative additional context exceeds delivery limit',true);
+      throw new Error('read-byte-limit: cumulative additional context exceeds delivery limit');
+    }
+  }
+  delivered(kernel:SwarmKernel,target:string,context:Checkout,callId:string):void {
+    if(!this.#targets.has(target))return;
+    this.#deliveredBytes.set(target,(this.#deliveredBytes.get(target)??0)+this.additionalBytes(target,context));
+    for(const path of this.#selected.get(target)??[]) {
+      const stamp=context.reads[path]!;
+      this.#deliveries.push({callId,target,path,stamp,sha256:hash(context.contents[path]!),bytes:Buffer.byteLength(context.contents[path]!)});
+      this.#evidence.push({consumer:target,provider:path,source:'delivered-read',evidenceId:callId,consumerStamp:context.reads[target]!,providerStamp:stamp,sourceHash:hash(context.contents[path]!)});
+      this.edge(target,path);
+      kernel.addDependency(target,path,stamp.version,stamp.evidenceEpoch);
+    }
+  }
+  private defer(target:string,context:Checkout,callId:string,reason:string,blocked:boolean) {
+    this.#uncertainties.push({callId,target,reads:context.reads,source:'host-observation',observed:[],missing:[reason],hypothesis:null,open:true,resolution:null});
+    return {deferred:reason,blocked};
+  }
+  private request(target:string,context:Checkout,callId:string,paths:readonly string[],scan=this.#scan,staticRequest=false) {
+    let reason:string|null=null;
+    const count=(this.#requested.get(target)??0)+1;
+    this.#requested.set(target,count);
+    if(!staticRequest&&this.#snapshot.task.discovery!.mode!=='static+reads')reason='additional-read-disabled';
+    if(count>this.#snapshot.task.discovery!.maxReadCalls)reason='read-call-limit';
+    let selected=new Set(this.#selected.get(target));
+    try {
+      for(const path of this.closure(paths,scan))if(path!==target)selected.add(path);
+      const bytes=[...selected].filter(p=>!this.#snapshot.task.context.includes(p)).reduce((n,p)=>n+Buffer.byteLength(context.contents[p]??this.artifacts[p]!),0);
+      if((this.#deliveredBytes.get(target)??0)+bytes>this.#snapshot.task.discovery!.maxDeliveredBytes)reason='read-byte-limit';
+    }catch(error){reason=String(error);}
+    this.#requests.push({callId,target,paths,accepted:reason===null,reason});
+    if(reason)return this.defer(target,context,callId,reason,true);
+    // No edge or read stamp is registered before the next actual delivery.
+    this.#selected.set(target,selected);
+    return this.defer(target,context,callId,`Read requested; await next call: ${paths.join(', ')}`,false);
+  }
+  async propose(kernel:SwarmKernel,target:string,context:Checkout,callId:string,value:unknown) {
+    const action=parseWorkerResponse(value);
+    if(action.kind==='uncertain') {
+      this.#uncertainties.push({callId,target,reads:context.reads,source:'model-claim',observed:action.observed,missing:action.missing,hypothesis:action.hypothesis,open:true,resolution:null});
+      return {deferred:`Uncertain: ${action.missing.join('; ')}`,blocked:false};
+    }
+    if(action.kind==='read')return this.request(target,context,callId,action.paths);
+    const contents=Object.fromEntries([...this.#public].map(p=>[p,p===target?action.content:(context.contents[p]??kernel.artifact(p).content)]));
+    const scan=await discoverRepoDependencies(contents,[...this.#public]);this.scans.push(scan);
+    let required:Set<string>;
+    try{required=this.closure([target],scan);}catch(error){return this.defer(target,context,callId,String(error),false);}
+    required.delete(target);
+    const missing=[...required].filter(p=>!Object.hasOwn(context.reads,p));
+    if(missing.length)return this.request(target,context,callId,missing,scan,true);
+    for(const edge of scan.edges.filter(e=>e.consumer===target))this.#evidence.push({consumer:target,provider:edge.provider,source:'static-import',evidenceId:callId,consumerStamp:context.reads[target]!,providerStamp:context.reads[edge.provider]??null,sourceHash:edge.sourceHash});
+    // Retain conservative observed dependencies even when a later proposal fails.
+    for(const provider of required){this.#selected.get(target)!.add(provider);this.edge(target,provider);kernel.addDependency(target,provider,context.reads[provider]!.version,context.reads[provider]!.evidenceEpoch);}
+    this.#pendingScans.set(target,scan);
+    return {writes:{[target]:action.content}};
+  }
+  committed(target:string,context:Checkout,validation:string):void {
+    const accepted=this.#pendingScans.get(target);if(accepted)this.#scan=accepted;
+    this.#pendingScans.delete(target);
+    for(const uncertainty of this.#uncertainties)if(uncertainty.target===target&&uncertainty.open){
+      uncertainty.open=false;uncertainty.resolution=validation;
+    }
+    // Future reads of accepted target contents still come from the kernel.
+    for(const path of this.#selected.get(target)??[])if(context.contents[path]!==undefined)this.artifacts[path]=context.contents[path]!;
+  }
+  observations():unknown {
+    return this.#uncertainties.filter(u=>u.open).slice(-6).map(u=>({...u,observed:u.observed.slice(0,3),missing:u.missing.slice(0,3)}));
+  }
+  metrics(calls:readonly {role:string;target:string;contextBytes:number}[]) {
+    const workers=calls.filter(c=>c.role==='worker');const sizes=workers.map(c=>c.contextBytes).sort((a,b)=>a-b);
+    return {selectedTargets:this.#targets.size,activatedTargets:new Set(workers.map(c=>c.target)).size,
+      scanCount:this.scans.length,scannedFiles:this.scans.reduce((n,s)=>n+s.filesRead,0),scannedBytes:this.scans.reduce((n,s)=>n+s.bytesRead,0),scanDurationMs:this.scans.reduce((n,s)=>n+s.durationMs,0),
+      contextBytes:{total:sizes.reduce((n,b)=>n+b,0),p95:sizes[Math.max(0,Math.ceil(sizes.length*0.95)-1)]??0,max:sizes.at(-1)??0},
+      uniqueDeliveredDependencies:new Set(this.#deliveries.map(d=>d.path)).size,readRequests:this.#requests.length,
+      acceptedReadRequests:this.#requests.filter(r=>r.accepted).length,openUncertainties:this.#uncertainties.filter(c=>c.open).length,
+      additionalDeliveredBytes:[...this.#deliveredBytes.values()].reduce((n,b)=>n+b,0)};
+  }
+  async save(directory:string):Promise<void> {
+    await writeFile(join(directory,'dependency-evidence.json'),JSON.stringify({format:1,edges:this.dependencies(),evidence:this.#evidence,scans:this.scans},null,2)+'\n');
+    await writeFile(join(directory,'read-deliveries.json'),JSON.stringify({format:1,requests:this.#requests,deliveries:this.#deliveries,additionalBytesByTarget:Object.fromEntries(this.#deliveredBytes)},null,2)+'\n');
+    await writeFile(join(directory,'uncertainties.json'),JSON.stringify({format:1,claims:this.#uncertainties},null,2)+'\n');
+  }
+}

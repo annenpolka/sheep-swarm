@@ -31,7 +31,8 @@
     "sandbox:mechanism-probe": "node scripts/probe-docker-mechanism.mjs",
     "sandbox:completion-probe": "node scripts/probe-docker-completion.mjs",
     "swarm:diagnostics": "node scripts/swarm-docker-diagnostics.mjs",
-    "summarize:docker-mechanism": "node scripts/summarize-docker-mechanism.mjs"
+    "summarize:docker-mechanism": "node scripts/summarize-docker-mechanism.mjs",
+    "sheep": "node src/sheep-cli.ts"
   },
   "devDependencies": {
     "@types/node": "24.13.3",
