@@ -6,6 +6,18 @@ import { parseArgs } from "node:util";
 import { parseRateCard } from "../src/cost-estimate.ts";
 import { CreditBudget } from "../src/credit-budget.ts";
 
+// Token-series runs share the entrypoint but never touch the credit study parser or its side effects.
+const budgetModeIndex = process.argv.findIndex(arg => arg === "--budget-mode" || arg.startsWith("--budget-mode="));
+if (budgetModeIndex !== -1) {
+  const mode = process.argv[budgetModeIndex].includes("=") ? process.argv[budgetModeIndex].slice("--budget-mode=".length) : process.argv[budgetModeIndex + 1];
+  if (mode !== "tokens") throw new Error("Unknown --budget-mode; only tokens is dispatched here");
+  const { runTokenSeries } = await import("./mechanism-token-experiment.mjs");
+  const report = await runTokenSeries(process.argv.slice(2));
+  process.stdout.write(JSON.stringify({ status: report.status, stopReason: report.stopReason,
+    observedTokens: report.observedTokens, calls: report.calls, runs: report.runs.length }) + "\n");
+  process.exit(report.status === "completed" ? 0 : 1);
+}
+
 const { values } = parseArgs({ options: {
   mode: { type: "string", default: "pilot" }, output: { type: "string" }, prior: { type: "string", multiple: true, default: [] },
   "unpriced-prior": { type: "string" },

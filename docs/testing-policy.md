@@ -105,6 +105,8 @@ dispatcherは結果・レシート・保存ソースのhashを確認し、中断
 
 `sandbox:recovery-probe`は実child processをSIGKILLし、残留VMの回収、生存中のVMの保護、作成前crashの記録保持と遅延出現の回収を検査する。通常gateでは他host、PID生存、不正record、symlink、image不一致、削除失敗、同時回収を拒否・保留できることを確認する。VM資源の回収を、元runの成功・再開・usage復元とは扱わない。
 
+DeepSeek直接APIの通常gateは注入`fetch`だけを使い、実network・実key・実課金を呼び出さない。要求body（model・JSON mode・`thinking`無効・`max_tokens`・tool不在）と、要求model／応答model証拠の区別、`finish_reason`不一致・schema違反・非JSON・応答過大・timeout・取消の拒否を検査する。base URLはhttpsとloopback httpだけを許し、credential・query・fragmentを拒否する。HTTP失敗は秘匿情報を伏せたbounded transcriptとし、fetchのcauseを転送しない。usage欠落・不整合は0にせず不明として、同時実行分の回収後に受付を止める。`swarm --runtime deepseek`は`--worker-model`必須・meta既定Codex・Astra拒否・不明usageでの受付停止を検査する。共通の`resolveRoleRuntimes`を注入callerの`compare`・`durable`試験でも使い、`compare`のrole計数（同一model idの下位・上位区別）、provider alias保持と`requestedModel`不一致拒否、`durable`のprofile永続化・完了resumeのzero call・不明usage lock・legacy format-1正規化・override拒否を確認する。`mechanism`はcredit予算seriesを凍結したまま、DeepSeek/混合upperを`--budget-mode tokens`で実行できる。注入callerの試験で、token予約の同時受付・重複ID拒否・観測下限・不明usageの恒久lock・cache split不在での完走・credit modeでのDeepSeek早期拒否・token/credit optionの混在拒否を確認する。token系列dispatcherは、集計予算内の逐次完走と、unknown usage・receipt欠落・子run失敗でのfail closedを注入child seamで検証する。実network・実key・実課金は呼び出さない。
+
 ## 現在の実行証拠の範囲
 
 M3は既知依存の合成taskで、主比較15runと別pilot1run。M4はC=1の専用実行系。M5は温度・圧力の別合成task、下位Luna/上位Astra、共通500,000token上限、30,000tokenの受付予約で比較する。単一上位にも増分の局所確定を許し、最終全体受入を共通にする。
@@ -116,3 +118,7 @@ CLIの途中errorの後にturn.completedとexit 0が来る回復経路を保持�
 `mechanism`のDocker検査は、3課題・3段階のhost oracleとの一致、負の時刻等の変異、必須import、非同期JSON読取、供給外ファイル拒否を含む。可視bundleの旧版/基準解、未読・旧版policyのケース非公開、選択したreadの先取り禁止、全methodの読取精算・read set・履歴、実差分の権限、最終失敗後の呼出し不在を検査する。上位のtool-less/guidance権限、使用量不明・cleanup失敗・検証基盤障害の受付停止も通常gateに含む。`sandbox:mechanism-probe`はモデルなしで8つの実VMを作成・検査・削除する。実Lunaと通常gateの証拠は[結果](results/docker-agent-mechanism.md)で分ける。
 
 既存swarmの実装課題では、固定した未実装stubの失敗、担当外変更の拒否、返却された2 helperの可視・追加ケース（入力不変、途中/重複tool、未知応答、prototypeに衝突する名前、不完全なstage/budget証拠）を検査する。集計CLIは欠落レシートを無視せず、元runのunknown usageから完了を推定しない。helper本体の作者と、親が書いたfactory・oracle・CLI接続を分けて記録する。
+
+OpenCode Goの通常gateは3形式の注入fetchとrunnerの注入callerで行う。sessionの同一worker内継続・worker間分離・durable再開、認証情報の反射時redaction、不正role/tool出力、usage算術、HTTP失敗・429・timeout・取消を検証する。既存DeepSeek snapshotの移行と、Go snapshotのsession欠損拒否を別ケースにする。live APIは既存認証を親processで明示使用し、通常gateから分離した小さな固定課題に限定する。
+
+Astraの独立レビューで固定した反例も通常gateに含める。混合API/Codex上位のusage欠落・数値付き途中終了・末尾JSONL破損は新規受付を止め、durableの予約・失敗receipt保存後の再開でも追加呼出を許さない。末尾破損はローカル偽CLIを実Codex adapter経由で検証する。規模比較の子run失敗・結果欠落・不正report・usage不明、上下を入れ替えたDocker cleanup、DeepSeekのtool/refusal混入とmetadata keyの伏字も検査する。[レビュー証拠](results/astra-go-review.md)。

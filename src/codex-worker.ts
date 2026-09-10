@@ -14,6 +14,8 @@ export interface CodexCallOptions {
   readonly cwd: string;
   readonly timeoutMs: number;
   readonly signal?: AbortSignal;
+  /** Stable conversation identifier forwarded to providers that support routing/caching. */
+  readonly sessionId?: string;
   readonly outputDirectory?: string;
 }
 

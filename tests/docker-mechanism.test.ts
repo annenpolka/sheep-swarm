@@ -204,7 +204,7 @@ test("unknown usage, failed cleanup and unavailable verifier stop admission", as
     assert.equal(report.success, false); assert.equal(called, kind === "verifier" ? 0 : 1);
     assert.equal(report.budget.activeReservations, 0);
     assert.equal(report.budget.unknownUsageCalls, kind === "usage" ? 1 : 0);
-    if (kind === "usage") assert.ok(report.budget.observedCredits > 0);
+    if (kind === "usage") { assert.ok("observedCredits" in report.budget); assert.ok(report.budget.observedCredits > 0); }
     if (kind !== "usage") assert.equal(report.terminationReason, "execution-error");
   }
 });

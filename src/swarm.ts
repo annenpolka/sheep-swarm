@@ -1,19 +1,22 @@
 export { dockerWorkspaceWrites } from "./docker-agent-worker.ts";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
 import { dirname, join } from "node:path";
 import { createFixture, type CodeFixture, type FixtureObserver } from "./fixture.ts";
-import { callCodex, CodexWorkerError, type CodexCallResult } from "./codex-worker.ts";
-import { callDockerAgent, dockerWorkspaceWrites, validateFiles, SANDBOX_TEMPLATE, type DockerAgentOptions, type DockerTranscript } from "./docker-agent-worker.ts";
+import { CodexWorkerError, type CodexCallResult } from "./codex-worker.ts";
+import { dockerWorkspaceWrites, validateFiles, SANDBOX_TEMPLATE, type DockerAgentOptions, type DockerTranscript } from "./docker-agent-worker.ts";
+import { apiRun, callerForRuntime, resolveRoleRuntimes, sumUsage, unknownUsageForRun, usageCompleteness } from "./model-runtime.ts";
 import { createDockerFixtureObserver } from "./docker-fixture-observer.ts";
 import { SwarmKernel, KernelError, type Checkout, type Verdict } from "./kernel.ts";
 import { WorkerPool, type WorkerMemory, type WorkerStats } from "./worker-pool.ts";
 
 export interface SwarmOptions {
   workers: number; concurrency: number; size: number; outputDirectory: string;
-  workerModel?: "gpt-5.6-luna"; metaModel?: string; timeoutMs?: number;
+  workerModel?: string; metaModel?: string; timeoutMs?: number;
   maxCalls?: number; maxMetaCalls?: number; maxRounds?: number;
   fault?: "none" | "rounded-guidance"; memoryLimit?: number;
-  runtime?: "codex" | "docker-agent";
+  runtime?: "codex" | "docker-agent" | "deepseek" | "opencode-go";
+  metaRuntime?: "codex" | "docker-agent" | "deepseek" | "opencode-go";
   workerTools?: "none" | "local";
   maxTokensPerCall?: number;
 }
@@ -48,31 +51,40 @@ const SCHEMA = { type: "object", properties: { content: { type: "string" }, note
 
 /** A bounded experimental scheduler. Semantic work belongs to the requested models. */
 export async function runSwarm(options: SwarmOptions,
-  model: ModelCaller = options.runtime === "docker-agent" ? callDockerAgent<Response> : callCodex<Response>,
+  model?: ModelCaller,
   observe?: FixtureObserver,
   task?: SwarmTask,
 ): Promise<SwarmReport> {
   for (const value of [options.workers, options.concurrency, options.size])
     if (!Number.isSafeInteger(value) || value < 1) throw new RangeError("worker, concurrency and size counts must be positive integers");
   if (options.concurrency > options.workers) throw new RangeError("concurrency must not exceed registered workers");
-  if (options.workerModel !== undefined && options.workerModel !== "gpt-5.6-luna") throw new Error("real workers must use gpt-5.6-luna");
-  if (options.workerTools !== undefined && !["none", "local"].includes(options.workerTools)) throw new Error("Unknown worker tools");
-  if (options.workerTools === "local" && options.runtime !== "docker-agent") throw new Error("Local tools require the Docker Agent runtime");
+  const resolved = resolveRoleRuntimes({
+    ...(options.runtime === undefined ? {} : { runtime: options.runtime }),
+    ...(options.metaRuntime === undefined ? {} : { metaRuntime: options.metaRuntime }),
+    ...(options.workerModel === undefined ? {} : { workerModel: options.workerModel }),
+    ...(options.metaModel === undefined ? {} : { metaModel: options.metaModel }),
+    ...(options.workerTools === undefined ? {} : { workerTools: options.workerTools }),
+    ...(options.maxTokensPerCall === undefined ? {} : { maxTokensPerCall: options.maxTokensPerCall }),
+  });
   if (task && (!/^[a-z0-9][a-z0-9-]+$/.test(task.id) || options.fault && options.fault !== "none"))
     throw new Error("Custom tasks require a stable ID and no measurement-specific fault");
   const configuration: SwarmReport["configuration"] = {
     workers: options.workers, concurrency: options.concurrency, size: options.size,
-    workerModel: "gpt-5.6-luna", metaModel: options.metaModel ?? "gpt-6-astra",
+    workerModel: resolved.workerModel, metaModel: resolved.metaModel,
     timeoutMs: options.timeoutMs ?? 120_000, maxCalls: options.maxCalls ?? Math.ceil(options.size * 5),
     maxMetaCalls: options.maxMetaCalls ?? 2, maxRounds: options.maxRounds ?? 12, fault: options.fault ?? "none",
     memoryLimit: options.memoryLimit ?? 4,
-    runtime: options.runtime ?? "codex",
-    workerTools: options.workerTools ?? "none",
-    maxTokensPerCall: options.maxTokensPerCall ?? 30_000,
+    runtime: resolved.runtime, metaRuntime: resolved.metaRuntime,
+    workerTools: resolved.workerTools,
+    maxTokensPerCall: resolved.maxTokensPerCall,
   };
   for (const value of [configuration.timeoutMs, configuration.maxCalls, configuration.maxMetaCalls, configuration.maxRounds])
     if (!Number.isSafeInteger(value) || value < 0) throw new RangeError("limits must be non-negative integers");
-  if (!Number.isSafeInteger(configuration.maxTokensPerCall) || configuration.maxTokensPerCall < 1) throw new RangeError("token limit must be positive");
+  // Keep the injectable caller for deterministic tests; otherwise route each role by its own runtime.
+  const workerCaller = callerForRuntime<Response>(configuration.runtime);
+  const metaCaller = callerForRuntime<Response>(configuration.metaRuntime);
+  // In an API/mixed run an unknown-usage receipt from either role stops admission.
+  const meteredRun = apiRun(configuration.runtime, configuration.metaRuntime);
   await mkdir(dirname(options.outputDirectory), { recursive: true });
   await mkdir(options.outputDirectory); // A new run must never reuse old output as evidence.
   const workspace = await mkdtemp(join(options.outputDirectory, "model-workspace-"));
@@ -91,6 +103,7 @@ export async function runSwarm(options: SwarmOptions,
   kernel.change(fixture.changedSource.id, fixture.changedSource.content);
   kernel.closeInput(); kernel.deliverAll();
   const start = Date.now();
+  const sessionSeed = randomUUID();
   const calls: CallRecord[] = [];
   const attempts = new Map<string, number>();
   const errors = new Map<string, string[]>();
@@ -154,20 +167,27 @@ export async function runSwarm(options: SwarmOptions,
     };
     calls.push(record); kernel.beginWork(id, agent);
     if (role === "worker") { activeModelCalls++; maxConcurrentModelCalls = Math.max(maxConcurrentModelCalls, activeModelCalls); }
+    const roleRuntime = role === "worker" ? configuration.runtime : configuration.metaRuntime;
+    const caller = model ?? (role === "worker" ? workerCaller : metaCaller);
     try {
-      const response = await model({ model: record.model, prompt, schema: SCHEMA, cwd: workspace,
+      const response = await caller({ model: record.model, prompt, schema: SCHEMA, cwd: workspace,
         timeoutMs: configuration.timeoutMs, outputDirectory: join(options.outputDirectory, "transcripts"),
-        ...(configuration.runtime === "docker-agent" ? { maxTokens: configuration.maxTokensPerCall } : {}),
+        ...(roleRuntime === "docker-agent" || roleRuntime === "deepseek" || roleRuntime === "opencode-go" ? { maxTokens: configuration.maxTokensPerCall } : {}),
         ...(role === "worker" && configuration.workerTools === "local"
-          ? { tools: "local", files: { ...context.contents, "visible.test.mjs": fixture.visibleTest(target) } } : {}) });
+          ? { tools: "local", files: { ...context.contents, "visible.test.mjs": fixture.visibleTest(target) } } : {}),
+        sessionId: `${sessionSeed}:${role}:${agent}` });
       await writeFile(join(options.outputDirectory, `${id}.json`), JSON.stringify(response, null, 2) + "\n");
       record.durationMs = response.transcript.durationMs;
-      const inputs = response.usage.map((item) => item.inputTokens).filter((item): item is number => item !== undefined);
-      const outputs = response.usage.map((item) => item.outputTokens).filter((item): item is number => item !== undefined);
-      record.inputTokens = inputs.length ? inputs.reduce((a, b) => a + b, 0) : null;
-      record.outputTokens = outputs.length ? outputs.reduce((a, b) => a + b, 0) : null;
+      const observed = sumUsage(response.usage);
+      record.inputTokens = observed.inputTokens;
+      record.outputTokens = observed.outputTokens;
       record.effectiveModelEvidence = response.transcript.effectiveModelEvidence ?? null;
-      record.usageCompleteness = (response.transcript as Partial<DockerTranscript>).usageCompleteness ?? null;
+      record.usageCompleteness = usageCompleteness(response.transcript);
+      // A returned result with unknown usage is still not acceptable evidence of a metered run.
+      if (record.usageCompleteness === "partial-or-unknown"
+        || unknownUsageForRun(response.transcript, roleRuntime, meteredRun)) unknownModelUsage = true;
+      if (response.requestedModel !== record.model || response.transcript.requestedModel !== record.model)
+        throw new Error("model identity does not match requested role");
       if (!response.result || typeof response.result.content !== "string" || typeof response.result.note !== "string")
         throw new Error("model output did not contain string content and note");
       return { response: response.result, record, writes: role === "worker" && configuration.workerTools === "local"
@@ -177,14 +197,13 @@ export async function runSwarm(options: SwarmOptions,
       record.outcome = error instanceof CodexWorkerError ? error.code : "model-error";
       record.errors = [String(error)];
       if (error instanceof CodexWorkerError) {
-        const usage = error.transcript.usage;
-        const inputs = usage.map((item) => item.inputTokens).filter((item): item is number => item !== undefined);
-        const outputs = usage.map((item) => item.outputTokens).filter((item): item is number => item !== undefined);
-        record.inputTokens = inputs.length ? inputs.reduce((a, b) => a + b, 0) : null;
-        record.outputTokens = outputs.length ? outputs.reduce((a, b) => a + b, 0) : null;
+        const observed = sumUsage(error.transcript.usage);
+        record.inputTokens = observed.inputTokens;
+        record.outputTokens = observed.outputTokens;
         record.effectiveModelEvidence = error.transcript.effectiveModelEvidence;
-        record.usageCompleteness = (error.transcript as Partial<DockerTranscript>).usageCompleteness ?? null;
-        if (record.usageCompleteness === "partial-or-unknown") unknownModelUsage = true;
+        record.usageCompleteness = usageCompleteness(error.transcript);
+        if (record.usageCompleteness === "partial-or-unknown"
+          || unknownUsageForRun(error.transcript, roleRuntime, meteredRun, error.code)) unknownModelUsage = true;
         if ((error.transcript as Partial<DockerTranscript>).runtime === "docker-agent" && (error.transcript as Partial<DockerTranscript>).cleanupSucceeded === false)
           runtimeCleanupFailed = true;
         await writeFile(join(options.outputDirectory, `${id}.json`), JSON.stringify({ error: error.code, transcript: error.transcript }, null, 2) + "\n");
@@ -322,6 +341,7 @@ export async function runSwarm(options: SwarmOptions,
   } catch (error) {
     final = { ok: false, errors: [`execution-error: ${String(error)}`] };
   } finally { await snapshot(); }
+  if (unknownModelUsage) final = { ok: false, errors: [...final.errors, "unknown-usage"] };
   if (runtimeCleanupFailed) final = { ok: false, errors: [...final.errors, "sandbox-cleanup-failed"] };
   const report: SwarmReport = {
     task: taskId,

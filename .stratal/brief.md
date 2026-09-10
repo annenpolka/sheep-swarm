@@ -17,7 +17,7 @@
 - 明示された利用者の方針を、Agentの推測で上書きしない。
 - referencesの既存snapshotを書き換えない。
 - 実装していない機能や試験していない性能を完了として報告しない。
-- 実動作の下位モデルは利用者が2026-09-10に指定したgpt-5.6-lunaを用いる。利用できない場合も黙って置換しない。
+- 既存比較の実動作の下位モデルはgpt-5.6-lunaを用いる。2026-09-10のDeepSeek API対応依頼による各runnerの`--runtime deepseek`の明示選択を追加の例外とし、既存比較のmodelは黙って置換しない。
 - 2026-09-10の利用者方針により、Astra単独のコスト感は概ね把握できたため、今後の単独対照はLunaのみとする。群れへの必要時のAstra介入と、過去の実測・凍結記録は維持する。
 
 ## Preference Gradients
@@ -137,11 +137,26 @@ Validation: [導入手順](../docs/docker-agent-sandbox.md)と[実測](../docs/r
 「わかっているところまで進めて」に対し、`compare`の4方式への同一tool追加、単独Luna対照、所有process終了後の復帰時回収を進めた。機構実験のreadRequests・段階別oracleまで同じ形で移植できるとは仮定しない。Docker usageのper-message計上と中断時の既知下限を費用見積器へ接続し、資源回収や価格catalogの0から成功・総費用を推定しない。
 Status: active
 
+### DeepSeek直接APIを実験用opt-in runtimeとして追加する
+Authority: Human stated
+Evidence: Stated; 2026-09-10の利用者依頼「DeepSeek APIを使えるようにする」。実装の委譲先としてopencode-delegateとdeepseek-v4.1-flash-expires-on-0910を指定。直接API adapterとswarmへの初期接続範囲は、この依頼に対するWorking default。
+Working default:
+- `src/deepseek-worker.ts`を追加し、`swarm`・`compare`・`durable`・`mechanism`の`--runtime deepseek`から共通`src/model-runtime.ts`経由で選ぶ。既存のCodex既定・Luna workerは変えない。`mechanism`のcredit予算seriesは凍結し、credit modeでのDeepSeekは有料callの前に拒否する。
+- bearer認証、JSON mode、`stream:false`、明示`max_tokens`、`thinking`無効。toolは渡さず自動retryしない。base URLはhttpsとloopback httpのみ。
+- 要求modelと応答の実model証拠を別に保持し、`finish_reason: stop`とschema適合を検査する。HTTP失敗・応答過大・timeout・取消はboundedで秘匿情報を伏せたtranscriptにする。providerの応答aliasは証拠として保持し、`requestedModel`の不一致だけを拒否する。
+- `--worker-model`はprovider prefixのない生API idを必須とする。meta既定はCodex、`--meta-runtime deepseek`は`--meta-model`明示とAstra拒否を要求する。
+- usageは主要counterが整合する場合だけ完全とし、欠落・不一致は0と数えず不明として受付と上位介入を止め、runを失敗にする。`durable`は不明usageをsnapshotへlockし、再開時の新規callとoverrideを拒否する。
+- `compare`はrole単位で下位・上位callを数え、同一model idでも区別する。`durable`はruntime/model/maxTokensPerCallを保存し、legacy format-1は既定値へ正規化して再開する。`mechanism`のcredit系列は凍結し、DeepSeek/混合upperは`--budget-mode tokens`の独立token予算（cache split不要、input+output下限、不明usageで恒久lock）に分離する。credit modeのDeepSeekは有料call前に拒否し、tokenとcreditを換算・混在しない。
+Validation: [DeepSeek adapter試験](../tests/deepseek-worker.test.ts)、[swarm接続試験](../tests/deepseek-swarm.test.ts)、[runner横断試験](../tests/deepseek-runners.test.ts)、[token予算境界試験](../tests/token-budget-boundaries.test.ts)、[mechanism token試験](../tests/mechanism-token.test.ts)、[token系列dispatcher試験](../tests/mechanism-token-series.test.ts)。実network・実keyを通常gateに持ち込まない。実APIでの全3成果物の確定を[別試行](../docs/results/deepseek-api.md)で確認し、課金・一般repo有用性は未確認。
+Revisit when:
+- 実DeepSeekでの観測範囲を広げるとき。またはtoken系列の実billing見積りや、credit結果との比較方法を定めるとき。
+Status: active
+
 ## Open Questions And Discomfort
 
 - 未知の意味依存を何から発見するか。発見費用が局所化の利益を上回らないか。
 - 一つのartifactが多数のconsumerを持つとき、どの粒度で検証するか。
-- 下位はgpt-5.6-lunaを利用者指定として固定。上位gpt-6-astraとCodex CLIは現在の作業上の既定値。費用上限、観測間隔、兆候の閾値は実験ごとに記録して見直す。
+- 既存比較の下位はgpt-5.6-luna、上位gpt-6-astraとCodex CLIは現在の作業上の既定値。DeepSeekは各runnerで明示選択する追加経路。費用上限、観測間隔、兆候の閾値は実験ごとに記録して見直す。
 - 上位が全件を読み直さず、全員共通の誤解を何から発見するか。
 - Commit policy: recommend commit（共有のrepo規約のみ）。初期化では未stageとし、commitの依頼時に含める。
 
@@ -168,3 +183,15 @@ Evidence: Stated; 2026-09-10の「一通り終わらせることをgoalとして
 前回の使用量不明は保持したまま、goal内の終了形式・semantic全工程・3段階更新を別runで実行する。実行が重なる区間の所要時間は性能比較に使わない。完了には実Lunaの正常終了・完全usage・固定採点とkernel確定・cleanupが必要である。
 
 Evidence: Observed; semantic 18call、staged 28callで完走し、生成helperは3call・固定91ケース後に本体変更0で採用した。システム側の終了指示と、現在の配信済みreadと過去の要求を区別する説明を修正した。oracleや予算上限は維持し、以前のunknown usageを復元済みとは扱わない。[完了検証](../docs/results/docker-agent-completion.md)
+
+2026-09-10追加検証: 利用者の「一通り対応して。使えるならworkerをdeepseekにして使ってみて」に基づき、各runnerとtoken系列でDeepSeek workerを実行した。8条件・52下位callとManager-localの2上位callが成功し、[実行記録](../docs/results/deepseek-runners.md)へ保存した。既存のcredit系列や固定oracleを変更せず、一般repoでの有用性や請求額はこの合成課題から推定しない。
+
+### OpenCode Goの追加経路
+
+Evidence: Stated; 利用者のOpenCode Go対応依頼と「luna swarmで実装を進めて」に基づく。Lunaの作業エージェントが通信・runner・計数を分担し、親が独立した固定条件で検証する。`opencode-go`を明示したときだけGoへ送信し、provider/model/session/usageを識別する。既定のLuna/Astra、直接DeepSeek、固定oracleは保持する。Goのsubscription枠を既存Codex creditへ換算しない。
+
+### API混合runの不完全な使用量と独立レビュー
+
+Evidence: Stated; 利用者が実装後の独立レビューをAstra、修正をOpenCode GoのDeepSeek V4.1 Flashに指定した。実装者と独立レビューを分け、再現を固定して修正後に再検証した。
+
+API runtimeを含むrunでは、上位Codexの数値usageも途中値かもしれない。timeout・取消・不完全な終了イベントは既知数値を保持して受付を止め、durable再開で解除しない。正常終了した単一usageと、完全に計測されたschema不適合を区別する。Docker cleanupは呼出roleのruntimeに従う。規模比較の子run失敗・不正reportで次条件へ進まない。[AstraレビューとGo修正の証拠](../docs/results/astra-go-review.md)。

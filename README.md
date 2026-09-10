@@ -23,6 +23,8 @@
 | kernelと独立受入テスト | [src/kernel.ts](src/kernel.ts)、[tests/kernel.test.ts](tests/kernel.test.ts) |
 | 実コードfixtureとCodex adapter | [src/fixture.ts](src/fixture.ts)、[src/codex-worker.ts](src/codex-worker.ts) |
 | Docker Agentとmountless microVMの導入 | [導入手順](docs/docker-agent-sandbox.md)、[実測](docs/results/docker-agent-sandbox.md)、[adapter](src/docker-agent-worker.ts) |
+| 実験用の直接DeepSeek API adapter | [src/deepseek-worker.ts](src/deepseek-worker.ts)、[共通runtime選択](src/model-runtime.ts)、[runner試験](tests/deepseek-runners.test.ts) |
+| OpenCode Goの3 API形式と全runner接続 | [導入方法](docs/opencode-go.md)、[実Lunaによる検証](docs/results/opencode-go.md) |
 | 実装の進捗と実行証拠 | [docs/execplan.md](docs/execplan.md)、[4体の実測](docs/results/luna-four-worker-pilot.md) |
 | 8・16・32体の反復と誤指示条件 | [規模比較の結果](docs/results/scaling-findings.md) |
 | SQLiteと実process中断・再開 | [src/durable-run.ts](src/durable-run.ts)、[実Luna再開の結果](docs/results/durable-restart.md) |
@@ -58,7 +60,26 @@ npm run demo
 
 TypeScriptの実行にはNode.jsのtype strippingを使い、型検査は別に `tsc` で行う。[Node.jsの公式説明](https://nodejs.org/api/typescript.html)
 
-追加のruntime npm packageは使わない。実LLM呼出しには認証済みのCodex CLIを使う。下位は利用者指定の `gpt-5.6-luna`、上位の既定値は `gpt-6-astra`。
+追加のruntime npm packageは使わない。既定の実LLM呼出しには認証済みのCodex CLIを使う。下位は利用者指定の `gpt-5.6-luna`、上位の既定値は `gpt-6-astra`。
+
+`swarm --runtime deepseek`はDeepSeek APIへ直接接続する。CLIでは環境変数`DEEPSEEK_API_KEY`を設定し、`--worker-model`にprovider prefixのないAPI model idを明示する。OpenCodeの認証storeは自動で読み込まない。toolは使わず、局所promptとschemaを送信し、`finish_reason: stop`と要求schemaへの適合を検査する。要求modelとproviderが返したmodel名は別に保存する。接続仕様は[DeepSeek公式API](https://api-docs.deepseek.com/api/create-chat-completion/)を参照。
+
+```sh
+export DEEPSEEK_API_KEY='YOUR_DEEPSEEK_API_KEY'
+npm run swarm -- --runtime deepseek --worker-model deepseek-v4-flash --workers 1 --concurrency 1 --size 2 --max-calls 4 --max-meta-calls 0 --max-tokens-per-call 4096
+```
+
+利用可能なmodel名を指定する。期限付きの`deepseek-v4.1-flash-expires-on-0910`も明示指定できるが、恒久的な既定値にはしない。`DEEPSEEK_BASE_URL`で接続先を変更でき、既定は`https://api.deepseek.com`。adapterを直接呼ぶ場合は`apiKey`・`baseUrl`も明示指定できる。
+
+DeepSeek workerの上位は既定でCodex/Astra。上位もDeepSeekにする場合は`--meta-runtime deepseek --meta-model <API model id>`を指定する。使用量が欠落・不整合のcallは0と数えず、新規受付と上位介入を止めてrunを失敗にする。
+
+同じruntime選択は`swarm`のほか`compare`・`durable`・`mechanism`にも`--runtime`・`--meta-runtime`・`--worker-model`・`--meta-model`・`--max-tokens-per-call`として渡せる。`compare --method single-worker`はDeepSeekの単独worker対照に使える。`durable`はruntimeとmodelをsnapshotへ保存し、完了runの`resume`は新しいcallを発行せず、不明usageはsnapshotへlockして再開時の再課金を拒否する。`mechanism`はcredit予算seriesを凍結したまま、`--budget-mode tokens --max-tokens --reserve-tokens`でDeepSeek/混合upperをcredit系列と分離したtoken予算で実行できる。credit modeでDeepSeekを指定した場合は有料callの前に拒否する。token予算では消費tokenを合算し、不明usage・receipt欠落・子run失敗で新規受付を止めてfail closedにする。`docs/mechanism-experiment.md`のcredit系列は変更しない。
+
+指定beta IDのworkerで8条件を実行し、すべて受入検査に成功した。DeepSeekは計52call、Manager-localの上位Astraは2call。機構実験は静的依存・意味依存・3段階変更を含む。応答名は`deepseek-flash`として要求IDと別に保存した。[runner横断の実行記録と導入例](docs/results/deepseek-runners.md)、[初回の接続確認](docs/results/deepseek-api.md)を参照。
+
+`--runtime opencode-go --worker-model <API model ID>`でOpenCode Goにも接続できる。LunaのResponses、DeepSeek等のChat Completions、MiniMax等のMessagesを明示catalogで選び、workerごとのsession headerと使用量記録を保存する。認証は`OPENCODE_GO_API_KEY`。各runnerとtoken系列で使える。[導入方法・対応範囲](docs/opencode-go.md)を参照。
+
+Astraの独立レビュー後、OpenCode GoのDeepSeek V4.1 Flashで修正を行った。混合runtimeの使用量不明・途中終了と再開時の停止、role別Docker cleanup、DeepSeek応答の拒否・伏字処理を検証し、404テストが成功した。[レビュー・修正の記録](docs/results/astra-go-review.md)。
 
 `swarm --runtime docker-agent`ではDocker Agent v1.137.0＋sbx v0.42.1へ切り替えられる。各呼出しをhost repo未マウントの新規VMで実行し、承認済み認証をhost proxyから注入する。`npm run sandbox:probe`は実VMの隔離検査、`npm run sandbox:pilot`はLunaの局所編集・別VMでの受入・kernel確定を実行する。下位4体・C=2の既存fixtureも5呼出しで成功した。詳細と未対応範囲は[導入手順](docs/docker-agent-sandbox.md)を参照。
 
@@ -78,13 +99,15 @@ npm run compare -- --method sheep-full --size 8 --workers 4 --concurrency 4 --ma
 npm run compare -- --runtime docker-agent --worker-tools local --method single-luna --size 2 --max-calls 5 --max-upper-calls 0 --max-tokens 200000 --reserve-tokens 40000 --timeout-ms 240000
 npm run mechanism -- --runtime docker-agent --worker-tools local --family semantic --method sheep --groups 1 --workers 4 --concurrency 2 --max-meta-calls 0 --max-credits 3 --luna-reservation 0.5 --max-calls 24 --max-tokens-per-call 60000 --timeout-ms 240000
 npm run mechanism -- --family staged --method sheep --groups 1 --workers 4 --concurrency 4 --output .sheep/my-mechanism-pilot
+npm run mechanism -- --runtime deepseek --worker-model deepseek-v4.1-flash-expires-on-0910 --family static --method single-worker --groups 1 --max-meta-calls 0 --workers 1 --concurrency 1 --budget-mode tokens --max-tokens 100000 --reserve-tokens 4000 --max-calls 8 --max-tokens-per-call 4096 --output .sheep/my-token-mechanism
+npm run mechanism:experiment -- --budget-mode tokens --runtime deepseek --worker-model deepseek-v4.1-flash-expires-on-0910 --families static,semantic,staged --methods sheep --groups 1 --workers 4 --concurrency 2 --max-tokens 300000 --reserve-tokens 12000 --max-calls 80 --max-meta-calls 0 --max-tokens-per-call 4096 --timeout-ms 60000 --output .sheep/my-token-series
 ```
 
 これらは実モデルを呼び出す。結果・コード・使用量・失敗履歴は `.sheep/` の一意なrunディレクトリへ保存する。`--max-calls`、`--max-meta-calls`、`--max-rounds`、`--timeout-ms` で上限を指定できる。通常の `npm run check` はモデルを呼び出さない。
 
-`compare` の新規対照は `single-luna`、`manager-local`、`sheep-fixed`、`sheep-full`。`single-upper`は過去の再現用に保持し、Docker runtimeでの新規実行は拒否する。token予約は呼出しの受付制御であり、providerの強制上限ではない。超過・使用量不明は予算付き比較の成功にしない。`--max-upper-calls`で上位の受付数も制限できる。Sheep-fullが発見するのは実ファイルの静的importと明示された仕様依存であり、任意の意味依存ではない。
+`compare` の新規対照は `single-luna`（DeepSeekでは`single-worker`）、`manager-local`、`sheep-fixed`、`sheep-full`。`single-upper`は過去の再現用に保持し、Docker runtimeでの新規実行は拒否する。token予約は呼出しの受付制御であり、providerの強制上限ではない。超過・使用量不明は予算付き比較の成功にしない。`--max-upper-calls`で上位の受付数も制限できる。Sheep-fullが発見するのは実ファイルの静的importと明示された仕様依存であり、任意の意味依存ではない。
 
-今後の単独比較はLunaに統一し、費用の目安を得たAstra単独は新規試行から省く。Astraは群れへの必要時介入で継続する。`mechanism:experiment` はpilot 4条件・main 25条件。`scripts/compare-experiment.mjs`の既定は単独Lunaを含む4方式×3条件で、共通runtime/toolを指定できる。使用量不明・検証基盤障害・cleanup失敗で系列の新規実行を止める。旧単独方式の実装は過去の再現用に残す。
+通常の単独比較はLunaを使い、利用者が明示したDeepSeekの試行を追加の例外とする。費用の目安を得たAstra単独は新規試行から省く。Astraは群れへの必要時介入で継続する。`mechanism:experiment` はpilot 4条件・main 25条件。`scripts/compare-experiment.mjs`の既定は単独Lunaを含む4方式×3条件で、共通runtime/toolを指定できる。使用量不明・検証基盤障害・cleanup失敗で系列の新規実行を止める。旧単独方式の実装は過去の再現用に残す。
 
 `mechanism:experiment`の既存系列はCodex/tool-lessのまま保持し、今回のDocker試行は個別CLIで記録する。
 

@@ -1,15 +1,17 @@
 import { createHash } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { callCodex, CodexWorkerError, type CodexCallResult, type CodexUsage } from "./codex-worker.ts";
-import { callDockerAgent, dockerWorkspaceWrites, validateFiles, SANDBOX_TEMPLATE, type DockerAgentOptions, type DockerTranscript } from "./docker-agent-worker.ts";
+import { CodexWorkerError, type CodexCallResult, type CodexUsage } from "./codex-worker.ts";
+import { dockerWorkspaceWrites, validateFiles, SANDBOX_TEMPLATE, type DockerAgentOptions, type DockerTranscript } from "./docker-agent-worker.ts";
+import { callerForRuntime, resolveRoleRuntimes, usageCompleteness, type ModelRuntime } from "./model-runtime.ts";
 import { createDockerFixtureObserver } from "./docker-fixture-observer.ts";
 import type { FixtureObserver } from "./fixture.ts";
 import { createHeldoutFixture, discoverThermalDependencies, type FixtureEdge } from "./heldout-fixture.ts";
 import { KernelError, SwarmKernel, type Checkout, type Contents, type Verdict } from "./kernel.ts";
 import { WorkerPool, type WorkerAssignment, type WorkerStats } from "./worker-pool.ts";
 
-export const COMPARISON_METHODS = ["single-luna", "single-upper", "manager-local", "sheep-fixed", "sheep-full"] as const;
+export const COMPARISON_METHODS = ["single-luna", "single-worker", "single-upper", "manager-local", "sheep-fixed", "sheep-full"] as const;
 export type ComparisonMethod = typeof COMPARISON_METHODS[number];
 export interface ComparisonResponse {
   readonly writes: readonly { readonly id: string; readonly content: string }[];
@@ -31,12 +33,17 @@ export interface ComparisonOptions {
   readonly maxRounds?: number;
   readonly maxAttempts?: number;
   readonly fault?: "none" | "rounded-guidance";
-  readonly runtime?: "codex" | "docker-agent";
+  readonly runtime?: ModelRuntime;
+  readonly metaRuntime?: ModelRuntime;
+  readonly workerModel?: string;
+  readonly metaModel?: string;
   readonly workerTools?: "none" | "local";
+  readonly maxTokensPerCall?: number;
 }
 type Phase = "implementation" | "management" | "intervention";
+type ComparisonRole = "worker" | "upper";
 export interface ComparisonCall {
-  id: string; model: "gpt-6-astra" | "gpt-5.6-luna"; agent: string; phase: Phase; target: string | null;
+  id: string; role: ComparisonRole; model: string; agent: string; phase: Phase; target: string | null;
   retry: boolean; contextArtifacts: string[]; contextBytes: number; promptBytes: number;
   durationMs: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null;
   usageComplete: boolean; reservedTokens: number; reservationOverrun: boolean;
@@ -102,25 +109,35 @@ function countUsage(usage: readonly CodexUsage[]) {
 
 /** Small paired-pilot runner. Every method uses the same pinned source, oracle and mutation boundary. */
 export async function runComparison(options: ComparisonOptions,
-  caller: ComparisonCaller = options.runtime === "docker-agent" ? callDockerAgent<ComparisonResponse> : callCodex<ComparisonResponse>,
+  caller?: ComparisonCaller,
   observe?: FixtureObserver,
 ): Promise<ComparisonReport> {
   const start = performance.now();
+  const sessionSeed = randomUUID();
   if (!COMPARISON_METHODS.includes(options.method)) throw new TypeError("unknown comparison method");
-  if (options.runtime !== undefined && !["codex", "docker-agent"].includes(options.runtime)) throw new Error("unknown runtime");
-  if (options.workerTools !== undefined && !["none", "local"].includes(options.workerTools)) throw new Error("unknown worker tools");
-  if (options.workerTools === "local" && options.runtime !== "docker-agent") throw new Error("Local tools require Docker Agent");
-  if (options.runtime === "docker-agent" && options.method === "single-upper") throw new Error("New Docker standalone trials use single-luna");
+  const runtimes = resolveRoleRuntimes({
+    ...(options.runtime === undefined ? {} : { runtime: options.runtime }),
+    ...(options.metaRuntime === undefined ? {} : { metaRuntime: options.metaRuntime }),
+    ...(options.workerModel === undefined ? {} : { workerModel: options.workerModel }),
+    ...(options.metaModel === undefined ? {} : { metaModel: options.metaModel }),
+    ...(options.workerTools === undefined ? {} : { workerTools: options.workerTools }),
+    ...(options.maxTokensPerCall === undefined ? {} : { maxTokensPerCall: options.maxTokensPerCall }),
+  });
+  if (runtimes.runtime === "docker-agent" && options.method === "single-upper")
+    throw new Error("New Docker standalone trials use single-luna");
+  const isSingleLane = options.method === "single-luna" || options.method === "single-worker";
   const config: ComparisonReport["configuration"] = {
-    method: options.method, size: options.size ?? 8, workers: options.method === "single-luna" ? 1 : options.workers ?? 4,
-    concurrency: options.method === "single-luna" ? 1 : options.concurrency ?? 4,
+    method: options.method, size: options.size ?? 8, workers: isSingleLane ? 1 : options.workers ?? 4,
+    concurrency: isSingleLane ? 1 : options.concurrency ?? 4,
     maxCalls: options.maxCalls ?? 48, maxTokens: options.maxTokens ?? 120_000,
     maxUpperCalls: options.maxUpperCalls ?? options.maxCalls ?? 48,
     reserveTokensPerCall: options.reserveTokensPerCall ?? 12_000, timeoutMs: options.timeoutMs ?? 120_000,
     maxRounds: options.maxRounds ?? 24, maxAttempts: options.maxAttempts ?? 3, fault: options.fault ?? "none",
-    runtime: options.runtime ?? "codex", workerTools: options.workerTools ?? "none",
+    runtime: runtimes.runtime, metaRuntime: runtimes.metaRuntime,
+    workerModel: runtimes.workerModel, metaModel: runtimes.metaModel,
+    workerTools: runtimes.workerTools, maxTokensPerCall: runtimes.maxTokensPerCall,
   };
-  for (const key of ["size", "workers", "concurrency", "maxCalls", "maxTokens", "reserveTokensPerCall", "timeoutMs", "maxRounds", "maxAttempts"] as const)
+  for (const key of ["size", "workers", "concurrency", "maxCalls", "maxTokens", "reserveTokensPerCall", "timeoutMs", "maxRounds", "maxAttempts", "maxTokensPerCall"] as const)
     if (!Number.isSafeInteger(config[key]) || config[key] < 1) throw new RangeError(`${key} must be a positive integer`);
   if (config.reserveTokensPerCall > config.maxTokens) throw new RangeError("reservation exceeds total token budget");
   if (!Number.isSafeInteger(config.maxUpperCalls) || config.maxUpperCalls < 0) throw new RangeError("maxUpperCalls must be nonnegative");
@@ -208,7 +225,9 @@ export async function runComparison(options: ComparisonOptions,
   const invoke = async (agent: string, phase: Phase, target: string | null, context: Checkout,
     instruction: string, extra: Record<string, unknown> = {}, observation?: Checkout): Promise<{ value: ComparisonResponse | null; record: ComparisonCall } | null> => {
     if (!slots()) { budget.admissionDenied = true; return null; }
-    if (agent === "upper" && calls.filter(call => call.model === "gpt-6-astra").length >= config.maxUpperCalls) {
+    const role: ComparisonRole = agent === "upper" ? "upper" : "worker";
+    const roleRuntime: ModelRuntime = role === "upper" ? config.metaRuntime : config.runtime;
+    if (role === "upper" && calls.filter(entry => entry.role === "upper").length >= config.maxUpperCalls) {
       upperAdmissionDenied = true; return null;
     }
     const readStart = performance.now();
@@ -226,7 +245,7 @@ export async function runComparison(options: ComparisonOptions,
     times.readingMs += performance.now() - readStart;
     const retry = target !== null ? (attempts.get(target) ?? 0) > 1
       : phase === "implementation" && calls.some(call => call.phase === "implementation");
-    const record: ComparisonCall = { id: `compare-call-${++serial}`, model: agent === "upper" ? "gpt-6-astra" : "gpt-5.6-luna",
+    const record: ComparisonCall = { id: `compare-call-${++serial}`, role, model: role === "upper" ? config.metaModel : config.workerModel,
       agent, phase, target, retry, contextArtifacts: [...new Set([...Object.keys(context.reads), ...Object.keys(observation?.reads ?? {})])],
       contextBytes: Buffer.byteLength(JSON.stringify(context.contents)) + observationBytes,
       promptBytes: Buffer.byteLength(prompt), durationMs: 0, inputTokens: null, outputTokens: null, totalTokens: null,
@@ -245,16 +264,20 @@ export async function runComparison(options: ComparisonOptions,
     let partialUsage = false;
     try {
       if (planningObservation) await writeFile(join(options.outputDirectory, `${record.id}.json`), JSON.stringify(inputReceipt, null, 2) + "\n");
-      const result = await caller({ model: record.model, prompt, schema, cwd: workspace, timeoutMs: config.timeoutMs,
+      const call = caller ?? callerForRuntime<ComparisonResponse>(roleRuntime);
+      const result = await call({ model: record.model, prompt, schema, cwd: workspace, timeoutMs: config.timeoutMs,
         outputDirectory: join(options.outputDirectory, "transcripts"),
+        sessionId: `${sessionSeed}:${roleRuntime}:${role}:${agent}`,
         ...(localTools ? { tools: "local", maxTokens: config.reserveTokensPerCall,
-          files: { ...context.contents, "visible.test.mjs": fixture.visibleTest(target ? [target] : fixture.writableIds) } } : {}) });
+          files: { ...context.contents, "visible.test.mjs": fixture.visibleTest(target ? [target] : fixture.writableIds) } }
+          : (roleRuntime === "deepseek" || roleRuntime === "opencode-go") ? { maxTokens: config.maxTokensPerCall } : {}) });
       returned = true;
       usage = result.usage;
-      partialUsage = (result.transcript as Partial<DockerTranscript>).usageCompleteness === "partial-or-unknown";
+      partialUsage = usageCompleteness(result.transcript) === "partial-or-unknown";
       record.effectiveModelEvidence = result.transcript.effectiveModelEvidence ?? null;
       await writeFile(join(options.outputDirectory, `${record.id}.json`), JSON.stringify({ ...result, ...inputReceipt }, null, 2) + "\n");
-      if (result.requestedModel !== record.model || (record.effectiveModelEvidence !== null && record.effectiveModelEvidence !== record.model))
+      if (result.requestedModel !== record.model
+        || (roleRuntime !== "deepseek" && roleRuntime !== "opencode-go" && record.effectiveModelEvidence !== null && record.effectiveModelEvidence !== record.model))
         throw new Error("model identity does not match requested role");
       value = response(result.result); record.outcome = "received";
       if (localTools) value = { ...value, writes: Object.entries(dockerWorkspaceWrites(result.transcript)).map(([id, content]) => ({ id, content })) };
@@ -264,7 +287,7 @@ export async function runComparison(options: ComparisonOptions,
       if (error instanceof CodexWorkerError) {
         if (["malformed-events", "missing-output", "malformed-output"].includes(error.code)) record.failureKind = "response";
         usage = error.transcript.usage;
-        partialUsage = (error.transcript as Partial<DockerTranscript>).usageCompleteness === "partial-or-unknown";
+        partialUsage = usageCompleteness(error.transcript) === "partial-or-unknown";
         if ((error.transcript as Partial<DockerTranscript>).runtime === "docker-agent" && (error.transcript as Partial<DockerTranscript>).cleanupSucceeded === false)
           runtimeCleanupFailed = true;
         record.effectiveModelEvidence = error.transcript.effectiveModelEvidence ?? null;
@@ -362,9 +385,9 @@ export async function runComparison(options: ComparisonOptions,
       const pending = [...new Set(kernel.pending().map(item => item.consumer))].filter(id => fixture.writableIds.includes(id));
       if (!pending.length) break;
       if (!slots()) { budget.admissionDenied = true; break; }
-      if (config.method === "single-upper" || config.method === "single-luna") {
+      if (config.method === "single-upper" || config.method === "single-luna" || config.method === "single-worker") {
         if (pending.some(id => (attempts.get(id) ?? 0) >= config.maxAttempts)) break;
-        const singleAgent = config.method === "single-luna" ? "single" : "upper";
+        const singleAgent = config.method === "single-upper" ? "upper" : "single";
         const context = checkout(singleAgent, [...fixture.writableIds, fixture.specId], true);
         const result = await invoke(singleAgent, "implementation", null, context,
           "Solve the complete thermal API migration. You may edit all sensor files, regional files and the specification, but never the pinned library. You may return an incremental subset of replacement files; accepted files are retained for subsequent calls. Each submitted file and its dependencies must satisfy local acceptance; final success still requires the whole migration. targets must be empty.",
@@ -459,8 +482,8 @@ export async function runComparison(options: ComparisonOptions,
   const report: ComparisonReport = {
     format: 1, task: fixture.task, fixtureFingerprint: fingerprint, method: config.method, configuration: config,
     success: final.ok && budgetOkay() && infrastructureError === null, qualityPass: quality.ok, finalErrors,
-    calls, lowerCalls: calls.filter(call => call.model === "gpt-5.6-luna").length,
-    upperCalls: calls.filter(call => call.model === "gpt-6-astra").length, interventions,
+    calls, lowerCalls: calls.filter(call => call.role === "worker").length,
+    upperCalls: calls.filter(call => call.role === "upper").length, interventions,
     retries: calls.filter(call => call.retry).length, maxActiveModelCalls: maxActive, workerStats: pool.stats(), budget, times,
     discovery, acceptanceChecks, contextBytes: calls.reduce((sum, call) => sum + call.contextBytes, 0),
     unknownPreparationCost: ["Human fixture/oracle authorship and the supplied known graph are not timed by the runtime."],

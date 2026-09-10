@@ -110,7 +110,7 @@ test("one observed tool execution invalidates the run and still consumes its kno
   assert.equal(report.success, false); assert.equal(report.calls.length, 1);
   assert.equal(report.boundaryViolations.length, 1);
   assert.equal(report.stages[0]!.terminationReason, "context-boundary");
-  assert.ok(report.budget.observedCredits > 0); assert.equal(report.budget.activeReservations, 0);
+  assert.ok("observedCredits" in report.budget); assert.ok(report.budget.observedCredits > 0); assert.equal(report.budget.activeReservations, 0);
   assert.ok(report.calls.every(call => call.outcome !== "committed"));
 });
 
@@ -225,7 +225,7 @@ test("incomplete event coverage fails closed even when a terminal usage receipt 
     });
     assert.equal(report.success, false); assert.equal(report.calls.length, 1);
     assert.ok(report.boundaryViolations[0]!.events.includes(`incomplete-transcript:${code}`));
-    assert.ok(report.budget.observedCredits > 0); assert.equal(report.budget.unknownUsageCalls, 0);
+    assert.ok("observedCredits" in report.budget); assert.ok(report.budget.observedCredits > 0); assert.equal(report.budget.unknownUsageCalls, 0);
     assert.equal(report.budget.activeReservations, 0);
   }
 });
