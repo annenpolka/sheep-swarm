@@ -1,12 +1,12 @@
 # 羊型Agent Swarm — 現在の方針
 
-更新日: 2026-09-10。kernel、Luna4体、8・16・32体の反復、C=1のSQLite再開を実測した。別taskの[4方式比較](results/comparison-findings.md)と[Manager修正後の追加試行](results/manager-observation-fix.md)も記録した。一般的な有用性と創発は未確認。進捗は[ExecPlan](execplan.md)、規模の証拠は[結果](results/scaling-findings.md)、再開は[記録](results/durable-restart.md)を参照。
+更新日: 2026-09-11。kernel、Luna4体、8・16・32体の反復、C=1のSQLite再開を実測した。別taskの[4方式比較](results/comparison-findings.md)と[Manager修正後の追加試行](results/manager-observation-fix.md)も記録した。一般的な有用性と創発は未確認。進捗は[ExecPlan](execplan.md)、規模の証拠は[結果](results/scaling-findings.md)、再開は[記録](results/durable-restart.md)を参照。
 
 ## 目的と仮説
 
 下位モデルの個体数を増やしたとき、成果物依存に沿う局所的な作業が、群れ全体として有効な仕事へつながるかを確かめる。上位モデルは群れを観測し、必要なときに働く条件を調整する。
 
-中心仮説は、下位が増えても各個体が扱う情報を局所的に保ち、上位の必要時の介入によって、品質を維持した作業を継続できること。仕事量あたりの調整費用、誤りの広がり、停滞からの復旧も含めて評価する。
+現在の主仮説は、DeepSeek Flashが単体で手戻りするrepo変更を、分担・依存管理・必要時の上位介入によって正しく早く完了できること。品質と受入完了までの実所要時間を主指標とし、低費用モデルの採用による費用面の利点をさらに削ることは優先しない。固定時間内成功率は使わず、失敗・中断のelapsedと成功時だけのcompletionを分ける。
 
 少数個体での成功から増員時の振る舞いを推定しない。人数を変え、分業、情報伝播、混雑、振動、収束そのものを観測する。
 
@@ -17,11 +17,11 @@
 | 利用者が明示した意図 | swarmはより下位のモデル、メタマネジメントは上位のモデルが担う |
 | 利用者が明示した意図 | 下位から上位へ相談する形を避け、上位が必要時に干渉する |
 | 利用者が明示した意図 | 下位の数を膨らませたときの振る舞いが仮説の中心である |
-| 利用者が明示した意図 | Astra単独のコスト感は概ね把握できたため、今後の単独対照はLunaのみとし、必要時のAstra介入は継続する |
+| 利用者が明示した意図 | 主比較はopencode-go/deepseek-flashへ揃える。新規Astra単独試行は行わず、必要時のAstra介入と過去Luna系列の証拠は保持する |
 | 現在の作業上の既定値 | 上位1体、下位16体で最初の本実験。8・16・32体を初期比較範囲とし、64体を次の探索候補にする |
 | 現在の作業上の既定値 | 相談APIを持たない二つのループ、版と範囲を持つ介入、小さなkernelから早期の実worker比較へ進む |
 
-具体的な人数は設計対話で提案した検証前の値であり、利用者が指定した固定要件や、研究で確立された臨界人数ではない。実動作の下位モデルは2026-09-10の利用者指定で `gpt-5.6-luna` に固定。Codex CLIを使用し、上位は `gpt-6-astra` を作業上の既定値とする。金額上限や本運用の観測間隔は未選定で、実験ごとに呼出し回数・時間の上限を記録する。
+具体的な人数は設計対話で提案した検証前の値であり、利用者が指定した固定要件や、研究で確立された臨界人数ではない。主ベンチマークの下位は2026-09-11の利用者指定で `opencode-go/deepseek-flash`。上位介入を比較する段階ではManagerとSheepに同じ上位モデル・予算を使い、介入なし条件と分ける。時間によるtask採点締切は置かない。通信/check単位の停止設定と、call/tokenの受付上限は実行profileへ記録し、中断を完了として扱わない。過去Luna系列とCLIの既定モデルは書き換えない。
 
 ## 役割と二つのループ
 
@@ -150,3 +150,9 @@ activationはhostのchangedPathsと既知の静的/明示依存に限定する�
 ## MoonBitの追加対応
 
 [限定adapter](moonbit-repositories.md)を追加した。package依存と同一packageのreadonly補助宣言を用い、各packageの書換対象1ファイルに限定する。公開catalog不足や未対応構成を黙認せず、確定条件は実compilerと固定oracleに置く。[Go実走](results/moonbit-repository.md)は2target/2call。N4は動作確認で、規模や費用の優位へ一般化しない。
+
+## 品質と実所要時間の次段階
+
+PR #6のf04b191を基準版に固定し、最初はDeepSeek Flash単体と現行Sheepを同じrepo課題で比較する。[計画](execplan-quality-speed.md)。単体は全targetを1callで変更可能。公開検査だけを修復へ返し、非公開oracleは最後の採点に限定する。独立課題と依存伝播課題の小規模対照から、手戻りと待ちの原因を調べる。現行Sheepのcontext配信・schedulerを含む方式全体の比較であり、activation単独の効果とは区別する。Manager/上位介入、progressive activation、read wideningはこの基準値の後へ置く。
+
+初期の[品質・実所要時間比較](results/deepseek-quality-speed.md)を完了した。対象名固定系列は単体5/6・Sheep4/6成功で、一般的なSheep優位は確認できていない。公開下流テストが上流の誤りを示しても、下流だけ5回修復する固定反例が得られた。次の実装は公開証拠に基づく上流再検査・再起動を優先し、その後にManager/上位介入の比較へ進む。

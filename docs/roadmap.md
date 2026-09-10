@@ -2,6 +2,12 @@
 
 2026-09-09の [現在の方針](current-direction.md) に基づく計画。小さなkernelから実workerへ進み、人数を変えた振る舞いを早く観測する。各段階の状態は実行証拠に合わせる。詳細な進捗は [ExecPlan](execplan.md)、M2の証拠は [4体pilot](results/luna-four-worker-pilot.md) を参照。
 
+## DeepSeek Flashの品質・実所要時間比較 — 初期実走済み
+
+利用者の2026-09-11指定により主比較をopencode-go/deepseek-flashへ移し、固定時間による採点は採用しない。単体は全targetを1callで修正できるbaselineを追加し、2family×3variant×2方式を実行した。初回の配列応答形式による却下を保全し、対象名固定schemaの別12runも同じoracleで測定した。[結果](results/deepseek-quality-speed.md)。後者は単体5/6、Sheep4/6成功。496テスト・型検査・原資料照合・全receipt監査が成功した。
+
+次は、公開された下流エラーを使った上流前提の再検査・受理済みprovider再起動を固定反例で実装・比較する。現行の全target起動でも下流だけ5回修復する例があるため、初期起動数削減よりこの回復経路を先に検証する。Manager/上位介入、progressive activationの一般化、read widening、追加言語は別段階。過去Luna系列とPR #6の実測は書き換えない。
+
 ## MoonBit adapter — 限定対応と実走済み
 
 利用者の追加指定により[MoonBit対応](moonbit-repositories.md)を実装。[計画](execplan-moonbit.md)の完了条件は、新旧manifestの純粋解析、public catalogの完全性検査、package依存と補助ファイルの配信、関連targetだけの起動、実compilerの固定oracle受入。Go実走は関連2target/2call/2,323tokens、通常gateは488テスト成功。[証拠](results/moonbit-repository.md)。各packageの書換対象1ファイル、module内通常sourceの範囲。外部依存・workspace・生成等は未対応として明示拒否する。

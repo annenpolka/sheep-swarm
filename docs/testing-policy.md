@@ -47,7 +47,7 @@ M1では以下のうちcrash/restartを除くin-memoryの性質を確認する�
 
 ## 実LLMでの評価
 
-役割分担と規模の既定値は [現在の方針](current-direction.md) に従う。下位4体は動作確認、最初の本実験は下位16体＋上位1体、初期比較は8・16・32体、64体は次の探索候補。実動作の下位は利用者指定のgpt-5.6-lunaに固定し、上位はgpt-6-astraを作業上の既定値とする。Codex CLIの要求モデルと、実際に返ったモデル識別の証拠は区別する。
+役割分担と規模の既定値は [現在の方針](current-direction.md) に従う。下位4体は動作確認、最初の本実験は下位16体＋上位1体、初期比較は8・16・32体、64体は次の探索候補。主ベンチマークの下位は2026-09-11指定のopencode-go/deepseek-flash。上位を使う条件では方式間で同じ上位モデルと予算を揃える。要求モデルと、実際に返ったモデル識別の証拠は区別する。過去のLuna系列は凍結したまま残す。
 
 ### 規模探索
 
@@ -155,3 +155,11 @@ Astraの独立レビューで固定した反例も通常gateに含める。混�
 ## MoonBit adapter
 
 `tests/moonbit-*.test.ts`の8件はJSON/DSLのtokenization・拒否境界、source root・package edge・cycle、catalog不足と非公開file、activation・helper配信・受理済みprovider版を検査する。通常gateはMoon installationやAPIを使わない。実compiler検証は別の固定fixtureでbaseline失敗/reference成功/境界誤実装失敗を先に保存し、実Go候補を同一oracleと独立再実行で確認した。[実走証拠](results/moonbit-repository.md)。
+
+## 品質と実所要時間のrepo比較
+
+固定時間内成功率を採用しない。成功は同じ全体oracleと独立再検査・既知usage・元repo不変で決め、execution elapsedのうち成功時だけをcompletionとして記録する。失敗・中断にcompletionを代入しない。snapshot・全check・モデル再試行・独立再検査を含めた時間を測り、並列call時間の合計をwall timeと混同しない。準備経過と未測定の人間/親実作業時間は分ける。
+
+`repository-patch.test.ts`と`quality-speed-*.test.ts`は複数file原子的提案、書込scope、未知usage停止、hidden oracleの非フィードバック、固定fixtureのbaseline/reference/変異を検査する。実Go呼出しは通常gateの外で行う。
+
+`quality-speed-upstream-failure.test.ts`は、公開局所検査を通った誤providerが再起動されず、正しいconsumer候補を5回返しても失敗する現行限界を固定する。単体/Sheepの[実結果](results/deepseek-quality-speed.md)とは別の注入試験である。後続の回復実装でこの反例を解消する際も、公開検査とhidden oracleの境界を保持する。

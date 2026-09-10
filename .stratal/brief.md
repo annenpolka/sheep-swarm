@@ -2,7 +2,7 @@
 
 ## Goal
 
-下位モデルの群れを増やしたとき、成果物依存に沿う局所作業と、上位モデルの必要時の介入で、品質と作業の継続を保てるか確かめる。分業・伝播・混雑・収束と、認知範囲・費用・障害範囲を実コード上で観測する。
+DeepSeek Flash単体と群れを比較し、分担・依存管理・必要時の上位介入によって、同じrepo変更の品質と実際の受入完了までの時間を改善できるか確かめる。費用は上限制約と補助指標に置き、固定時間内成功率は使わない。
 
 ## Current Working Contract
 
@@ -19,8 +19,8 @@
 - 明示された利用者の方針を、Agentの推測で上書きしない。
 - referencesの既存snapshotを書き換えない。
 - 実装していない機能や試験していない性能を完了として報告しない。
-- 既存比較の実動作の下位モデルはgpt-5.6-lunaを用いる。2026-09-10のDeepSeek API対応依頼による各runnerの`--runtime deepseek`の明示選択を追加の例外とし、既存比較のmodelは黙って置換しない。
-- 2026-09-10の利用者方針により、Astra単独のコスト感は概ね把握できたため、今後の単独対照はLunaのみとする。群れへの必要時のAstra介入と、過去の実測・凍結記録は維持する。
+- 2026-09-11の利用者指定により主ベンチマークはopencode-go/deepseek-flash。単体・Manager・Sheepで下位を揃える。過去のLuna/DeepSeek実測とCLI defaultsは黙って置換しない。
+- 主目的は品質と実際の受入完了までの時間。固定時間内成功率は使わない。失敗・中断の完了時間はnull。費用は上限と補助指標。Astra単独の新規試行は行わず、必要時のAstra介入と過去の実測は維持する。
 
 ## Preference Gradients
 
@@ -114,7 +114,7 @@ Status: tentative
 Authority: Working default
 Evidence: Derived; 調査レポート第10節の評価提案。Observed; 2026-09-10の利用者によるAstra単独の新規試行を省く方針と、上下モデルを分ける意図。
 Working default:
-- 今後の単独対照にはLuna、Manager-localには同じ上下モデルの組を使う。Astra単独の新規試行は利用者方針により省く。規模探索と総予算を揃える有用性比較を分ける。
+- 主ベンチマークの単独対照にはDeepSeek Flash、Manager-localにはSheepと同じ上下モデルの組を使う。Astra単独の新規試行は利用者方針により省く。規模探索と総予算を揃える有用性比較を分ける。
 - 外側の受入条件をrun前に固定し、上位が作業仕様を直しても採点条件を緩めない。上位の観測・読み直し・介入、依存発見、監査を費用から落とさない。
 Why it matters:
 - 通知削減や少ないtokenだけで成功を装わないため。
@@ -232,3 +232,10 @@ Status: active
 ### MoonBit repository support
 
 利用者の追加指定により、MoonBit packageの静的依存と補助ファイル配信を追加。各packageのv2 write対象は1つとし、公開catalog不足や外部/生成/条件付き等の未対応依存は拒否する。指定のGo swarmを継続使用。parser生成後は親が型・入力境界を補修し、実MoonBit修正は2callで固定compiler oracleに合格。通常gate488件。[結果](../docs/results/moonbit-repository.md)。
+
+### DeepSeek Flashの品質と実所要時間
+Authority: Human stated (2026-09-11)
+
+「低費用はモデル選択である程度達成。品質と速度が問題」「主ベンチマークはdeepseek-flash」「固定時間はやめ、どれだけかかるか測る」を採用した。PR #6を基準に、まず独立3targetと依存連鎖3targetで単体/現行Sheepを比較する。完了はhidden oracleと独立再検査、時間は実行開始から元repo不変確認まで。準備・親レビューは別会計。詳細は[計画](../docs/execplan-quality-speed.md)。
+
+Validation: 初回の形式負担を保全し、対象名固定系列は単体5/6・Sheep4/6成功。固定時間採点なし、非成功のcompletionはnull。496テストと全24runのreceipt/候補/元repoを監査した。次は公開下流失敗から受理済み上流を再検査する経路を固定反例で検証する。[証拠](../docs/results/deepseek-quality-speed.md)。

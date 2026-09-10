@@ -6,6 +6,8 @@
 
 現在の方針は [docs/current-direction.md](docs/current-direction.md) にまとめている。下位4体の動作確認から16体へ進み、8・16・32体の初期比較を実行した。64体は次の探索候補で、最適人数や成功の境目はまだ示していない。
 
+主ベンチマークは`opencode-go/deepseek-flash`へ移し、品質と受入完了までの実所要時間を測る。固定時間内成功率は使わない。単体の複数file修正と現行Sheepの小規模対照を実行し、対象名固定系列は単体5/6・Sheep4/6成功だった。[全結果・時間・限界](docs/results/deepseek-quality-speed.md)、[計画](docs/execplan-quality-speed.md)。
+
 ## 現在の状態
 
 **kernel、実Luna worker、選択的な上位介入、8・16・32体の実測、SQLiteからの再開を実装し、別taskで4方式の初期比較まで完了した。**
