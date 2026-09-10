@@ -145,3 +145,9 @@ Astraの独立レビューで固定した反例も通常gateに含める。混�
 `read-selection-*.test.ts`はopaque資料のworld間不変、全資料へのregistry切替、固定oracleの旧版失敗・基準解成功・別world推測と入力境界変異の拒否を検査する。maxPathsPerReadの既定/範囲、超過時の非配信、host新規import要求、1pathからの推移closureを含む。call IDの辞書順に頼らず、同targetの配信/要求/最初のcommit順、欠落・重複・未知参照を検査する。
 
 実tmp Gitと注入callerで同じ課題の局所/広域を実行し、候補へ固定oracleを再実行する。改変delivery hashとunknown usageの監査拒否、元repo不変も確認する。通常gateはAPIを呼ばない。実Goの部品生成、親の補修、同品質pilotは[別証拠](results/read-selection-pilot.md)。構造上妥当なledger、手続き上の二段読取、意味的品質は独立の結果とし、文書配信をモデル理解の証明にはしない。
+
+## M8 TS / scaling / activation
+
+`remaining-*.test.ts`はASTでの通常/型import、reexport、型import式、非公開参照、構文不正、循環とソース非実行、疎な配列や入力変異、全opaque資料のregistry切替、TS moduleの実読み込みとJSON import attribute不備を検査する。changedPathsのscopeとv1拒否、関連targetだけの起動、受入後のprovider版の配信、元ファイル不変、0callの全体受入、見逃した意味依存による非成功を含む。
+
+実Goの部品生成、TS自己実装、規模比較、影響起動は[別証拠](results/repository-scale-activation.md)。各1回の比較を反復や一般的な有用性にしない。既知usageの意味的失敗はそのまま記録し、未知usage/予約超過/検証障害と分ける。自己実装でsnapshotに含まれなかった追加testは、存在を検査する独立snapshotで再検証した。原runのcase数を増やして書き換えない。

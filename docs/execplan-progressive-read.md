@@ -15,7 +15,7 @@ workerの読むファイル数そのものではなく、必要な情報を得�
 - [x] (2026-09-10 13:50:58Z) Go DeepSeek swarmによる生成部品を独立にレビューし統合。
 - [x] (2026-09-10 13:50:58Z) 決定論的な局所/広域対照、誤推測・まとめ読取・証拠欠落の反例を検査。
 - [x] (2026-09-10 13:50:58Z) 同じ課題で小規模のGo DeepSeek局所/広域実走と独立受入を報告。
-- [ ] 後続: TypeScript adapterとself-host、N/C系列、impact/activation（本変更の完了範囲外）。
+- [x] (2026-09-10 14:17:08Z) 後続: TS adapter/self-host、N/C系列、static impact/activationを[次の変更](execplan-repository-scale-activation.md)で実装・実走。意味依存の完全性や一般的な有用性は別課題。
 
 ## Surprises & Discoveries
 
@@ -43,7 +43,7 @@ workerの読むファイル数そのものではなく、必要な情報を得�
 
 ## Outcomes & Retrospective
 
-最初の範囲を実装し、実Goで両条件の固定品質と独立受入に成功した。localは6call/8,241tokens、broadは2call/5,593tokens。両targetで二段読取を観測できた一方、この小課題では追加callが総負担を増やした。元のM6成果と[今回の証拠](results/read-selection-pilot.md)を分けて保持する。後続のTS/self-host、N/C、impact/activationは未実装。`npm run check`で472テスト、型検査、原資料2snapshotが成功し、`git diff --check`も成功した。
+最初の範囲を実装し、実Goで両条件の固定品質と独立受入に成功した。localは6call/8,241tokens、broadは2call/5,593tokens。両targetで二段読取を観測できた一方、この小課題では追加callが総負担を増やした。元のM6成果と[今回の証拠](results/read-selection-pilot.md)を分けて保持する。この時点で未実装だったTS/self-host、N/C、impact/activationは[後続変更](execplan-repository-scale-activation.md)で実装・実走した。`npm run check`で472テスト、型検査、原資料2snapshotが成功し、`git diff --check`も成功した。
 
 ## Context and Orientation
 

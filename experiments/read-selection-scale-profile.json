@@ -1,0 +1,68 @@
+{
+  "format": 1,
+  "runtime": "opencode-go",
+  "workerModel": "deepseek-flash",
+  "thinking": "disabled",
+  "seed": "holdout-scale-0910",
+  "world": 7,
+  "targets": 16,
+  "documents": 64,
+  "maxWorkerCalls": 64,
+  "maxMetaCalls": 0,
+  "maxRounds": 24,
+  "maxTokens": 300000,
+  "reserveTokens": 20000,
+  "maxTokensPerCall": 6000,
+  "timeoutMs": 120000,
+  "aggregateMaxTokensIncludingInitialTrials": 1600000,
+  "initialTrialsTokens": 257863,
+  "order": [
+    {
+      "N": 8,
+      "C": 4,
+      "context": "local"
+    },
+    {
+      "N": 8,
+      "C": 4,
+      "context": "broad"
+    },
+    {
+      "N": 16,
+      "C": 4,
+      "context": "broad"
+    },
+    {
+      "N": 16,
+      "C": 4,
+      "context": "local"
+    },
+    {
+      "N": 32,
+      "C": 4,
+      "context": "local"
+    },
+    {
+      "N": 32,
+      "C": 4,
+      "context": "broad"
+    },
+    {
+      "N": 16,
+      "C": 8,
+      "context": "broad"
+    },
+    {
+      "N": 16,
+      "C": 8,
+      "context": "local"
+    }
+  ],
+  "stopOn": [
+    "unknown or incomplete usage",
+    "reservation overrun or denied admission",
+    "verification infrastructure failure",
+    "missing or invalid evidence"
+  ],
+  "knownSemanticFailure": "Record failed quality and continue independent planned conditions; do not rerun or expand that task."
+}

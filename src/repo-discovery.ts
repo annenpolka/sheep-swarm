@@ -6,6 +6,7 @@ import type {RepoSnapshot} from './repo-types.ts';
 import type {SwarmTaskControl} from './swarm.ts';
 import {discoverRepoDependencies, type RepoDependencyScan} from './repo-dependencies.ts';
 import {REPO_WORKER_SCHEMA, parseWorkerResponse} from './worker-proposal.ts';
+import {selectImpactedTargets} from './repo-impact.ts';
 
 export const REPO_GOAL='.sheep-internal/goal.md';
 export const REPO_GUIDANCE='.sheep-internal/guidance.md';
@@ -22,6 +23,7 @@ export class RepositoryDiscovery implements SwarmTaskControl {
   readonly artifacts:Record<string,string>={};
   readonly instructions=new Map<string,string>();
   readonly scans:RepoDependencyScan[]=[];
+  readonly activation:{mode:'all'|'changed';changedPaths:readonly string[];activeTargets:string[];unaffectedTargets:string[]};
   readonly #snapshot:RepoSnapshot;
   readonly #public:Set<string>;
   readonly #targets:Set<string>;
@@ -42,6 +44,13 @@ export class RepositoryDiscovery implements SwarmTaskControl {
     this.maxAttempts=3+options.maxReadCalls;
     this.#targets=new Set(snapshot.task.files.map(f=>f.path));
     this.#public=new Set([...this.#targets,...snapshot.task.context,...options.readable]);
+    const changed=snapshot.task.activation?.changedPaths;
+    const impactEdges=[...scan.edges,...snapshot.task.files.flatMap(f=>[...f.dependsOn,...snapshot.task.context].filter(p=>p!==f.path).map(provider=>({consumer:f.path,provider})))];
+    const selectedImpact=changed===undefined?{activeTargets:[...this.#targets],unaffectedTargets:[]}:
+      selectImpactedTargets({targets:[...this.#targets],changedPaths:changed,edges:impactEdges,
+        uncertainConsumers:[...this.#targets].filter(p=>! /\.(?:mjs|ts|mts)$/.test(p))});
+    this.activation={mode:changed===undefined?'all':'changed',changedPaths:changed??[],...selectedImpact};
+    const active=new Set(this.activation.activeTargets);
     for(const path of this.#public)this.artifacts[path]=snapshot.initialTargets[path]??snapshot.entries.get(path)!.bytes.toString('utf8');
     snapshot.task.files.forEach((file,i)=>{
       const instruction=`.sheep-internal/instructions/${i}.md`;
@@ -49,7 +58,9 @@ export class RepositoryDiscovery implements SwarmTaskControl {
       const selected=this.closure([file.path,...snapshot.task.context,...file.dependsOn]);selected.delete(file.path);
       this.#selected.set(file.path,selected);
       for(const provider of selected)this.edge(file.path,provider);
-      for(const provider of [REPO_GOAL,REPO_GUIDANCE,instruction])this.edge(file.path,provider);
+      // Only selected work receives the initial goal-change obligation. All declared
+      // targets retain their normal dependency edges and may wake on later commits.
+      for(const provider of [REPO_GUIDANCE,instruction,...(active.has(file.path)?[REPO_GOAL]:[])])this.edge(file.path,provider);
     });
   }
 
@@ -169,7 +180,7 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
   }
   metrics(calls:readonly {role:string;target:string;contextBytes:number}[]) {
     const workers=calls.filter(c=>c.role==='worker');const sizes=workers.map(c=>c.contextBytes).sort((a,b)=>a-b);
-    return {selectedTargets:this.#targets.size,activatedTargets:new Set(workers.map(c=>c.target)).size,
+    return {selectedTargets:this.#targets.size,activatedTargets:new Set(workers.map(c=>c.target)).size,initiallyActivatedTargets:this.activation.activeTargets.length,
       scanCount:this.scans.length,scannedFiles:this.scans.reduce((n,s)=>n+s.filesRead,0),scannedBytes:this.scans.reduce((n,s)=>n+s.bytesRead,0),scanDurationMs:this.scans.reduce((n,s)=>n+s.durationMs,0),
       contextBytes:{total:sizes.reduce((n,b)=>n+b,0),p95:sizes[Math.max(0,Math.ceil(sizes.length*0.95)-1)]??0,max:sizes.at(-1)??0},
       uniqueDeliveredDependencies:new Set(this.#deliveries.map(d=>d.path)).size,readRequests:this.#requests.length,
@@ -177,6 +188,7 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
       additionalDeliveredBytes:[...this.#deliveredBytes.values()].reduce((n,b)=>n+b,0)};
   }
   async save(directory:string):Promise<void> {
+    await writeFile(join(directory,'activation.json'),JSON.stringify({format:1,...this.activation,limitations:['static-and-declared-context-impact-only','changed-paths-are-host-declared','final-oracle-still-covers-all-targets']},null,2)+'\n');
     await writeFile(join(directory,'dependency-evidence.json'),JSON.stringify({format:1,edges:this.dependencies(),evidence:this.#evidence,scans:this.scans},null,2)+'\n');
     await writeFile(join(directory,'read-deliveries.json'),JSON.stringify({format:1,requests:this.#requests,deliveries:this.#deliveries,additionalBytesByTarget:Object.fromEntries(this.#deliveredBytes)},null,2)+'\n');
     await writeFile(join(directory,'uncertainties.json'),JSON.stringify({format:1,claims:this.#uncertainties},null,2)+'\n');

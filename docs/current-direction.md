@@ -140,3 +140,9 @@
 [添付議論の精査](discussion-review-progressive-read.md)を踏まえ、目標をファイル数最小化から、必要な知識を得て完成するまでの総負担へ置く。広い初期配信を正式な対照とし、read scope・impact scope・write authorityを分ける。配信記録は理解の証明ではなく、固定品質と別に検査する。
 
 最初の[Go pilot](results/read-selection-pilot.md)は両方式とも成功したが、局所6call/8,241tokens、広域2call/5,593tokensだった。1callのcontext縮小だけで局所方式の優位を判断しない。次はTS adapterとself-hostで実repoの構造を増やし、その後にN/C比較とactivationへ進む。上位の必要時介入と既存のLuna規模比較方針は継続する。
+
+## M8の完了と観測上の限界
+
+[TS自己実装・N/C対照・static impact](results/repository-scale-activation.md)を実装・実走した。16targetの8条件で7成功、N16/C4 localはread上限による未完了。成功品質の比較からこの失敗を除外するだけでなく、失敗率と消費として残す。登録32でもbroadでは16個体しか参加せず、Nと実際の稼働を同一視しない。
+
+activationはhostのchangedPathsと既知の静的/明示依存に限定する。初期起動の候補を絞ること、本文を実配信すること、書込権限を与えることは別の操作。見えていない意味依存は全体oracleで非成功となる場合を検査し、confidenceだけで完了範囲を広げない。

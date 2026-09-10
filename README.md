@@ -18,6 +18,7 @@
 | 現在の方針・役割分担・規模比較 | [docs/current-direction.md](docs/current-direction.md) |
 | 共通CLI・repo v2の依存発見と追加読取 | [CLI](docs/cli.md)、[議論の精査](docs/discussion-review-20260910.md)、[実装・実走](docs/results/repository-discovery.md)、[実行計画](docs/execplan-repository-discovery.md) |
 | 段階読取と広い初期contextの同品質pilot | [実測・再現手順](docs/results/read-selection-pilot.md)、[次の計画](docs/execplan-progressive-read.md) |
+| TS自己実装・N/C比較・変更からの対象起動 | [結果と限界](docs/results/repository-scale-activation.md)、[実行計画](docs/execplan-repository-scale-activation.md) |
 | 現在の設計・不変条件 | [docs/design.md](docs/design.md) |
 | 実装順序と各段階の完了条件 | [docs/roadmap.md](docs/roadmap.md) |
 | 検証方針と故障シナリオ | [docs/testing-policy.md](docs/testing-policy.md) |
@@ -71,6 +72,8 @@ TypeScriptの実行にはNode.jsのtype strippingを使い、型検査は別に 
 5主commandは共通のhelp・dry-run・alias・JSON/textに対応する。`npm run sheep -- repo --help`で確認でき、旧入口のJSONと既定値も保持する。task v2は担当固有の指示と実配信した版を追跡し、未解決・不明usageを成功にしない。Go DeepSeekの小規模実走は3targetが5callで固定受入に成功した。[失敗試行を含む証拠](docs/results/repository-discovery.md)。
 
 task v2には1要求のpath上限を追加した。opaqueな24文書からregistryでpolicyを選ぶ2target課題で、Go DeepSeekの局所/広域条件が同じ固定検査に成功した。局所は6call・8,241tokens、広域は2call・5,593tokensで、この小課題では追加読取の総tokensが多かった。読取順の証拠と品質を分離して記録している。[実測と限界](docs/results/read-selection-pilot.md)。
+
+`.ts`/`.mts`の型だけのimportを含む静的解析と、`activation.changedPaths`から依存先のtargetだけを初期起動するopt-inを追加した。TSの実自己実装、16targetでN8/16/32・C4/8の8条件、関連2targetだけの実起動を確認した。規模対照は7成功・1未完了で、失敗分も含めて報告する。TS解析は既存typescript 7.0.2のnative APIを使うため、通常のdevDependenciesを含む `npm ci` が必要。[実測・検証](docs/results/repository-scale-activation.md)。
 
 独立レビューで、検査後のprocess group回収、親Gitの誤参照防止、検査基盤障害での呼出し停止、局所検査の診断引継ぎを補修した。[再現と検証](docs/results/repository-runner-astra-review.md)。
 

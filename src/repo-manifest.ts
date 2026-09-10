@@ -147,7 +147,7 @@ function parseFileTask(value: unknown, where: string): RepoFileTask {
 
 export function parseRepoTask(value: unknown): RepoTask {
   if (!isPlainObject(value)) throw new Error('repository task must be an object');
-  rejectUnknownKeys(value, ['version', 'goal', 'files', 'context', 'protected', 'checks', ...(value.version === 2 ? ['discovery'] : [])], 'repository task');
+  rejectUnknownKeys(value, ['version', 'goal', 'files', 'context', 'protected', 'checks', ...(value.version === 2 ? ['discovery','activation'] : [])], 'repository task');
   if (!Object.prototype.hasOwnProperty.call(value, 'version')) throw new Error('repository task.version is required');
   if (value.version !== 1 && value.version !== 2) throw new Error('repository task.version must be 1 or 2');
   if (!Object.prototype.hasOwnProperty.call(value, 'goal')) throw new Error('repository task.goal is required');
@@ -218,6 +218,15 @@ export function parseRepoTask(value: unknown): RepoTask {
   };
   const maxPathsPerRead=bounded(d.maxPathsPerRead,32,32);
   if(maxPathsPerRead<1)throw new Error('maxPathsPerRead must be from 1 to 32');
-  return {version:2,...base,discovery:{mode:d.mode,readable,maxPathsPerRead,
+  let activation:{changedPaths:readonly string[]}|undefined;
+  if(value.activation!==undefined){
+    if(!isPlainObject(value.activation))throw new Error('activation must be an object');
+    rejectUnknownKeys(value.activation,['changedPaths'],'activation');
+    const changedPaths=parsePathList(value.activation.changedPaths,'activation.changedPaths');
+    const publicPaths=new Set([...targetPaths,...context,...readable]);
+    for(const path of changedPaths)if(!publicPaths.has(path))throw new Error('activation path is outside public scope: '+path);
+    activation={changedPaths};
+  }
+  return {version:2,...base,...(activation?{activation}:{}),discovery:{mode:d.mode,readable,maxPathsPerRead,
     maxReadCalls:bounded(d.maxReadCalls,2,32),maxDeliveredBytes:bounded(d.maxDeliveredBytes,65536,2*1024*1024)}};
 }

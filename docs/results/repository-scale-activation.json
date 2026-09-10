@@ -1,0 +1,1558 @@
+{
+  "format": 1,
+  "date": "2026-09-10",
+  "baseCommit": "cff1ec5",
+  "runtime": "opencode-go",
+  "requestedModel": "deepseek-flash",
+  "thinking": "disabled",
+  "toolchain": {
+    "node": "26.0.0",
+    "typescript": "7.0.2",
+    "platform": "darwin-arm64",
+    "packageLockSha256": "df65b657a516d338ead84eb59d3db48144d622be3db3deccc864707e9eba80b8"
+  },
+  "series": {
+    "status": "complete",
+    "totalCap": 1600000,
+    "priorKnownTokens": 257863,
+    "measuredTokens": 892681,
+    "includingPriorTokens": 1150544,
+    "frozenRuntimeSha256": "8121638b37ebf90117608f9ae38f687e7a73d82541f03e7bd750402546e506a7",
+    "fixtureSha256": "bb769be47d7613eec14170543250e08a99f24e069fa7274da12bb7a6031363f8",
+    "seed": "holdout-scale-0910",
+    "world": 7,
+    "targets": 16,
+    "documents": 64,
+    "profile": {
+      "perRunCap": 300000,
+      "reserveTokens": 20000,
+      "maxCalls": 64,
+      "maxRounds": 24,
+      "maxTokensPerCall": 6000
+    },
+    "conditions": [
+      {
+        "qualityPass": true,
+        "audit": {
+          "valid": true,
+          "errors": [],
+          "targets": [
+            {
+              "target": "modules/unit-00.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-01.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-02.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-03.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-04.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-05.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-06.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-07.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-08.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-09.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-10.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-11.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-12.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-13.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-14.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-15.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            }
+          ]
+        },
+        "sourceUnchanged": true,
+        "N": 8,
+        "C": 4,
+        "maxActiveWorkers": 4,
+        "participatingWorkers": 8,
+        "lowerCalls": 48,
+        "upperCalls": 0,
+        "tokens": 123221,
+        "usageComplete": true,
+        "context": {
+          "selectedTargets": 16,
+          "activatedTargets": 16,
+          "scanCount": 17,
+          "scannedFiles": 272,
+          "scannedBytes": 52642,
+          "scanDurationMs": 1494,
+          "contextBytes": {
+            "total": 75859,
+            "p95": 1931,
+            "max": 1932
+          },
+          "uniqueDeliveredDependencies": 17,
+          "readRequests": 32,
+          "acceptedReadRequests": 32,
+          "openUncertainties": 0,
+          "additionalDeliveredBytes": 26353
+        },
+        "durationMs": 26222,
+        "requestedModel": "deepseek-flash",
+        "effectiveEvidence": [
+          "deepseek-flash"
+        ],
+        "evidenceSha256": {
+          "result.json": "354305b372f28d2987b1d684dd65ff4355e95f11ebe90f2927d8ee2bdd537f12",
+          "artifacts.json": "8a23261ce7ec471442f62eb0c35db9468677ed925c4db6c73d5fce7120a222ad",
+          "task.json": "4f73c60f6e34bc3522f6449ffacf4405d8247aa84423f35acfa3b294b0bb9976",
+          "read-deliveries.json": "fb59c3c4094b7abcdd36c64f35139a752036bb2f61eaf6be24fb6474596bd05c",
+          "swarm/kernel-state.json": "5a4b5e5aca9b3f73eab55092fe50647c078347599724d6a269bf644d84edf7c3"
+        },
+        "fixtureSha256": "bb769be47d7613eec14170543250e08a99f24e069fa7274da12bb7a6031363f8",
+        "cost": null,
+        "name": "module-n8-c4-local",
+        "evidenceRoot": ".sheep/m8-build/module-n8-c4-local",
+        "nonReadUnsuccessfulProposals": 0,
+        "verification": {
+          "ok": true,
+          "errors": [],
+          "candidateDigest": "2f0ffddce7e6fa0b77b8902bc3da56a0f203567925dff1b84844934d73c2b70c",
+          "checksDigest": "4efef15eb0924a69cd7f9da8784b969a02163e41ca9e18bde470fdcdd653a90d",
+          "environmentId": "host-process-group-v1/node-26.0.0/darwin-arm64",
+          "phase": "final",
+          "status": "pass",
+          "cleanup": "process-group-attempted"
+        },
+        "auditSha256": "cd328cbd4e59701ea93e09094e6590490f4f8c26e876d7f8ad71a03490323d83"
+      },
+      {
+        "qualityPass": true,
+        "audit": {
+          "valid": true,
+          "errors": [],
+          "targets": [
+            {
+              "target": "modules/unit-00.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-01.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-02.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-03.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-04.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-05.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-06.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-07.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-08.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-09.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-10.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-11.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-12.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-13.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-14.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-15.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            }
+          ]
+        },
+        "sourceUnchanged": true,
+        "N": 8,
+        "C": 4,
+        "maxActiveWorkers": 4,
+        "participatingWorkers": 8,
+        "lowerCalls": 17,
+        "upperCalls": 0,
+        "tokens": 123091,
+        "usageComplete": true,
+        "context": {
+          "selectedTargets": 16,
+          "activatedTargets": 16,
+          "scanCount": 18,
+          "scannedFiles": 288,
+          "scannedBytes": 54819,
+          "scanDurationMs": 1616,
+          "contextBytes": {
+            "total": 121998,
+            "p95": 7177,
+            "max": 7177
+          },
+          "uniqueDeliveredDependencies": 65,
+          "readRequests": 0,
+          "acceptedReadRequests": 0,
+          "openUncertainties": 0,
+          "additionalDeliveredBytes": 0
+        },
+        "durationMs": 14423,
+        "requestedModel": "deepseek-flash",
+        "effectiveEvidence": [
+          "deepseek-flash"
+        ],
+        "evidenceSha256": {
+          "result.json": "7242424158535cc2a5bfbdcc3c962a90d79e3fecd6e98cc8bb211cecb34ef22e",
+          "artifacts.json": "9d1306cf05589b3a534a34b906c8f4ab5610ab824e34fac7d46bfa5c645d0dfd",
+          "task.json": "55cf8a982022f6c03b87889fdf4db3e9dbb9e4b21127936d0bf3b95343fe2da3",
+          "read-deliveries.json": "bda5ca2ec3df2be6308e0bb62f6fc5db4b4acb5a0c282d4d3ca1621ebd453a33",
+          "swarm/kernel-state.json": "167fc66c8ee2919da5527dcff6eff4cb305ebb2389c8e5120a605daf7bc67968"
+        },
+        "fixtureSha256": "bb769be47d7613eec14170543250e08a99f24e069fa7274da12bb7a6031363f8",
+        "cost": null,
+        "name": "module-n8-c4-broad",
+        "evidenceRoot": ".sheep/m8-build/module-n8-c4-broad",
+        "nonReadUnsuccessfulProposals": 1,
+        "verification": {
+          "ok": true,
+          "errors": [],
+          "candidateDigest": "a6c957056140ba22636d89640ee9b5e6fb8996757f73a3a77e16efd5a33145cf",
+          "checksDigest": "4efef15eb0924a69cd7f9da8784b969a02163e41ca9e18bde470fdcdd653a90d",
+          "environmentId": "host-process-group-v1/node-26.0.0/darwin-arm64",
+          "phase": "final",
+          "status": "pass",
+          "cleanup": "process-group-attempted"
+        },
+        "auditSha256": "a9651d4a48f4f5afb03311317732d4f741b2529c495a540e4ec78b236e9667a6"
+      },
+      {
+        "qualityPass": true,
+        "audit": {
+          "valid": true,
+          "errors": [],
+          "targets": [
+            {
+              "target": "modules/unit-00.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-01.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-02.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-03.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-04.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-05.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-06.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-07.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-08.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-09.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-10.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-11.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-12.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-13.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-14.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-15.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            }
+          ]
+        },
+        "sourceUnchanged": true,
+        "N": 16,
+        "C": 4,
+        "maxActiveWorkers": 4,
+        "participatingWorkers": 16,
+        "lowerCalls": 17,
+        "upperCalls": 0,
+        "tokens": 105137,
+        "usageComplete": true,
+        "context": {
+          "selectedTargets": 16,
+          "activatedTargets": 16,
+          "scanCount": 18,
+          "scannedFiles": 288,
+          "scannedBytes": 54552,
+          "scanDurationMs": 1678,
+          "contextBytes": {
+            "total": 121998,
+            "p95": 7177,
+            "max": 7177
+          },
+          "uniqueDeliveredDependencies": 65,
+          "readRequests": 0,
+          "acceptedReadRequests": 0,
+          "openUncertainties": 0,
+          "additionalDeliveredBytes": 0
+        },
+        "durationMs": 14982,
+        "requestedModel": "deepseek-flash",
+        "effectiveEvidence": [
+          "deepseek-flash"
+        ],
+        "evidenceSha256": {
+          "result.json": "3ac8096387cadd54daef3cb577ee11740815cdb730ff1705e47cbb70e1c283b8",
+          "artifacts.json": "1cdc17be6d8737e556cca3f0081224dd31e36406ed95dab4ed78ae8137576f68",
+          "task.json": "55cf8a982022f6c03b87889fdf4db3e9dbb9e4b21127936d0bf3b95343fe2da3",
+          "read-deliveries.json": "88e585845247ebdf643f6a2292abdfaa0a42f91c58f5611206a0ccb9e145aa6b",
+          "swarm/kernel-state.json": "6af73bbdc0dc0f31401f61b4d89e9ce103515cb71f0af7ee2e2f0c1ccdb712d3"
+        },
+        "fixtureSha256": "bb769be47d7613eec14170543250e08a99f24e069fa7274da12bb7a6031363f8",
+        "cost": null,
+        "name": "module-n16-c4-broad",
+        "evidenceRoot": ".sheep/m8-build/module-n16-c4-broad",
+        "nonReadUnsuccessfulProposals": 1,
+        "verification": {
+          "ok": true,
+          "errors": [],
+          "candidateDigest": "3d29186b7fd0cacbcabe822b517e41d679d429212a11c12b755e169db80a71ae",
+          "checksDigest": "4efef15eb0924a69cd7f9da8784b969a02163e41ca9e18bde470fdcdd653a90d",
+          "environmentId": "host-process-group-v1/node-26.0.0/darwin-arm64",
+          "phase": "final",
+          "status": "pass",
+          "cleanup": "process-group-attempted"
+        },
+        "auditSha256": "9653b8c16a3666d3344462361b39f4cd570ca49960149c63fb0b1eb1e014ebff"
+      },
+      {
+        "qualityPass": false,
+        "audit": {
+          "valid": true,
+          "errors": [],
+          "targets": [
+            {
+              "target": "modules/unit-00.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-01.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-02.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-03.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-04.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-05.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-06.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-07.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-08.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-09.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-10.ts",
+              "registryDelivered": false,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": false
+            },
+            {
+              "target": "modules/unit-11.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-12.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-13.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-14.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-15.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            }
+          ]
+        },
+        "sourceUnchanged": true,
+        "N": 16,
+        "C": 4,
+        "maxActiveWorkers": 4,
+        "participatingWorkers": 16,
+        "lowerCalls": 49,
+        "upperCalls": 0,
+        "tokens": 114456,
+        "usageComplete": true,
+        "context": {
+          "selectedTargets": 16,
+          "activatedTargets": 16,
+          "scanCount": 16,
+          "scannedFiles": 256,
+          "scannedBytes": 44690,
+          "scanDurationMs": 1538,
+          "contextBytes": {
+            "total": 76738,
+            "p95": 1931,
+            "max": 1931
+          },
+          "uniqueDeliveredDependencies": 16,
+          "readRequests": 33,
+          "acceptedReadRequests": 32,
+          "openUncertainties": 3,
+          "additionalDeliveredBytes": 26307
+        },
+        "durationMs": 30812,
+        "requestedModel": "deepseek-flash",
+        "effectiveEvidence": [
+          "deepseek-flash"
+        ],
+        "evidenceSha256": {
+          "result.json": "c7490a64b845348a8b6a0cef1d2462abfc8ccbdc6a414479fd02c64936a0cc09",
+          "artifacts.json": "f5c6cf44897dfcf5dd52d4c46185717904b742b24b2dc869228f441f94a65d34",
+          "task.json": "4f73c60f6e34bc3522f6449ffacf4405d8247aa84423f35acfa3b294b0bb9976",
+          "read-deliveries.json": "b9209eab1cfe82a89afb33ed7ef8a6c7f8d1e3091a46007ad8b76373563b7610",
+          "swarm/kernel-state.json": "471b70fabf4e49c0d5061884615b52a6ee02f437a24d0de75966a4101b6464ee"
+        },
+        "fixtureSha256": "bb769be47d7613eec14170543250e08a99f24e069fa7274da12bb7a6031363f8",
+        "cost": null,
+        "name": "module-n16-c4-local",
+        "evidenceRoot": ".sheep/m8-build/module-n16-c4-local",
+        "nonReadUnsuccessfulProposals": 2,
+        "verification": {
+          "ok": false,
+          "errors": [
+            "command exited with code 1: /opt/homebrew/Cellar/node/26.0.0/bin/node check.mjs"
+          ],
+          "candidateDigest": "64c54e56a118a7534dca463099526643d8c0de564f089062618d13304a4a7e34",
+          "checksDigest": "4efef15eb0924a69cd7f9da8784b969a02163e41ca9e18bde470fdcdd653a90d",
+          "environmentId": "host-process-group-v1/node-26.0.0/darwin-arm64",
+          "phase": "final",
+          "status": "reject",
+          "cleanup": "process-group-attempted"
+        },
+        "auditSha256": "bba0bf6ec8c775322a2cb533ec366982891fd6bfb55b1c2f3f0d706b6378b2f2"
+      },
+      {
+        "qualityPass": true,
+        "audit": {
+          "valid": true,
+          "errors": [],
+          "targets": [
+            {
+              "target": "modules/unit-00.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-01.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-02.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-03.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-04.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-05.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-06.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-07.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-08.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-09.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-10.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-11.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-12.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-13.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-14.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-15.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            }
+          ]
+        },
+        "sourceUnchanged": true,
+        "N": 32,
+        "C": 4,
+        "maxActiveWorkers": 4,
+        "participatingWorkers": 32,
+        "lowerCalls": 48,
+        "upperCalls": 0,
+        "tokens": 107340,
+        "usageComplete": true,
+        "context": {
+          "selectedTargets": 16,
+          "activatedTargets": 16,
+          "scanCount": 17,
+          "scannedFiles": 272,
+          "scannedBytes": 51954,
+          "scanDurationMs": 1506,
+          "contextBytes": {
+            "total": 75859,
+            "p95": 1931,
+            "max": 1932
+          },
+          "uniqueDeliveredDependencies": 17,
+          "readRequests": 32,
+          "acceptedReadRequests": 32,
+          "openUncertainties": 0,
+          "additionalDeliveredBytes": 26353
+        },
+        "durationMs": 26454,
+        "requestedModel": "deepseek-flash",
+        "effectiveEvidence": [
+          "deepseek-flash"
+        ],
+        "evidenceSha256": {
+          "result.json": "f7f6cc19aaa3890ab05a1075685402cce7c41cef662ce0578b17135882be39a0",
+          "artifacts.json": "4c4f8dc326c63c75ef910c7787a1d48629072cb082c84af6db8b088545c4a4fb",
+          "task.json": "4f73c60f6e34bc3522f6449ffacf4405d8247aa84423f35acfa3b294b0bb9976",
+          "read-deliveries.json": "68f5ac1da9a1ab5562da9ceee28c400987ddcbd9b9e0f5adf3ef9eae1ecd1c41",
+          "swarm/kernel-state.json": "9e76dbecefd09022cf09dd3a149cb935861081edfb90257bc562ed064e9c43da"
+        },
+        "fixtureSha256": "bb769be47d7613eec14170543250e08a99f24e069fa7274da12bb7a6031363f8",
+        "cost": null,
+        "name": "module-n32-c4-local",
+        "evidenceRoot": ".sheep/m8-build/module-n32-c4-local",
+        "nonReadUnsuccessfulProposals": 0,
+        "verification": {
+          "ok": true,
+          "errors": [],
+          "candidateDigest": "5aa16e42221f4ec29bd700bd751f3075bf7ac359e20ac2f151784e1c3488bc94",
+          "checksDigest": "4efef15eb0924a69cd7f9da8784b969a02163e41ca9e18bde470fdcdd653a90d",
+          "environmentId": "host-process-group-v1/node-26.0.0/darwin-arm64",
+          "phase": "final",
+          "status": "pass",
+          "cleanup": "process-group-attempted"
+        },
+        "auditSha256": "347f6b7861ad00e28a89a1cf1f10e76143e73e32ff19bc78eb9ba590505546a0"
+      },
+      {
+        "qualityPass": true,
+        "audit": {
+          "valid": true,
+          "errors": [],
+          "targets": [
+            {
+              "target": "modules/unit-00.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-01.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-02.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-03.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-04.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-05.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-06.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-07.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-08.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-09.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-10.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-11.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-12.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-13.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-14.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-15.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            }
+          ]
+        },
+        "sourceUnchanged": true,
+        "N": 32,
+        "C": 4,
+        "maxActiveWorkers": 4,
+        "participatingWorkers": 16,
+        "lowerCalls": 16,
+        "upperCalls": 0,
+        "tokens": 97276,
+        "usageComplete": true,
+        "context": {
+          "selectedTargets": 16,
+          "activatedTargets": 16,
+          "scanCount": 17,
+          "scannedFiles": 272,
+          "scannedBytes": 53430,
+          "scanDurationMs": 1684,
+          "contextBytes": {
+            "total": 114822,
+            "p95": 7177,
+            "max": 7177
+          },
+          "uniqueDeliveredDependencies": 65,
+          "readRequests": 0,
+          "acceptedReadRequests": 0,
+          "openUncertainties": 0,
+          "additionalDeliveredBytes": 0
+        },
+        "durationMs": 13629,
+        "requestedModel": "deepseek-flash",
+        "effectiveEvidence": [
+          "deepseek-flash"
+        ],
+        "evidenceSha256": {
+          "result.json": "a637a49f0045b640e81f5ee4cd25d7d1d1686a92b4ba7df195015a090974791c",
+          "artifacts.json": "a8f566d90866f9c8b0867a36db4904abdd53fdc2f80c6ff0880359bfe5d94944",
+          "task.json": "55cf8a982022f6c03b87889fdf4db3e9dbb9e4b21127936d0bf3b95343fe2da3",
+          "read-deliveries.json": "bf415335e642844b14fd83e75f52655f26b547a181b5ff059e3ec53622e885fe",
+          "swarm/kernel-state.json": "fbd7bad84541aa46c0d08d2903fbe7bc81888e623ca313fd95e24f4a89d3183f"
+        },
+        "fixtureSha256": "bb769be47d7613eec14170543250e08a99f24e069fa7274da12bb7a6031363f8",
+        "cost": null,
+        "name": "module-n32-c4-broad",
+        "evidenceRoot": ".sheep/m8-build/module-n32-c4-broad",
+        "nonReadUnsuccessfulProposals": 0,
+        "verification": {
+          "ok": true,
+          "errors": [],
+          "candidateDigest": "78e3d879c1f98e2be1f37954167932278aa32749fbbd7b92f6c1783979098bde",
+          "checksDigest": "4efef15eb0924a69cd7f9da8784b969a02163e41ca9e18bde470fdcdd653a90d",
+          "environmentId": "host-process-group-v1/node-26.0.0/darwin-arm64",
+          "phase": "final",
+          "status": "pass",
+          "cleanup": "process-group-attempted"
+        },
+        "auditSha256": "e17bdb5f170bb2ce8f1ab489e03a23b383d5a458d2fea817d9148dec5a0dfbf4"
+      },
+      {
+        "qualityPass": true,
+        "audit": {
+          "valid": true,
+          "errors": [],
+          "targets": [
+            {
+              "target": "modules/unit-00.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-01.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-02.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-03.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-04.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-05.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-06.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-07.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-08.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-09.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-10.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-11.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-12.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-13.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-14.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-15.ts",
+              "registryDelivered": true,
+              "policyRequested": false,
+              "sequentialRead": false,
+              "policyDeliveredBeforeCommit": true
+            }
+          ]
+        },
+        "sourceUnchanged": true,
+        "N": 16,
+        "C": 8,
+        "maxActiveWorkers": 8,
+        "participatingWorkers": 16,
+        "lowerCalls": 17,
+        "upperCalls": 0,
+        "tokens": 107381,
+        "usageComplete": true,
+        "context": {
+          "selectedTargets": 16,
+          "activatedTargets": 16,
+          "scanCount": 18,
+          "scannedFiles": 288,
+          "scannedBytes": 57558,
+          "scanDurationMs": 1833,
+          "contextBytes": {
+            "total": 121999,
+            "p95": 7177,
+            "max": 7177
+          },
+          "uniqueDeliveredDependencies": 65,
+          "readRequests": 0,
+          "acceptedReadRequests": 0,
+          "openUncertainties": 0,
+          "additionalDeliveredBytes": 0
+        },
+        "durationMs": 11589,
+        "requestedModel": "deepseek-flash",
+        "effectiveEvidence": [
+          "deepseek-flash"
+        ],
+        "evidenceSha256": {
+          "result.json": "1b60c8a70a1d91af45f8d8f08427ee04b6a49a5b45d9d76536a0c83ddf41bd7c",
+          "artifacts.json": "4b3b29b08da2d4f4e0e7b7c5c340a2091c365e68e1e115eec20882b3ab464fb9",
+          "task.json": "55cf8a982022f6c03b87889fdf4db3e9dbb9e4b21127936d0bf3b95343fe2da3",
+          "read-deliveries.json": "28f5a3646bc6619c92cab4f4a045896707c28b16cfc459923e2cfe6bcb5898ef",
+          "swarm/kernel-state.json": "855e0aa22f2ceea1e0a5d0bf8c19382d427fe3b7a99a9e6a507e04a90b033d21"
+        },
+        "fixtureSha256": "bb769be47d7613eec14170543250e08a99f24e069fa7274da12bb7a6031363f8",
+        "cost": null,
+        "name": "module-n16-c8-broad",
+        "evidenceRoot": ".sheep/m8-build/module-n16-c8-broad",
+        "nonReadUnsuccessfulProposals": 1,
+        "verification": {
+          "ok": true,
+          "errors": [],
+          "candidateDigest": "70870cb63fd3f459ed08c72f6c6c824306dc7dd574c3aa017e60bfe66459033e",
+          "checksDigest": "4efef15eb0924a69cd7f9da8784b969a02163e41ca9e18bde470fdcdd653a90d",
+          "environmentId": "host-process-group-v1/node-26.0.0/darwin-arm64",
+          "phase": "final",
+          "status": "pass",
+          "cleanup": "process-group-attempted"
+        },
+        "auditSha256": "1918427a0a97cfcccce67b294b9f7b7c617a876a891aef001165c8c24ac77f51"
+      },
+      {
+        "qualityPass": true,
+        "audit": {
+          "valid": true,
+          "errors": [],
+          "targets": [
+            {
+              "target": "modules/unit-00.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-01.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-02.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-03.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-04.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-05.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-06.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-07.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-08.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-09.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-10.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-11.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-12.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-13.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-14.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            },
+            {
+              "target": "modules/unit-15.ts",
+              "registryDelivered": true,
+              "policyRequested": true,
+              "sequentialRead": true,
+              "policyDeliveredBeforeCommit": true
+            }
+          ]
+        },
+        "sourceUnchanged": true,
+        "N": 16,
+        "C": 8,
+        "maxActiveWorkers": 8,
+        "participatingWorkers": 16,
+        "lowerCalls": 49,
+        "upperCalls": 0,
+        "tokens": 114779,
+        "usageComplete": true,
+        "context": {
+          "selectedTargets": 16,
+          "activatedTargets": 16,
+          "scanCount": 17,
+          "scannedFiles": 272,
+          "scannedBytes": 51922,
+          "scanDurationMs": 1513,
+          "contextBytes": {
+            "total": 76822,
+            "p95": 1931,
+            "max": 1932
+          },
+          "uniqueDeliveredDependencies": 17,
+          "readRequests": 32,
+          "acceptedReadRequests": 32,
+          "openUncertainties": 0,
+          "additionalDeliveredBytes": 26353
+        },
+        "durationMs": 19523,
+        "requestedModel": "deepseek-flash",
+        "effectiveEvidence": [
+          "deepseek-flash"
+        ],
+        "evidenceSha256": {
+          "result.json": "58ee3be1598047083c26be4a23ce3e1db0607bc3c0f9bafe1caec9040e672553",
+          "artifacts.json": "fa7aa9160586e2e017cdafc98bcf0c406943b0052a8269270f7c1a99d6be5757",
+          "task.json": "4f73c60f6e34bc3522f6449ffacf4405d8247aa84423f35acfa3b294b0bb9976",
+          "read-deliveries.json": "c3cadaa0ba90c57f2503b53bc7cf35a99fd7958a25c5afc8b55ba57df755fcc3",
+          "swarm/kernel-state.json": "1cf9100f954d7ae54bbec8250e0c46b9ceea6874e6d0dff4808a18233025cd3f"
+        },
+        "fixtureSha256": "bb769be47d7613eec14170543250e08a99f24e069fa7274da12bb7a6031363f8",
+        "cost": null,
+        "name": "module-n16-c8-local",
+        "evidenceRoot": ".sheep/m8-build/module-n16-c8-local",
+        "nonReadUnsuccessfulProposals": 1,
+        "verification": {
+          "ok": true,
+          "errors": [],
+          "candidateDigest": "da6a1da88f5941726d9b8d409443a8d6d023f0b9f2764c1e0f05c9783465e221",
+          "checksDigest": "4efef15eb0924a69cd7f9da8784b969a02163e41ca9e18bde470fdcdd653a90d",
+          "environmentId": "host-process-group-v1/node-26.0.0/darwin-arm64",
+          "phase": "final",
+          "status": "pass",
+          "cleanup": "process-group-attempted"
+        },
+        "auditSha256": "169d5889029ab18444f181b4a25a99ea4be37bc90ada26202a3de053f1591fa0"
+      }
+    ]
+  },
+  "implementation": {
+    "components-run": {
+      "success": true,
+      "tokens": 9037,
+      "unknownUsageCalls": 0,
+      "reservationOverruns": 0,
+      "lowerCalls": 2,
+      "upperCalls": 0,
+      "N": 4,
+      "C": 2,
+      "maxActiveWorkers": 2,
+      "resultSha256": "d28954ae04769952396dc7ad4085b40e32d96c0b088a2f948725e500a8657a02",
+      "artifactsSha256": "411341ece0bd181b53e1e0462155ea06df9c64defde3de737ba130d70e737a9c"
+    },
+    "self-host-run": {
+      "success": true,
+      "tokens": 2202,
+      "unknownUsageCalls": 0,
+      "reservationOverruns": 0,
+      "lowerCalls": 1,
+      "upperCalls": 0,
+      "N": 4,
+      "C": 2,
+      "maxActiveWorkers": 1,
+      "resultSha256": "4e39219f3f842a9add7b0eb06b90ee44701d03b9a3bc33785b04a25aa25e2dab",
+      "artifactsSha256": "82b81cf4b80dcaba18fb9a42d06783fcfa318b75c8fe3584c856f343ad6b44c6"
+    },
+    "activation-run": {
+      "success": true,
+      "tokens": 1768,
+      "unknownUsageCalls": 0,
+      "reservationOverruns": 0,
+      "lowerCalls": 2,
+      "upperCalls": 0,
+      "N": 4,
+      "C": 2,
+      "maxActiveWorkers": 1,
+      "resultSha256": "80d3239408789ce6c233f25196b9944cd573d6fe691a57351e1c744a9757f5f9",
+      "artifactsSha256": "d808c8dbe211050fa557d2421563f7629938c5aa59bbfb40b7df6f8a15596a73"
+    }
+  },
+  "priorTrials": [
+    {
+      "name": "n8-c4-local",
+      "success": true,
+      "tokens": 123370,
+      "unknownUsageCalls": 0,
+      "reservationOverruns": 0,
+      "calls": 48,
+      "resultSha256": "57851ec1d99e19a48773b5440a86b237816b05730d04da5898a9cbe1913d777c",
+      "errors": []
+    },
+    {
+      "name": "n8-c4-broad",
+      "success": false,
+      "tokens": 134493,
+      "unknownUsageCalls": 0,
+      "reservationOverruns": 1,
+      "calls": 18,
+      "resultSha256": "ce48aab5087251b391424abf50d398501cb571a279ee39e5e246af833125c5e1",
+      "errors": [
+        "command exited with code 1: /opt/homebrew/Cellar/node/26.0.0/bin/node check.mjs",
+        "command exited with code 1: /opt/homebrew/Cellar/node/26.0.0/bin/node check.mjs",
+        "token-budget-incomplete-or-exceeded"
+      ]
+    }
+  ],
+  "independentEvidence": {
+    ".sheep/m8-build/reference-receipts.json": "4898ecef2bc0148a292fd50a19934bf116b992eb9784c66f39430b77aba61a3a",
+    ".sheep/m8-build/self-host-independent.json": "5403b1b212c9c7746129d14bd9e51440334ee20f98f20dc034a148df2f8cc67e",
+    ".sheep/m8-build/activation-independent.json": "1adc8cadd6144b8ef793772af4d4753067511e621bbd22db5a1ac69065c53be8"
+  },
+  "helpers": {
+    "src/repo-impact.ts": {
+      "generatedSha256": "ceac418e24f36bf7120599fe3f07bcfec0d9426e4821a05e044ebefd04652488",
+      "adoptedSha256": "2425506d58cfd1ea96e21942ca6131fd1b9cf5792719a114aa96deea89f8661f"
+    },
+    "scripts/scaling-read-fixture.mjs": {
+      "generatedSha256": "5995ece00aecc6d420a5aea9110e6c71ffbf9a1719d40f5a66e66ce2236dff62",
+      "adoptedSha256": "5995ece00aecc6d420a5aea9110e6c71ffbf9a1719d40f5a66e66ce2236dff62"
+    },
+    "src/repo-impact-input.ts": {
+      "generatedSha256": "11ce8921e1de7db7de3814a0f3771b5a5150ff591e67b4f3fc62db0d99920e2f",
+      "adoptedSha256": "9e4e979e1a7a05bcff5da9eaa31a0cd9caeba655185ddb4f1b101600ed2bddde"
+    }
+  },
+  "totalObservedTokensExcludingParent": 1163551,
+  "cost": null,
+  "validation": {
+    "command": "npm run check",
+    "tests": 480,
+    "passed": 480,
+    "referenceSnapshots": 2,
+    "logSha256": "907b54288371a566786cd5ffe55b32c64968d8f8cb34ba9dd839cb138ad4bff9"
+  },
+  "sourceSha256": {
+    "src/repo-dependencies.ts": "ba2a3700071d4fea3e27c288f22da7db97fa79ea521e8e070024f93ea601caf4",
+    "src/repo-discovery.ts": "d7243515344dabd308565932a289542ddce0f20cf284c1fae14aa5e85beb7aff",
+    "src/repo-manifest.ts": "415aab88e556e3fbfa3414415a42838f584613f6038c5aef2172827add0f49e8",
+    "src/repo-types.ts": "16f837dcc1d824cc86408303209d2fead5c1a79ea3103887439c47282647196a",
+    "src/repo-impact-input.ts": "9e4e979e1a7a05bcff5da9eaa31a0cd9caeba655185ddb4f1b101600ed2bddde",
+    "src/repo-impact-types.ts": "ac8fb974ac0e46b6291d21fc1365d9d6a41a77f9bcf783e9a60ea9e1e8a16475",
+    "src/repo-impact.ts": "2425506d58cfd1ea96e21942ca6131fd1b9cf5792719a114aa96deea89f8661f",
+    "scripts/parse-typescript-dependencies.mjs": "b1a1031267c41de8afce32d7a9d26180adabdb8cc95be524e420c22b95478cb1",
+    "scripts/scaling-read-fixture.mjs": "5995ece00aecc6d420a5aea9110e6c71ffbf9a1719d40f5a66e66ce2236dff62",
+    "scripts/prepare-read-selection-pilot.mjs": "8bf084546de1db32cf298dea66e4408eb36006e85695e4090e31ddf9b6834d2c",
+    "tests/remaining-components.test.ts": "2fc25b86c061721ad0bb5dbf47e771a6896c7191eeef204bef8e20ea9c588c60",
+    "tests/remaining-typescript.test.ts": "9bffebc716e9c53eb98cb2ca0984250b534f33647e01e3d0940568ec3e85430d",
+    "tests/remaining-activation.test.ts": "0fb200921391bc737406d0b64e0e5da1973a1de3e7d72794b2062e6f9e9c6bd9",
+    "tests/remaining-scaling.test.ts": "0e0fe99a041de46101f91fd072305174a922c4d6c5cc3fd1926fa52ab5ffa60b",
+    "tests/remaining-self-host.test.ts": "19e21eee3be4923a77a8a7df7d3389297b7099cbd1d1dab04eeed0a8a7c3166a"
+  }
+}
