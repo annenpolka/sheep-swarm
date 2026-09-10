@@ -212,3 +212,11 @@ Validation:
 Revisit when:
 - 削除/rename、巨大repo、複雑な依存setup、resume、隔離した検査が必要になったとき。
 Status: active
+
+### 段階読取と広い初期配信の対照
+Authority: Human direction / agent scoped implementation
+Evidence: 2026-09-10の「マージして、添付した議論をもとに次の作業へ」。PR #5をマージし、[議論](../docs/discussion-review-progressive-read.md)を現行実装と照合した。
+Working default: ファイル数を最小化することを目的にしない。read scope、impact scope、write authorityを分け、全文に近い公開context対照と同じ品質で総負担を比べる。言語別解析はadapter、版と証拠の確定はkernel。confidenceだけで確定しない。
+Validation: opaqueな資料24件・2targetのGo N4/C2 pilotで、局所/広域とも固定受入成功。局所の総tokensが多い結果も保持する。[証拠](../docs/results/read-selection-pilot.md)。
+Next: TS adapter/self-host、未調整taskの反復、N/C比較、activation。今回の実装部品と小規模実走は継続指定のGo DeepSeekを使用。新規Astra単独対照は追加しない。
+Status: active

@@ -21,6 +21,7 @@ export interface RepoDiscoveryOptions {
   readonly mode: 'static' | 'static+reads';
   readonly readable: readonly string[];
   readonly maxReadCalls: number;
+  readonly maxPathsPerRead: number;
   readonly maxDeliveredBytes: number;
 }
 export type RepoTask = RepoTaskBase & (

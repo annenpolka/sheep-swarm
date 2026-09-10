@@ -85,6 +85,7 @@ trackedな通常ファイルの現在のbytesと、明示したcontext/protected
   "mode": "static+reads",
   "readable": ["registry.json", "policies/retail.json"],
   "maxReadCalls": 2,
+  "maxPathsPerRead": 1,
   "maxDeliveredBytes": 65536
 }
 ```
@@ -110,3 +111,5 @@ v2の出力には `dependency-evidence.json`（parser証拠と配信に基づく
 v1/v2とも `result.json.verifications` にcandidateDigest、checksDigest、environmentId、local/final、pass/reject/infrastructure-error、cleanupを保存する。候補のbytes/mode・固定command/timeout・実行環境識別が一致しないreceiptは受け入れない。cleanupはprocess-groupの終了処理を試みた記録であり、別sessionまで完全回収したという証明ではない。
 
 固定した疎通用repoは `node scripts/prepare-repo-discovery-pilot.mjs --output NEW_DIRECTORY` で作れる。親directoryは先に用意する。基準解は公開repoへコピーしない。[実装と実モデルの結果](results/repository-discovery.md)には失敗試行と親の修正も含める。
+
+`maxPathsPerRead`は1要求に列挙できるpath数（1..32、省略32）。モデルのreadとhostが新しいimportから作る追加要求の両方に適用し、超過時は部分配信せず未解決にする。1pathから辿る静的推移依存や、既に指定した初期contextの量はこの数で切り捨てない。総配信量や総tokensは別に測る。[段階読取と広域対照の手順・実測](results/read-selection-pilot.md)。

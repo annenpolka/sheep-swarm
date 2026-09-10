@@ -206,7 +206,7 @@ export function parseRepoTask(value: unknown): RepoTask {
   if (value.version === 1) return {version:1,...base};
   const d=value.discovery;
   if (!isPlainObject(d)) throw new Error('version 2 requires discovery');
-  rejectUnknownKeys(d,['mode','readable','maxReadCalls','maxDeliveredBytes'],'discovery');
+  rejectUnknownKeys(d,['mode','readable','maxReadCalls','maxDeliveredBytes','maxPathsPerRead'],'discovery');
   if (d.mode !== 'static' && d.mode !== 'static+reads') throw new Error('invalid discovery mode');
   const readable=parsePathList(d.readable,'discovery.readable');
   for (const path of readable) if (protectedPaths.includes(path) && !context.includes(path))
@@ -216,6 +216,8 @@ export function parseRepoTask(value: unknown): RepoTask {
     if(typeof v!=='number'||!Number.isSafeInteger(v)||v<0||v>max)throw new Error('invalid discovery limit');
     return v;
   };
-  return {version:2,...base,discovery:{mode:d.mode,readable,
+  const maxPathsPerRead=bounded(d.maxPathsPerRead,32,32);
+  if(maxPathsPerRead<1)throw new Error('maxPathsPerRead must be from 1 to 32');
+  return {version:2,...base,discovery:{mode:d.mode,readable,maxPathsPerRead,
     maxReadCalls:bounded(d.maxReadCalls,2,32),maxDeliveredBytes:bounded(d.maxDeliveredBytes,65536,2*1024*1024)}};
 }

@@ -87,7 +87,7 @@ export class RepositoryDiscovery implements SwarmTaskControl {
 WRITE: {"kind":"write","content":"<complete replacement>","paths":[],"observed":[],"missing":[],"hypothesis":"","note":"<summary>"}
 READ: {"kind":"read","content":"","paths":["<requested public path>"],"observed":[],"missing":[],"hypothesis":"","note":"<reason>"}
 UNCERTAIN: {"kind":"uncertain","content":"","paths":[],"observed":["<observation>"],"missing":["<unresolved information>"],"hypothesis":"<optional unverified hypothesis, or empty string>","note":"<summary>"}
-A write MUST NOT put its target in paths. On write/read, observed and missing MUST be [] and hypothesis MUST be "". Put explanatory prose only in note. Current Local files are already delivered. Never claim a requested file was read before delivery. Public catalog (names only): ${JSON.stringify([...this.#public])}. No tools or upper consultation. ${this.#snapshot.task.discovery!.mode==='static'?'Additional model read requests are disabled in static mode.':''}`;
+A write MUST NOT put its target in paths. On write/read, observed and missing MUST be [] and hypothesis MUST be "". Put explanatory prose only in note. Current Local files are already delivered. A read request may name at most ${this.#snapshot.task.discovery!.maxPathsPerRead} paths; do not request the whole catalog when it exceeds that limit. Never claim a requested file was read before delivery. Public catalog (names only): ${JSON.stringify([...this.#public])}. No tools or upper consultation. ${this.#snapshot.task.discovery!.mode==='static'?'Additional model read requests are disabled in static mode.':''}`;
   }
   private additionalBytes(target:string,context:Checkout):number {
     return [...(this.#selected.get(target)??[])].filter(p=>!this.#snapshot.task.context.includes(p)).reduce((n,p)=>n+Buffer.byteLength(context.contents[p]!),0);
@@ -119,6 +119,10 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
     this.#requested.set(target,count);
     if(!staticRequest&&this.#snapshot.task.discovery!.mode!=='static+reads')reason='additional-read-disabled';
     if(count>this.#snapshot.task.discovery!.maxReadCalls)reason='read-call-limit';
+    if(paths.length>this.#snapshot.task.discovery!.maxPathsPerRead){
+      this.#requests.push({callId,target,paths,accepted:false,reason:'read-path-limit'});
+      return this.defer(target,context,callId,'read-path-limit: too many paths in one request',true);
+    }
     let selected=new Set(this.#selected.get(target));
     try {
       for(const path of this.closure(paths,scan))if(path!==target)selected.add(path);

@@ -2,6 +2,14 @@
 
 2026-09-09の [現在の方針](current-direction.md) に基づく計画。小さなkernelから実workerへ進み、人数を変えた振る舞いを早く観測する。各段階の状態は実行証拠に合わせる。詳細な進捗は [ExecPlan](execplan.md)、M2の証拠は [4体pilot](results/luna-four-worker-pilot.md) を参照。
 
+## M7: 段階読取の同品質pilot — 最初の範囲を実装・実走済み
+
+PR #5のマージ後、添付議論を[精査](discussion-review-progressive-read.md)し、[ExecPlan](execplan-progressive-read.md)を作成した。task v2のmaxPathsPerRead、opaque資料とregistryだけを変えるworld、固定oracle、配信順監査、局所/広域の同一N4/C2実走を追加した。両条件が固定受入に成功し、局所6call/8,241tokens、広域2call/5,593tokens。小課題での追加読取負担を含め[結果](results/read-selection-pilot.md)へ残す。
+
+この範囲の完了条件は、1path要求と静的closureの区別、名前と資料本文を固定したworldの不識別、旧版/誤policy/入力境界変異の拒否、call順とcheckoutの照合、同じ固定oracleの独立再検査、既知usageと元repo不変。
+
+後続は順に、TypeScriptの静的adapterと小さなself-host、未調整taskでの局所/広域対照、N=8/16/32（C固定と総予算固定を別系列）、impact候補から必要targetだけを起動する仕組み。TS対応やN比較を今回の2target pilotで完了扱いにしない。言語別の解析結果は証拠種別を持たせ、modelのconfidenceをwrite authorityや確定条件に代用しない。
+
 ## M6: CLI整理と、一般repoでの依存発見 — A–D・初期gate実装済み
 
 2026-09-10の添付議論と、利用者のCLI整理の追加依頼を[精査](discussion-review-20260910.md)した。[ExecPlan](execplan-repository-discovery.md)に従い、1–3と4の初期gateを実装した。[実装・実走記録](results/repository-discovery.md)。

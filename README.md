@@ -17,6 +17,7 @@
 | 調査レポートと関連15対話の原文snapshot | [docs/references](docs/references/README.md) |
 | 現在の方針・役割分担・規模比較 | [docs/current-direction.md](docs/current-direction.md) |
 | 共通CLI・repo v2の依存発見と追加読取 | [CLI](docs/cli.md)、[議論の精査](docs/discussion-review-20260910.md)、[実装・実走](docs/results/repository-discovery.md)、[実行計画](docs/execplan-repository-discovery.md) |
+| 段階読取と広い初期contextの同品質pilot | [実測・再現手順](docs/results/read-selection-pilot.md)、[次の計画](docs/execplan-progressive-read.md) |
 | 現在の設計・不変条件 | [docs/design.md](docs/design.md) |
 | 実装順序と各段階の完了条件 | [docs/roadmap.md](docs/roadmap.md) |
 | 検証方針と故障シナリオ | [docs/testing-policy.md](docs/testing-policy.md) |
@@ -68,6 +69,8 @@ TypeScriptの実行にはNode.jsのtype strippingを使い、型検査は別に 
 `npm run sheep -- repo --repo /path/to/project --task /path/to/task.json`で、別のGit作業ツリーの対象ファイルを既存swarmへ渡せる。固定の検査コマンドをJSONで宣言し、候補を保存する。`--apply`は全体受入・使用量・元ファイルの変更確認に成功した場合だけ指定範囲へ書き戻す。Go DeepSeekの例と対応境界は[repo実行手順](docs/repository-runner.md)へ。専用factoryは不要だが、hostで信頼する検査コマンドと明示した書込対象が必要になる。v1は明示依存、v2は公開範囲内の静的依存発見と追加読取を使う。JavaScript/Pythonの実走を確認した範囲であり、全build環境や費用優位を保証しない。
 
 5主commandは共通のhelp・dry-run・alias・JSON/textに対応する。`npm run sheep -- repo --help`で確認でき、旧入口のJSONと既定値も保持する。task v2は担当固有の指示と実配信した版を追跡し、未解決・不明usageを成功にしない。Go DeepSeekの小規模実走は3targetが5callで固定受入に成功した。[失敗試行を含む証拠](docs/results/repository-discovery.md)。
+
+task v2には1要求のpath上限を追加した。opaqueな24文書からregistryでpolicyを選ぶ2target課題で、Go DeepSeekの局所/広域条件が同じ固定検査に成功した。局所は6call・8,241tokens、広域は2call・5,593tokensで、この小課題では追加読取の総tokensが多かった。読取順の証拠と品質を分離して記録している。[実測と限界](docs/results/read-selection-pilot.md)。
 
 独立レビューで、検査後のprocess group回収、親Gitの誤参照防止、検査基盤障害での呼出し停止、局所検査の診断引継ぎを補修した。[再現と検証](docs/results/repository-runner-astra-review.md)。
 

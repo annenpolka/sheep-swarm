@@ -139,3 +139,9 @@ Astraの独立レビューで固定した反例も通常gateに含める。混�
 `repo-discovery.test.ts`はv1互換・v2 manifestとtransportを分け、二段read、未公開本文の非配信、他target指示の非配信、call/bytes上限、旧read版と同bytesの旧evidenceEpochによるcatch-up、未解決claim、unknown usage、host検証後だけの解決を検査する。staticのみの意味read拒否と、新しいimportの未配信先がwriteと同時に先取りされないことも含む。上位へ渡すmodel-claimは未確認のまま扱う。
 
 `repo-discovery-fixture.test.ts`は固定したbaseline失敗・基準解成功・意味変異拒否を確認する。`next-components.test.ts`は独立に固定した生成部品の受入と追加境界検査で、parserの評価不在・公開allowlist・循環、receiptの候補/command/環境/phaseのすり替え・偽pass・入力変異を拒否する。通常gateはAPI・認証を使わない。実Go swarmの失敗と成功、親の補修、独立候補再検査は[結果](results/repository-discovery.md)へ分離する。
+
+## M7 read-selection pilot
+
+`read-selection-*.test.ts`はopaque資料のworld間不変、全資料へのregistry切替、固定oracleの旧版失敗・基準解成功・別world推測と入力境界変異の拒否を検査する。maxPathsPerReadの既定/範囲、超過時の非配信、host新規import要求、1pathからの推移closureを含む。call IDの辞書順に頼らず、同targetの配信/要求/最初のcommit順、欠落・重複・未知参照を検査する。
+
+実tmp Gitと注入callerで同じ課題の局所/広域を実行し、候補へ固定oracleを再実行する。改変delivery hashとunknown usageの監査拒否、元repo不変も確認する。通常gateはAPIを呼ばない。実Goの部品生成、親の補修、同品質pilotは[別証拠](results/read-selection-pilot.md)。構造上妥当なledger、手続き上の二段読取、意味的品質は独立の結果とし、文書配信をモデル理解の証明にはしない。

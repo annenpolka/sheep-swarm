@@ -1,0 +1,225 @@
+{
+  "format": 1,
+  "date": "2026-09-10",
+  "baseCommit": "fe037dd2069709526e90797abe37cbf4fd9f7193",
+  "profile": {
+    "runtime": "opencode-go",
+    "workerModel": "deepseek-flash",
+    "thinking": "disabled",
+    "workers": 4,
+    "concurrency": 2,
+    "maxWorkerCalls": 12,
+    "maxMetaCalls": 0,
+    "maxRounds": 12,
+    "maxTokens": 100000,
+    "reserveTokens": 20000,
+    "maxTokensPerCall": 8000,
+    "timeoutMs": 120000
+  },
+  "conditions": {
+    "local": {
+      "format": 1,
+      "qualityPass": true,
+      "audit": {
+        "valid": true,
+        "errors": [],
+        "targets": [
+          {
+            "target": "a.mjs",
+            "registryDelivered": true,
+            "policyRequested": true,
+            "sequentialRead": true,
+            "policyDeliveredBeforeCommit": true
+          },
+          {
+            "target": "b.mjs",
+            "registryDelivered": true,
+            "policyRequested": true,
+            "sequentialRead": true,
+            "policyDeliveredBeforeCommit": true
+          }
+        ]
+      },
+      "sourceUnchanged": true,
+      "N": 4,
+      "C": 2,
+      "maxActiveWorkers": 2,
+      "participatingWorkers": 4,
+      "lowerCalls": 6,
+      "upperCalls": 0,
+      "tokens": 8241,
+      "usageComplete": true,
+      "context": {
+        "selectedTargets": 2,
+        "activatedTargets": 2,
+        "scanCount": 3,
+        "scannedFiles": 6,
+        "scannedBytes": 901,
+        "scanDurationMs": 173,
+        "contextBytes": {
+          "total": 6044,
+          "p95": 1096,
+          "max": 1096
+        },
+        "uniqueDeliveredDependencies": 3,
+        "readRequests": 4,
+        "acceptedReadRequests": 4,
+        "openUncertainties": 0,
+        "additionalDeliveredBytes": 388
+      },
+      "retries": 0,
+      "durationMs": 6535,
+      "requestedModel": "deepseek-flash",
+      "effectiveEvidence": [
+        "deepseek-flash"
+      ],
+      "evidenceSha256": {
+        "result.json": "20c31e743595e9164718573e4aebdfe93edc087afce1c960f49ad82044fae7ee",
+        "artifacts.json": "c171334127f2e6c1c44200ebd5b1f14e4ca77c42906898ae814f3141b5a83681",
+        "task.json": "33120ba8e48f16c4aeb734214d1bda25c99e0ef5fa6212afb00839623ccbc8c7",
+        "read-deliveries.json": "3ea8b6cbfad0258844ce608a59bd73ff05f7ef5adaf10b0159673ee69473dc8a",
+        "swarm/kernel-state.json": "c6b12697ddcb5440898157ff7de2132426d402949a614fa7ee260d63898d78cc"
+      },
+      "fixtureSha256": "bceb165025a465eb6111c890f1ce4900724ea792ff08d67672d31d6012da1773",
+      "cost": null,
+      "evidenceRoot": ".sheep/m7-build/local-run",
+      "auditSha256": "275e480d17d8a5a3c7ccc2c8f296bd1376746bbe1fbbc5a06f2c52c43a478714",
+      "verification": {
+        "ok": true,
+        "errors": [],
+        "candidateDigest": "b2c9e8b45a718594c3611eec8109d11e36c802e046ad98098da017ea53b00fe6",
+        "checksDigest": "4efef15eb0924a69cd7f9da8784b969a02163e41ca9e18bde470fdcdd653a90d",
+        "environmentId": "host-process-group-v1/node-26.0.0/darwin-arm64",
+        "phase": "final",
+        "status": "pass",
+        "cleanup": "process-group-attempted",
+        "command": [
+          "node",
+          "check.mjs"
+        ]
+      }
+    },
+    "broad": {
+      "format": 1,
+      "qualityPass": true,
+      "audit": {
+        "valid": true,
+        "errors": [],
+        "targets": [
+          {
+            "target": "a.mjs",
+            "registryDelivered": true,
+            "policyRequested": false,
+            "sequentialRead": false,
+            "policyDeliveredBeforeCommit": true
+          },
+          {
+            "target": "b.mjs",
+            "registryDelivered": true,
+            "policyRequested": false,
+            "sequentialRead": false,
+            "policyDeliveredBeforeCommit": true
+          }
+        ]
+      },
+      "sourceUnchanged": true,
+      "N": 4,
+      "C": 2,
+      "maxActiveWorkers": 2,
+      "participatingWorkers": 2,
+      "lowerCalls": 2,
+      "upperCalls": 0,
+      "tokens": 5593,
+      "usageComplete": true,
+      "context": {
+        "selectedTargets": 2,
+        "activatedTargets": 2,
+        "scanCount": 3,
+        "scannedFiles": 6,
+        "scannedBytes": 936,
+        "scanDurationMs": 189,
+        "contextBytes": {
+          "total": 6034,
+          "p95": 3017,
+          "max": 3017
+        },
+        "uniqueDeliveredDependencies": 25,
+        "readRequests": 0,
+        "acceptedReadRequests": 0,
+        "openUncertainties": 0,
+        "additionalDeliveredBytes": 0
+      },
+      "retries": 0,
+      "durationMs": 2930,
+      "requestedModel": "deepseek-flash",
+      "effectiveEvidence": [
+        "deepseek-flash"
+      ],
+      "evidenceSha256": {
+        "result.json": "27d1120a4e79effb5c7d826d48b94b25067f7cfb943187a240d343d6e6198f03",
+        "artifacts.json": "949a9f84981456f99622f61a7b957f734ab5ab5ea1b93f20389f98262adebd2b",
+        "task.json": "be1d5266034ca9ce31d967472ae8049e9d60a92652cfdcc95224cb9297f30a05",
+        "read-deliveries.json": "d0504ce601e8024f90c70c09061eb2d25c7a84f72fbe78414c28326c5bb0de80",
+        "swarm/kernel-state.json": "72f7f8ab4fc42588c5633f3acd8efdc7e11ca291e033b38bb1ba4d4f6470d18a"
+      },
+      "fixtureSha256": "bceb165025a465eb6111c890f1ce4900724ea792ff08d67672d31d6012da1773",
+      "cost": null,
+      "evidenceRoot": ".sheep/m7-build/broad-run",
+      "auditSha256": "4bedda762056a7f87468a0ccbd71ad1390f6aabded8d895e029d7983ae8d1b6a",
+      "verification": {
+        "ok": true,
+        "errors": [],
+        "candidateDigest": "93fea49a7b0a13d72862eecaae85b15c17e9f0a54b79eeff8de5512e0e28faa3",
+        "checksDigest": "4efef15eb0924a69cd7f9da8784b969a02163e41ca9e18bde470fdcdd653a90d",
+        "environmentId": "host-process-group-v1/node-26.0.0/darwin-arm64",
+        "phase": "final",
+        "status": "pass",
+        "cleanup": "process-group-attempted",
+        "command": [
+          "node",
+          "check.mjs"
+        ]
+      }
+    }
+  },
+  "implementationSwarm": {
+    "success": true,
+    "N": 4,
+    "C": 2,
+    "lowerCalls": 4,
+    "upperCalls": 0,
+    "tokens": 24014,
+    "rejectedCalls": 2,
+    "evidenceRoot": ".sheep/m7-build/components-run",
+    "resultSha256": "6f5b15b89d6e6b4d1661cb5983c987ed68b2d95153ae05c350b9e9d7071d2bc5",
+    "helpers": {
+      "scripts/read-selection-fixture.mjs": {
+        "generatedSha256": "3e75fb01fa6b6153fb5aeef56c5ad1a841ec378b24a410a25359f2599770839c",
+        "adoptedSha256": "5f6ca97002d0bbae136689dc37f3002080f360ff51dbf9d9d38dcb7673bf61c5"
+      },
+      "src/read-selection-audit.ts": {
+        "generatedSha256": "ee464324036e5bb88de703b10653ff9c6541922d6f7476ef4d33c168bebc69ce",
+        "adoptedSha256": "23edee3a7829a5ea38e3334283121f9f12ec15f98b4d107a1e77d7301fcef183"
+      }
+    }
+  },
+  "validation": {
+    "command": "npm run check",
+    "tests": 472,
+    "passed": 472,
+    "referenceSnapshots": 2,
+    "logSha256": "b0e791c462bc3a562959acb30522c7730838fc9785c4764fcb1012a16dabcbf6"
+  },
+  "sourceSha256": {
+    "src/repo-types.ts": "0917e1598ccb26b72a0651bfa488e64cd1e56f623e5b0d456a41065779ad4125",
+    "src/repo-manifest.ts": "63166eab6cbdee94a6add2ac3ce7b74443ba8cdb5b19e40f87f03ead9368e804",
+    "src/repo-discovery.ts": "ebb6de3e9150fd5e23c1eca980ac3c6c1e6475fb7e41183759977575d692cc37",
+    "src/read-selection-audit.ts": "23edee3a7829a5ea38e3334283121f9f12ec15f98b4d107a1e77d7301fcef183",
+    "scripts/audit-read-selection.mjs": "dcc7e50e67be19f8b0d34350ab56279374e7ed70d8cd097a432c2ca0cd541e28",
+    "scripts/read-selection-fixture.mjs": "5f6ca97002d0bbae136689dc37f3002080f360ff51dbf9d9d38dcb7673bf61c5",
+    "scripts/prepare-read-selection-pilot.mjs": "9ef0cbb0fa4697cf5c256549a98d2d86a90ab5b6304b0ef4216e3696174da13c",
+    "tests/read-selection-components.test.ts": "4cdd7a19760470c5c847459d8ca69025f2e1d67b2fbea58d16e08884cab15a8a",
+    "tests/read-selection-pilot.test.ts": "54301a4aa8232fcab0636f034e5b6e62791fe9e96f7dc3cb8e047304e7a5fc13",
+    "tests/read-selection-limits.test.ts": "22291fe099aea99737b0d76aca10deff73a5b1b78b3f393bbb8a1f6735c79c81"
+  }
+}
