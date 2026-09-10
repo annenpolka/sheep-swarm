@@ -37,6 +37,8 @@ export interface RepoCheckResult {
 }
 export interface RepoVerification {
   readonly ok: boolean;
+  /** The host could not execute verification; generated-code retries cannot repair this. */
+  readonly executionFailure?: true;
   readonly workspace: string;
   readonly checks: readonly RepoCheckResult[];
   readonly errors: readonly string[];

@@ -135,19 +135,24 @@ function runCommand(
     killTimer.unref?.();
 
     child.once('close', (code, signal) => {
-      if (timedOut) {
-        killGroup('SIGKILL');
-      }
+      // A successful leader can leave a background child with closed stdio.
+      // Terminate its process group before another check or candidate inspection.
+      killGroup('SIGKILL');
       finish(code, signal ?? null, undefined);
     });
   });
 }
 
-async function buildChildEnvironment(scratch: string): Promise<NodeJS.ProcessEnv> {
+async function buildChildEnvironment(scratch: string, workspace: string): Promise<NodeJS.ProcessEnv> {
   await mkdir(scratch, { recursive: true, mode: 0o700 });
   const env: NodeJS.ProcessEnv = {
     HOME: scratch,
     TMPDIR: scratch,
+    // Snapshots intentionally contain no .git. Never let commands silently
+    // discover the source checkout (or the runner checkout) above a candidate.
+    // Pin the missing metadata path rather than a colon-delimited discovery
+    // ceiling, which cannot represent every valid POSIX directory name.
+    GIT_DIR: path.join(workspace, '.git'),
   };
   if (process.env.PATH !== undefined) env.PATH = process.env.PATH;
   if (process.platform === 'win32') {
@@ -241,12 +246,13 @@ async function persistEvidence(
   checks: readonly RepoCheckResult[],
   errors: readonly string[],
   ok: boolean,
+  executionFailure = false,
 ): Promise<void> {
   try {
     await mkdir(workspace, { recursive: true });
     await writeFile(
       `${workspace}.checks.json`,
-      JSON.stringify({ ok, checks, errors }, null, 2),
+      JSON.stringify({ ok, checks, errors, ...(executionFailure ? { executionFailure: true } : {}) }, null, 2),
       'utf8',
     );
   } catch {
@@ -267,15 +273,26 @@ export async function runRepoChecks(
     await materializeRepository(snapshot, workspace, contents);
   } catch (error) {
     const errors = [`failed to materialize candidate: ${(error as Error).message}`];
-    await persistEvidence(workspace, [], errors, false);
-    return { ok: false, workspace, checks: [], errors };
+    // Invalid generated overlays are normal rejections. Filesystem failures
+    // (e.g. ENOSPC/ENOTDIR) mean the host cannot perform verification.
+    const executionFailure = typeof (error as NodeJS.ErrnoException).code === 'string';
+    await persistEvidence(workspace, [], errors, false, executionFailure);
+    return { ok: false, workspace, checks: [], errors, ...(executionFailure ? { executionFailure: true } : {}) };
   }
 
   const expected = computeExpected(snapshot, contents);
-  const env = await buildChildEnvironment(scratch);
+  let env: NodeJS.ProcessEnv;
+  try {
+    env = await buildChildEnvironment(scratch, workspace);
+  } catch (error) {
+    const errors = [`failed to prepare check environment: ${(error as Error).message}`];
+    await persistEvidence(workspace, [], errors, false, true);
+    return { ok: false, executionFailure: true, workspace, checks: [], errors };
+  }
   const checks: RepoCheckResult[] = [];
   const errors: string[] = [];
   let failed = false;
+  let executionFailure = false;
 
   for (const command of commands) {
     if (failed) break;
@@ -284,6 +301,7 @@ export async function runRepoChecks(
     checks.push(result);
     if (spawnError !== undefined) {
       failed = true;
+      executionFailure = true;
       errors.push(`command failed to spawn (${command.argv.join(' ')}): ${spawnError.message}`);
       continue;
     }
@@ -310,6 +328,6 @@ export async function runRepoChecks(
   }
 
   const ok = !failed && errors.length === 0;
-  await persistEvidence(workspace, checks, errors, ok);
-  return { ok, workspace, checks, errors };
+  await persistEvidence(workspace, checks, errors, ok, executionFailure);
+  return { ok, workspace, checks, errors, ...(executionFailure ? { executionFailure: true } : {}) };
 }

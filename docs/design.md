@@ -123,3 +123,5 @@ OpenCode Goは別runtimeとして同じ局所成果物境界へ接続する。pr
 `src/repo-*.ts`はtask manifestとGit作業ツリーをhost-ownedな`CodeFixture`へ変換する。既存schedulerとkernelを再利用し、sourceの初期markerから固定goalへの変更で対象を起動する。upperが変えられるguidanceと、固定したmanifest/検査closureを分ける。却下された案は修正用contextとしてread版とともに保持するが、accepted checkoutへ採用しない。
 
 対象ファイルの完全なUTF-8内容だけをoverlayとして認め、現在のtracked bytesと選択済みuntrackedをfresh candidateへコピーする。宣言した局所検査と最終検査をhost subprocessで実行し、元候補のbytes・mode・path種別の変更も拒否する。最終判定はkernel完了と既知精算済みtoken予算の両方を必要とする。`--apply`は元HEAD・tracked path集合・snapshot bytes/mode・新規衝突を再確認し、全置換をstageしてから採用する。OS transaction・悪意ある並行filesystem・host隔離・crash resumeは保証しない。[詳細](repository-runner.md)。
+
+候補内のGit探索は親checkoutへ到達させず、POSIX検査のprocess groupは通常終了後も回収する。局所検査の失敗出力だけをboundedな修復情報へ戻し、固定した最終検査は修復ループへ戻さない。hostの起動・保存先I/O障害は`executionFailure`として、custom taskでも既存swarmの検査基盤停止経路へ接続する。既に呼出したモデルの精算は維持し、新たなworker/upper呼出しを止める。

@@ -162,6 +162,7 @@ function makeTask(
         scope?: readonly string[],
       ): Promise<FixtureResult> => {
         const errors: string[] = [];
+        let executionFailure = false;
         const scoped = scope !== undefined && scope.length > 0 ? scope : undefined;
 
         // Immutable artifacts must never be replaced by generated code.
@@ -197,6 +198,7 @@ function makeTask(
         };
 
         const runChecks = async (commands: readonly RepoCommand[]): Promise<void> => {
+          if (executionFailure) return;
           const verification = await runRepoChecks(
             snapshot,
             targetOverlay(),
@@ -205,13 +207,30 @@ function makeTask(
           );
           verifications.push(verification);
           if (scoped === undefined) finalChecks.value = verification;
-          if (!verification.ok) errors.push(...verification.errors);
+          if (verification.executionFailure) executionFailure = true;
+          if (!verification.ok) {
+            errors.push(...verification.errors);
+            // Local checks are operator-selected repair feedback. Keep full
+            // bounded logs on disk and only a small diagnostic in the prompt;
+            // final-only checks remain outside the worker repair loop.
+            if (scoped !== undefined) {
+              const failed = verification.checks.find(check => check.timedOut || check.signal !== null || check.exitCode !== 0);
+              if (failed) {
+                const diagnostic = [failed.stderr && `stderr:\n${failed.stderr}`, failed.stdout && `stdout:\n${failed.stdout}`]
+                  .filter(Boolean).join('\n').slice(0, 8192);
+                if (diagnostic) errors.push(`Local check diagnostics:\n${diagnostic}`);
+              }
+            }
+          }
         };
+
+        const verdict = (): FixtureResult => ({ ok: errors.length === 0, errors,
+          ...(executionFailure ? { executionFailure: true } : {}) });
 
         if (scoped === undefined) {
           // Final scope: run every final check against the combined candidate.
           await runChecks(snapshot.task.checks);
-          return errors.length === 0 ? { ok: true, errors: [] } : { ok: false, errors };
+          return verdict();
         }
 
         // Local scope: structural immutable-source verdict plus each target's local checks.
@@ -221,7 +240,7 @@ function makeTask(
           const commands = localChecks.get(id) ?? [];
           if (commands.length > 0) await runChecks(commands);
         }
-        return errors.length === 0 ? { ok: true, errors: [] } : { ok: false, errors };
+        return verdict();
       };
 
       const visibleTest = (): string => '';

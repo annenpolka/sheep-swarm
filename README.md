@@ -66,6 +66,8 @@ TypeScriptの実行にはNode.jsのtype strippingを使い、型検査は別に 
 
 `npm run repo -- --repo /path/to/project --task /path/to/task.json`で、別のGit作業ツリーの対象ファイルを既存swarmへ渡せる。固定の検査コマンドをJSONで宣言し、候補を保存する。`--apply`は全体受入・使用量・元ファイルの変更確認に成功した場合だけ指定範囲へ書き戻す。Go DeepSeekの例と対応境界は[repo実行手順](docs/repository-runner.md)へ。専用factoryは不要だが、hostで信頼する検査コマンドと明示した依存が必要になる。JavaScript/Pythonの実走を確認した範囲であり、全build環境や費用優位を保証しない。
 
+独立レビューで、検査後のprocess group回収、親Gitの誤参照防止、検査基盤障害での呼出し停止、局所検査の診断引継ぎを補修した。[再現と検証](docs/results/repository-runner-astra-review.md)。
+
 `swarm --runtime deepseek`はDeepSeek APIへ直接接続する。CLIでは環境変数`DEEPSEEK_API_KEY`を設定し、`--worker-model`にprovider prefixのないAPI model idを明示する。OpenCodeの認証storeは自動で読み込まない。toolは使わず、局所promptとschemaを送信し、`finish_reason: stop`と要求schemaへの適合を検査する。要求modelとproviderが返したmodel名は別に保存する。接続仕様は[DeepSeek公式API](https://api-docs.deepseek.com/api/create-chat-completion/)を参照。
 
 ```sh

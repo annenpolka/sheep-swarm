@@ -48,6 +48,10 @@ Goのkeyは`OPENCODE_GO_API_KEY`を使う。CLIは認証storeを自動で読ま�
 
 コマンドはshell文字列ではなくargv配列で指定する。たとえばPythonなら `{"argv":["python3","-m","unittest","discover","-s","tests"]}` を使える。検査に必要な依存の準備も利用者が明示する。自動で`npm install`等を追加しない。既存の`node_modules`やignoredな仮想環境はsnapshotへコピーしない。
 
+候補には`.git`をコピーせず、親ディレクトリのGit repositoryも探索しない。`git diff --check`等を元repoの検査として暗黙に成功させることはできない。Git履歴を必要とする検査は、このsnapshot方式の外で準備する。
+
+失敗した局所検査のstdout/stderrは最大8192文字を次の修復workerへ渡し、全体の最終検査は修復ループへ戻さない。検査コマンドの起動失敗・候補保存先のI/O障害は`executionFailure`として記録し、発行済みの呼出しを精算した後、新しいworker/upper呼出しを止める。通常の非zero終了や候補コードの不正は局所修復の対象に残る。
+
 ## 出力と書き戻し
 
 既定では元repoを書き換えず、runディレクトリに次を残す。
@@ -65,6 +69,8 @@ Goのkeyは`OPENCODE_GO_API_KEY`を使う。CLIは認証storeを自動で読ま�
 ## 対応境界
 
 Node.js 24.12+とGitが必要。検査コマンドは利用者が信頼するhost subprocessとして動き、OS sandboxではない。API credentialを検査環境へ渡さず、候補内の元ファイルの書換えも検査するが、任意の悪意あるコードのhost隔離を保証しない。Docker runtimeはこのrunnerでは拒否する。
+
+POSIXでは検査コマンドごとにprocess groupを分け、正常終了・失敗・timeout後に残る同じgroupの子processも終了させる。別sessionへ離脱したprocessやWindowsのprocess tree回収は保証しない。検査で常駐serviceを残す用途には使わない。
 
 trackedな通常ファイルの現在のbytesと、明示したcontext/protected/targetを採用する。既存のtracked変更・削除を反映し、無関係なuntrackedやignoredファイルは含めない。binaryはsnapshotとして保持できるが、workerが読むtarget/contextはUTF-8 textに限定する。symlink・submodule・特殊ファイルは拒否する。`.git`、`.sheep`、`.env*`、`node_modules`は対象外。snapshotは最大10000ファイル・128MiB、workerへ渡す各textは2MiBまで。
 

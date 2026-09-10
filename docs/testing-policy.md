@@ -129,3 +129,5 @@ Astraの独立レビューで固定した反例も通常gateに含める。混�
 `repo-*.test.ts`は実tmp Git作業ツリーとNode subprocessを使い、manifestの不正値、dirty bytes・binary・mode・選択untracked・削除のsnapshot、symlink/parent置換、HEAD/index/bytes drift、新規衝突、候補改変、timeout、bounded stdout/stderr、credential環境の非継承を検査する。注入callerでkernel完了、明示依存順序、並列呼出し、予算の同時予約/拒否、不明usageでの停止、成功時だけのapplyを確認する。最終検査を重複実行しないことも確認する。既存swarmの却下案はread版付きでtargetごとに引き継ぎ、採用内容へ混ぜない。
 
 通常gateで実APIは呼ばない。実Go DeepSeekのJavaScript/Python fixture repoは別証拠に保存し、実call・結果・指定ファイル差分・dirty/untracked保存を確認する。実装swarmの失敗と親の補修を分離し、最初の固定テストに加えた境界テストは要求の追加検査として記録する。[結果](results/repository-runner.md)。
+
+`repo-review.test.ts`は独立レビューの回帰ケースとして、正常終了した検査の残留子process、候補から親Gitへの探索、検査コマンドの起動失敗と候補保存先のI/O障害後の呼出し停止、局所stderrと却下案の修復promptへの引継ぎを検査する。通常の不正overlayは検査基盤障害と混同せず、元の受入条件を維持する。[再現記録](results/repository-runner-astra-review.md)。

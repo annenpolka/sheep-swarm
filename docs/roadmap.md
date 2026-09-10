@@ -133,3 +133,5 @@ CLIの選択、runtimeと予算、保存証拠の確認、durable再開、truste
 利用者指定の`opencode-go/deepseek-flash`で3モジュールを受入まで生成し、接続モジュールの生成案と境界条件は親が補修した。受入テストを弱めず、通常gateと実JavaScript/Python repoの候補保存・適用を確認した。[結果と作者の区分](results/repository-runner.md)。Go DeepSeekのthinkingはrepo CLIの明示指定だけに追加し、既存runtimeの既定値は維持する。
 
 並列runのresume、任意の依存探索、ファイル削除/rename、悪意あるcodeのOS隔離、大規模repoの実用性と費用比較は未対応・未実証。新repo経路はskillへ反映したが、既存5ラウンドのempirical評価を新版のblank-slate評価として流用しない。
+
+PR #4の独立レビューでは、実processと注入callerで4件の不具合を再現し、検査終了時のgroup回収・親Git探索の停止・検査基盤障害での受付停止・局所診断の引継ぎを修正した。元の実走証拠と429検査の記録は変更せず、[追加検証](results/repository-runner-astra-review.md)へ分離した。

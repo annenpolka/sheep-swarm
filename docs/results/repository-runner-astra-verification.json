@@ -1,0 +1,35 @@
+{
+  "pr": "https://github.com/annenpolka/sheep-swarm/pull/4",
+  "independentReviewer": {
+    "agent": "/root/astra_pr4_review_fix",
+    "configuredModel": "gpt-6-astra",
+    "conversationHistory": "none",
+    "initialHead": "23bcda0119d4734baa4d953aaa3124920f4312a1"
+  },
+  "parentValidation": {
+    "tests": 434,
+    "passed": 434,
+    "failed": 0,
+    "skipped": 0,
+    "referenceSnapshots": 2,
+    "log": ".sheep/pr4-parent/check.log",
+    "logSha256": "4033135f614d24799b805d3cdcf57cbb78560310497e8c2dda15cb10e9e2a467",
+    "savedArtifactChecks": ".sheep/pr4-parent/artifact-check-hGdGba/result.json",
+    "languages": [
+      "javascript",
+      "python"
+    ],
+    "accepted": true,
+    "sourceHeadBytesModesUnchanged": true,
+    "additionalGenerationCalls": 0,
+    "skillValidator": "pass",
+    "installedSkillMatchesSource": true
+  },
+  "sourceHashes": {
+    "src/repo-checks.ts": "2cf54bb396edcef9652676828a123ab27e832968b4a266d28e3f55a9e3576508",
+    "src/repo-run.ts": "eec1bf0348ebd5930e27167e43bae6fca89f818b3aa5bb30734e99399957c875",
+    "src/repo-types.ts": "4b874080ef7cdd4e9ebdc9258d864d8f5b63838dab0accfb8c103ac5cb158e7c",
+    "src/swarm.ts": "09eb2161d5e8bde3eb764328fb12b6e9980d157768c5df3ed70178379f28f896",
+    "tests/repo-review.test.ts": "29624bb7cfab73ef1d46dd30016b00da6679a6f60e35eb948b7e547f46a531ee"
+  }
+}

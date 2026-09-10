@@ -121,7 +121,7 @@ export async function runSwarm(options: SwarmOptions,
   let verificationUnavailable = false;
   const verify: typeof fixture.verify = async (contents, scope) => {
     const result = await fixture.verify(contents, scope);
-    if (configuration.runtime === "docker-agent" && result.executionFailure) {
+    if ((task || configuration.runtime === "docker-agent") && result.executionFailure) {
       verificationUnavailable = true;
       throw new Error(result.errors.join("\n"));
     }
@@ -346,6 +346,7 @@ export async function runSwarm(options: SwarmOptions,
     final = { ok: false, errors: [`execution-error: ${String(error)}`] };
   } finally { await snapshot(); }
   if (unknownModelUsage) final = { ok: false, errors: [...final.errors, "unknown-usage"] };
+  if (verificationUnavailable) final = { ok: false, errors: [...final.errors, "verification-unavailable"] };
   if (runtimeCleanupFailed) final = { ok: false, errors: [...final.errors, "sandbox-cleanup-failed"] };
   const report: SwarmReport = {
     task: taskId,
