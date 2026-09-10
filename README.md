@@ -61,6 +61,8 @@ TypeScriptの実行にはNode.jsのtype strippingを使い、型検査は別に 
 
 `swarm --runtime docker-agent`ではDocker Agent v1.137.0＋sbx v0.42.1へ切り替えられる。各呼出しをhost repo未マウントの新規VMで実行し、承認済み認証をhost proxyから注入する。`npm run sandbox:probe`は実VMの隔離検査、`npm run sandbox:pilot`はLunaの局所編集・別VMでの受入・kernel確定を実行する。下位4体・C=2の既存fixtureも5呼出しで成功した。詳細と未対応範囲は[導入手順](docs/docker-agent-sandbox.md)を参照。
 
+`--worker-tools local`を併用すると、各workerへ版付きの局所ファイルと可視テストを投入し、read/edit/testを利用できる。全workspace差分をlease検査へ渡し、Docker runtimeの受入実行は独立した通信拒否VMで行う。`npm run sandbox:swarm-probe`で基準解・変異・禁止import・timeoutをモデル呼出しなしで検証する。可視テストの成功や最終回答のコードだけでは確定しない。
+
 ```sh
 npm run swarm -- --workers 4 --concurrency 4 --size 4
 npm run swarm -- --workers 4 --concurrency 4 --size 4 --fault rounded-guidance

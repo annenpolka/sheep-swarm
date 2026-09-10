@@ -51,12 +51,16 @@ npm run sandbox:probe
 # Lunaが読み、失敗テストを実行し、編集・再検証する
 npm run sandbox:pilot
 
-# 既存swarmのtool-less workerをDocker Agentへ差し替える
-npm run swarm -- --runtime docker-agent --workers 4 --concurrency 2 \
-  --size 4 --max-calls 6 --max-meta-calls 0 --timeout-ms 120000
+# 合成swarm fixtureの受入経路を実VMで検証（LLM呼出しなし）
+npm run sandbox:swarm-probe
+
+# 既存swarmのworkerへ局所ファイル編集と可視テストを付与
+npm run swarm -- --runtime docker-agent --worker-tools local \
+  --workers 4 --concurrency 2 --size 4 --max-calls 6 \
+  --max-meta-calls 0 --timeout-ms 240000
 ```
 
-最後の例は4 consumerと1 reportを持つ既存fixture。登録4体は呼出し4回を意味しない。最大6呼出しの受付を与える。`--runtime`を省略すると従来のCodex adapterになる。`compare`・`mechanism`・`durable`は今回の切替対象に含めない。
+最後の例は4 consumerと1 reportを持つ既存fixture。登録4体は呼出し4回を意味しない。最大6呼出しの受付を与える。`--worker-tools`の既定値は`none`で、`local`にはDocker runtimeが必要。`--runtime`を省略すると従来のCodex adapterになる。`compare`・`mechanism`・`durable`は今回の切替対象に含めない。
 
 `callDockerAgent`は既存のcaller interfaceに接続する。`files`を指定しない場合はcwdをコピーせず、prompt内contextだけで働く。局所道具を使うときは`tools: "local"`と`files`を明示する。JSON形式のYAML例は[configs/docker-agent-local.yaml](../configs/docker-agent-local.yaml)。`permissions`はconfigの最上位に置く。
 
@@ -72,13 +76,19 @@ flowchart LR
   V --> C[kernel commit]
 ```
 
-pilotはモデルが最終回答に書いた`content`より実際に編集されたファイルを採用する。最終回答で末尾改行が省略されても、実ファイルの内容は保持する。全変更をlease検査へ渡し、許可外ファイルを黙って捨てて成功にしない。削除・symlink・特殊file・不正path・件数/容量超過は現adapterの対応外として拒否する。
+pilotと道具付きswarmはモデルが最終回答に書いた`content`より実際に編集されたファイルを採用する。最終回答で末尾改行が省略されても、実ファイルの内容は保持する。全変更をlease検査へ渡し、許可外ファイルを黙って捨てて成功にしない。削除・symlink・特殊file・不正path・件数/容量超過は現adapterの対応外として拒否する。
 
-可視テストはworkerが変更できるので、成功の証拠にはしない。pilotの独立oracleは新しい通信拒否VMで11ケースを検査し、null・undefined・Unicode・非stringの既存例外動作を確認する。固定oracleをworkerに渡さず、別VMを削除後にkernelへverdictを戻す。一般repositoryの安全な受入環境まで実装したものではない。既存swarm fixtureの受入方式は従来通りである。
+可視テストはworkerが変更できるので、成功の証拠にはしない。pilotの独立oracleは新しい通信拒否VMで11ケースを検査し、null・undefined・Unicode・非stringの既存例外動作を確認する。固定oracleをworkerに渡さず、別VMを削除後にkernelへverdictを戻す。
+
+道具付きswarmには、版付きcheckoutの全内容と固定生成の`visible.test.mjs`を投入する。テストはfeedback用で、書換えは全差分検査で拒否される。consumerとreportを同じ局所手順で処理し、上位は引き続きtool-lessの仕様介入を担当する。
+
+Docker runtimeのswarm受入では、候補と依存閉包を別の通信拒否VMへ送り、観測値だけをhostへ返す。従来の`fixture.ts`の期待値・case・比較式はhostに保持する。workerの可視テストや認証を受入VMにコピーしない。VM内の評価は同期`.mjs`と供給済みの相対importだけに限定し、Node builtin・外部import・汎用shellを候補へ提供しない。一般repositoryの実行環境ではない。受入ごとのreceiptはrun内の`acceptance/`へ保存する。
 
 ## 記録と失敗
 
 各呼出しは`.sheep/.../sheep-docker-call-*/receipt.json`に設定、入力ファイル、NDJSON、stderr、版、hash、sandbox名、各lifecycle操作、削除結果を保存する。timeoutでも既に届いたusageを残し、未完了の推論がある場合は`usageCompleteness: partial-or-unknown`とする。総費用0とは扱わない。
+
+swarmはusage不明が出たwaveを回収した後、新しいworkerと上位の呼出しを止める。受入VMの基盤障害も新規受付を止め、仕様の誤りを直すための上位介入を起こさない。既に並列で発行した呼出しの使用量とcleanupも記録する。
 
 `token_usage.usage`は実測とv1.137.0のコードでは直近のcontext snapshot。消費量は各`last_message`のinput・cache read/write・outputから集計する。`budget_usage`を加算せず、同一usage eventの重複も拒否する。`last_message.Model`はruntimeの設定IDに由来するため`configuredModelEvidence`に残し、`effectiveModelEvidence`はnullとする。
 

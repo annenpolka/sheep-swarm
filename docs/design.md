@@ -88,7 +88,9 @@ runtime schema、capability設定、外部副作用broker、複数snapshotのmer
 
 ## 実装で確定した境界
 
-Docker Agent導入後もworkerの作業VMはkernelの権威を持たない。mountless VMへcheckoutから明示した内容だけを投入し、次のcallにsessionや私有filesystemを暗黙継承しない。局所toolは実ファイルを編集し、その全差分を候補として回収する。最終回答のreplacement文字列や可視テストの自己申告は確定証拠にしない。pilotの外側oracleも別の通信拒否VMで実行する。既存swarmへの接続はtool-less caller差替えまでで、一般repoのtool付与は別途設計する。[導入境界](docker-agent-sandbox.md)
+Docker Agent導入後もworkerの作業VMはkernelの権威を持たない。mountless VMへcheckoutから明示した内容だけを投入し、次のcallにsessionや私有filesystemを暗黙継承しない。`swarm --worker-tools local`は実ファイルの全差分を候補として回収する。最終回答のreplacement文字列や可視テストの自己申告は確定証拠にしない。可視テストの改変も全差分に含め、kernelのscope検査で拒否する。
+
+Docker runtimeの受入では、固定oracleの期待値・比較をhostに置き、候補コードの実行結果だけを別の通信拒否VMから取得する。入力は候補の対象と依存閉包だけで、workerの可視テスト・認証・sessionは引き継がない。VM内で同期`.mjs`を評価し、局所importだけを許す。受入VMの起動・出力・削除に失敗した場合はvalidator-errorとし、新規worker受付と上位介入を止める。モデルusage不明でも既に発行した同時callの回収後に受付を止める。一般repoの実行環境は別途設計する。[導入境界](docker-agent-sandbox.md)
 
 実行APIはsrc/kernel.tsのSwarmKernel。checkoutが読取版と根拠epochを保持し、prepare→trusted verifierによるvalidate→commitで候補snapshotと権限を検査する。内容不変の訂正にも根拠epochを使う。依存登録は観測した内容版と根拠epochの両方から追いつく。完了検査のawait中に始まって終わった作業も、遷移世代の変化として拒否する。
 

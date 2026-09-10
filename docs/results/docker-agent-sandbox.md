@@ -2,6 +2,8 @@
 
 2026-09-10、macOS arm64。Docker Agent v1.137.0、sbx v0.42.1。導入手順は[こちら](../docker-agent-sandbox.md)。以下は導入の受入試験であり、比較実験や費用優位の証明ではない。
 
+PR化後の継続実装による[道具付きswarmの結果](docker-agent-tools-swarm.md)は別に記録した。以下の初回pilot・tool-less実測を上書きしない。
+
 ## 確認できたこと
 
 | 検証 | 結果 |

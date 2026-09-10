@@ -11,9 +11,12 @@ const DEFAULT_SIZE = 16;
 
 export type FixtureVariant = "baseline" | "migrated";
 export type FixtureContents = Readonly<Record<string, string>>;
+/** Observations only: expected values and comparison remain in the trusted caller. */
+export type FixtureObserver = (files: FixtureContents, calls: readonly Invocation[], timeoutMs: number) => Promise<unknown>;
 export interface FixtureResult {
   readonly ok: boolean;
   readonly errors: readonly string[];
+  readonly executionFailure?: true;
 }
 export interface CodeFixture {
   readonly artifacts: FixtureContents;
@@ -24,6 +27,7 @@ export interface CodeFixture {
   readonly consumerIds: readonly string[];
   readonly reportIds: readonly string[];
   readonly writableIds: readonly string[];
+  readonly visibleTest: (target: string) => string;
   /** Always checks the migrated contract, independently of the initial variant. */
   readonly verify: (contents: FixtureContents, scope?: readonly string[]) => Promise<FixtureResult>;
 }
@@ -42,7 +46,7 @@ interface RawMeasurement {
   readonly durationMs: number;
   readonly transferredBytes: number;
 }
-interface Invocation {
+export interface Invocation {
   readonly id: string;
   readonly method: "measure" | "summarize" | "evaluate";
   readonly args: readonly RawMeasurement[];
@@ -170,7 +174,7 @@ Acceptance checks live outside these artifacts; changing this document does not 
  * Returned migrated code is for deterministic verification, never a worker's context.
  */
 export function createFixture(
-  options: { readonly size?: number; readonly variant?: FixtureVariant } = {},
+  options: { readonly size?: number; readonly variant?: FixtureVariant; readonly observe?: FixtureObserver } = {},
 ): CodeFixture {
   const size = options.size ?? DEFAULT_SIZE;
   const variant = options.variant ?? "baseline";
@@ -188,7 +192,19 @@ export function createFixture(
     consumerIds: consumers.map(({ id }) => id),
     reportIds: reports.map(({ id }) => id),
     writableIds: [...consumers, ...reports].map(({ id }) => id),
-    verify: (contents, scope) => verifyFixture(contents, scope, { size }),
+    visibleTest: (target) => {
+      const consumer = consumers.find(({ id }) => id === target);
+      const report = reports.find(({ id }) => id === target);
+      if (!consumer && !report) throw new Error("Visible tests require a writable fixture target");
+      // A small feedback subset; the unchanged acceptance oracle also checks boundaries.
+      const left = { durationMs: 2000, transferredBytes: 8192 };
+      const right = { durationMs: 0, transferredBytes: 4096 };
+      const method = consumer ? "summarize" : "evaluate";
+      const args = consumer ? [left] : [left, right];
+      const expected = consumer ? expectedConsumer(consumer, left, "migrated") : expectedReport(report!, left, right);
+      return `import assert from 'node:assert/strict';\nimport { test } from 'node:test';\nimport { ${method} } from ${JSON.stringify("./" + target)};\ntest('visible migration feedback', () => assert.deepEqual(${method}(...${JSON.stringify(args)}), ${JSON.stringify(expected)}));\n`;
+    },
+    verify: (contents, scope) => verifyFixture(contents, scope, { size, ...(options.observe ? { observe: options.observe } : {}) }),
   };
 }
 
@@ -286,7 +302,7 @@ function equivalent(actual: unknown, expected: unknown): boolean {
 export async function verifyFixture(
   contents: FixtureContents,
   scope?: readonly string[],
-  options: { readonly size?: number; readonly contract?: FixtureVariant; readonly timeoutMs?: number } = {},
+  options: { readonly size?: number; readonly contract?: FixtureVariant; readonly timeoutMs?: number; readonly observe?: FixtureObserver } = {},
 ): Promise<FixtureResult> {
   const { consumers, reports, dependencies } = layout(options.size ?? DEFAULT_SIZE);
   const contract = options.contract ?? "migrated";
@@ -339,23 +355,9 @@ export async function verifyFixture(
     }
   }
 
-  const directory = await realpath(await mkdtemp(join(tmpdir(), "sheep-swarm-fixture-")));
   try {
-    for (const id of required) {
-      const path = join(directory, id);
-      await mkdir(dirname(path), { recursive: true });
-      await writeFile(path, contents[id]!, "utf8");
-    }
-    const runnerPath = join(directory, "__fixture-runner.mjs");
-    await writeFile(runnerPath, RUNNER, "utf8");
-    const child = execute(process.execPath, [
-      "--permission", `--allow-fs-read=${directory}`, "--disable-proto=throw",
-      "--preserve-symlinks", "--preserve-symlinks-main",
-      "--max-old-space-size=64", runnerPath,
-    ], { cwd: directory, env: {}, timeout: timeoutMs, maxBuffer: 1024 * 1024, killSignal: "SIGKILL" });
-    child.child.stdin!.end(JSON.stringify(calls));
-    const { stdout } = await child;
-    const observations: unknown = JSON.parse(stdout);
+    const files = Object.fromEntries([...required].map(id => [id, contents[id]!]));
+    const observations = await (options.observe ?? observeFixtureOnHost)(files, calls, timeoutMs);
     if (!Array.isArray(observations) || observations.length !== calls.length) {
       return { ok: false, errors: ["oracle received an invalid observation count"] };
     }
@@ -373,9 +375,29 @@ export async function verifyFixture(
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    errors.push(`fixture execution failed: ${message.slice(0, 1500)}`);
-  } finally {
-    await rm(directory, { recursive: true, force: true });
+    return { ok: false, errors: [`fixture execution failed: ${message.slice(0, 1500)}`], executionFailure: true };
   }
   return { ok: errors.length === 0, errors };
 }
+
+/** Legacy fixture runner; Node permissions are not an adversarial sandbox. */
+const observeFixtureOnHost: FixtureObserver = async (files, calls, timeoutMs) => {
+  const directory = await realpath(await mkdtemp(join(tmpdir(), "sheep-swarm-fixture-")));
+  try {
+    for (const [id, content] of Object.entries(files)) {
+      const path = join(directory, id);
+      await mkdir(dirname(path), { recursive: true });
+      await writeFile(path, content, "utf8");
+    }
+    const runnerPath = join(directory, "__fixture-runner.mjs");
+    await writeFile(runnerPath, RUNNER, "utf8");
+    const child = execute(process.execPath, [
+      "--permission", `--allow-fs-read=${directory}`, "--disable-proto=throw",
+      "--preserve-symlinks", "--preserve-symlinks-main",
+      "--max-old-space-size=64", runnerPath,
+    ], { cwd: directory, env: {}, timeout: timeoutMs, maxBuffer: 1024 * 1024, killSignal: "SIGKILL" });
+    child.child.stdin!.end(JSON.stringify(calls));
+    const { stdout } = await child;
+    return JSON.parse(stdout) as unknown;
+  } finally { await rm(directory, { recursive: true, force: true }); }
+};

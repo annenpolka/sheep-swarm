@@ -97,6 +97,10 @@ dispatcherは結果・レシート・保存ソースのhashを確認し、中断
 
 モデルの回答と実workspace差分、可視テストと外側oracle、レシートの設定modelとproviderの実model証拠を分ける。Lunaはruntimeの価格catalog上unpricedであり、cost=0を無料と読まない。timeoutの途中usageは既知下限で、未完了推論を含む総費用として集計しない。[実測](results/docker-agent-sandbox.md)に初回失敗と修正後の検証を残す。
 
+道具付きswarmでは、固定oracleの値・case・閾値・比較を変更せず、観測する実行環境だけを差し替える。通常gateは従来と同じ変異拒否、実差分優先、担当外・テスト改変・削除の拒否、局所contextとread setの一致、usage不明・検証基盤障害時の停止を検査する。guest runnerの局所subprocess試験はVM隔離の実証には数えない。
+
+`npm run sandbox:swarm-probe`は実VMで合成fixtureの基準解成功・旧実装失敗・閾値変異拒否・host API import拒否・無限loopと回収を検査する。setup失敗を変異拒否の成功へ数えない。実Lunaの道具付きswarmは別runに保存する。受入VMは同期`.mjs`の局所importのみを扱い、任意repositoryの実行互換性を保証しない。
+
 ## 現在の実行証拠の範囲
 
 M3は既知依存の合成taskで、主比較15runと別pilot1run。M4はC=1の専用実行系。M5は温度・圧力の別合成task、下位Luna/上位Astra、共通500,000token上限、30,000tokenの受付予約で比較する。単一上位にも増分の局所確定を許し、最終全体受入を共通にする。

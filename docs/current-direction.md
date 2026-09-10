@@ -109,6 +109,8 @@
 
 2026-09-10にDocker Agentをsandbox付きで導入する利用者の指示を受け、[worker runtimeとして追加](docker-agent-sandbox.md)した。kernelの割当・記憶・read set・lease・確定を保ち、Docker Agentのsub-agent orchestrationへ置換しない。実動作のLunaを維持し、VMは登録数Nに固定せず実行中callへ割り当てる。現段階はfresh VM/session方式で、再利用は未導入。
 
+継続実装で、合成fixtureの各workerに局所filesystemと固定可視テストを接続した。独立VMから観測を返し、従来の固定oracleで受け入れる。tool付きとtool-lessの実測は実装受入として分けて残す。`compare`・`mechanism`等へ共通の道具条件を揃える前に、費用や有用性の比較とは扱わない。
+
 ## 見直す条件
 
 - 下位が担当範囲を絞っても作業を完遂できない: 分割、道具、context、モデルの組を見直す。

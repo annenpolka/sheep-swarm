@@ -22,7 +22,8 @@
     "mechanism:experiment": "node scripts/mechanism-experiment.mjs",
     "sandbox:install": "node scripts/install-docker-agent.mjs",
     "sandbox:probe": "node scripts/probe-docker-sandbox.mjs",
-    "sandbox:pilot": "node src/docker-agent-pilot.ts"
+    "sandbox:pilot": "node src/docker-agent-pilot.ts",
+    "sandbox:swarm-probe": "node scripts/probe-docker-swarm.mjs"
   },
   "devDependencies": {
     "@types/node": "24.13.3",

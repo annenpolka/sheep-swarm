@@ -79,7 +79,11 @@ DB選定とschemaは、この段階でruntimeの要件とローカルの互換�
 
 完了条件: CLIのhash/版を照合、実host/SSH/network隔離、timeout後削除と状態非継承、Lunaの編集・可視テスト失敗→成功、別VMの固定oracleとkernel確定、登録4体・C=2の5 artifact全体受入を確認した。失敗・打切りrunも別に残す。[結果](results/docker-agent-sandbox.md)を参照。
 
-次の範囲: toolを既存の各比較条件へ同じ権限で追加すること、SIGKILL後の残留VM回収、pool再利用と汚染検査、Node 24+のtemplate、Astra介入を含む実走。一般repo・32 VM並列・費用優位・並列durabilityは本導入の完了条件に含まない。
+継続実装: `swarm --worker-tools local`で局所編集・可視テストを接続。全差分のscope検査、別VMの受入実行とhostの固定採点、usage不明・検証基盤障害時の新規受付停止を実装した。通常gateにoracle互換・改変拒否・誤自己申告・停止条件を追加し、実VMのprobeを分けた。
+
+継続範囲の完了証拠: [道具付きの実Luna N=4/C=2](results/docker-agent-tools-swarm.md)で5call・5artifact・全体受入成功。全件の可視テスト失敗→成功と、worker 5台・受入6台の削除を確認した。
+
+次の範囲: toolを`compare`・`mechanism`等の各比較条件へ同じ権限で追加すること、SIGKILL後の残留VM回収、pool再利用と汚染検査、Node 24+のtemplate、Astra介入を含む実走。一般repo・32 VM並列・費用優位・並列durabilityは本導入の完了条件に含まない。
 
 ## 再検討する条件
 
