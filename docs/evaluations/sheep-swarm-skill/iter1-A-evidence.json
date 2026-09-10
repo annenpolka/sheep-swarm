@@ -1,0 +1,149 @@
+{
+  "source": ".sheep/skill-eval/iter1-smoke",
+  "sha256": {
+    "result.json": "f48fed1b84405ae5c884bbaa4657f57be66ee97c6ed488da9403adea5172894e",
+    "call-4.json": "c20350c94cd54f6bf80724e495933b3421cc0712db8ca605957fa59f84eca9ae",
+    "call-3.json": "d0e1a34f589bd2ad7ee2025cc4df5127fbc66cf156f2a192ed96f047c70983c1",
+    "call-2.json": "ed9ff7540ac5f345354e63b8935d915652163f8fdba6b9c32c7f0cd6a8c03fba",
+    "kernel-state.json": "7b94dc7d1992528eead26b69606eb9932bb8b8e8f78a7f848db54d87e3e19845",
+    "call-1.json": "06419c5e9c953273c15db6394e53d36bd8f6419a79276e5e0648d6683f35cec3",
+    "individuals.json": "cebbee044f3d0c85253485b69536bd4341bbedc8d456c8b1c1c07fda81208508",
+    "artifacts.json": "006b790bb4bcd5fb3b29619924bb168874adb9461f49be0ea66691c9ca3db85d",
+    "calls.json": "45af6c3499335bb1b9cf84e5bd2999369bba4066f69aae11bab458f7e8a0e910"
+  },
+  "success": false,
+  "completedArtifacts": 0,
+  "writableArtifacts": 3,
+  "configuration": {
+    "workers": 2,
+    "concurrency": 1,
+    "size": 2,
+    "workerModel": "gpt-5.6-luna",
+    "metaModel": "gpt-6-astra",
+    "timeoutMs": 120000,
+    "maxCalls": 4,
+    "maxMetaCalls": 0,
+    "maxRounds": 6,
+    "fault": "none",
+    "memoryLimit": 4,
+    "runtime": "codex",
+    "metaRuntime": "codex",
+    "workerTools": "none",
+    "maxTokensPerCall": 30000
+  },
+  "lowerCalls": 4,
+  "upperCalls": 0,
+  "maxActiveWorkers": 1,
+  "maxConcurrentModelCalls": 1,
+  "durationMs": 1542,
+  "finalErrors": [
+    "pending-work",
+    "blocking-claims"
+  ],
+  "calls": [
+    {
+      "id": "call-1",
+      "role": "worker",
+      "agent": "sheep-1",
+      "target": "consumers/consumer-001.mjs",
+      "model": "gpt-5.6-luna",
+      "context": "context-5",
+      "contextArtifacts": [
+        "consumers/consumer-001.mjs",
+        "docs/contract.md",
+        "lib/measure.mjs"
+      ],
+      "contextBytes": 2033,
+      "startedAt": 1789029659992,
+      "durationMs": 494,
+      "commitWaitMs": 0,
+      "outcome": "nonzero-exit",
+      "errors": [
+        "CodexWorkerError: Codex CLI exited with 1"
+      ],
+      "inputTokens": null,
+      "outputTokens": null,
+      "effectiveModelEvidence": null,
+      "memoryEntries": 0,
+      "usageCompleteness": null
+    },
+    {
+      "id": "call-2",
+      "role": "worker",
+      "agent": "sheep-2",
+      "target": "consumers/consumer-001.mjs",
+      "model": "gpt-5.6-luna",
+      "context": "context-8",
+      "contextArtifacts": [
+        "consumers/consumer-001.mjs",
+        "docs/contract.md",
+        "lib/measure.mjs"
+      ],
+      "contextBytes": 2033,
+      "startedAt": 1789029660487,
+      "durationMs": 302,
+      "commitWaitMs": 0,
+      "outcome": "nonzero-exit",
+      "errors": [
+        "CodexWorkerError: Codex CLI exited with 1"
+      ],
+      "inputTokens": null,
+      "outputTokens": null,
+      "effectiveModelEvidence": null,
+      "memoryEntries": 0,
+      "usageCompleteness": null
+    },
+    {
+      "id": "call-3",
+      "role": "worker",
+      "agent": "sheep-1",
+      "target": "consumers/consumer-001.mjs",
+      "model": "gpt-5.6-luna",
+      "context": "context-10",
+      "contextArtifacts": [
+        "consumers/consumer-001.mjs",
+        "docs/contract.md",
+        "lib/measure.mjs"
+      ],
+      "contextBytes": 2033,
+      "startedAt": 1789029660791,
+      "durationMs": 379,
+      "commitWaitMs": 0,
+      "outcome": "nonzero-exit",
+      "errors": [
+        "CodexWorkerError: Codex CLI exited with 1"
+      ],
+      "inputTokens": null,
+      "outputTokens": null,
+      "effectiveModelEvidence": null,
+      "memoryEntries": 0,
+      "usageCompleteness": null
+    },
+    {
+      "id": "call-4",
+      "role": "worker",
+      "agent": "sheep-2",
+      "target": "consumers/consumer-002.mjs",
+      "model": "gpt-5.6-luna",
+      "context": "context-12",
+      "contextArtifacts": [
+        "consumers/consumer-002.mjs",
+        "docs/contract.md",
+        "lib/measure.mjs"
+      ],
+      "contextBytes": 2020,
+      "startedAt": 1789029661171,
+      "durationMs": 360,
+      "commitWaitMs": 0,
+      "outcome": "nonzero-exit",
+      "errors": [
+        "CodexWorkerError: Codex CLI exited with 1"
+      ],
+      "inputTokens": null,
+      "outputTokens": null,
+      "effectiveModelEvidence": null,
+      "memoryEntries": 0,
+      "usageCompleteness": null
+    }
+  ]
+}

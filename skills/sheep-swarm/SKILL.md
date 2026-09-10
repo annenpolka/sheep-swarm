@@ -1,0 +1,106 @@
+---
+name: sheep-swarm
+description: Run bounded sheep-swarm tasks on a selected Git repository, run its built-in experiments, inspect saved evidence, or resume its durable runner. Use when asked to use sheep-swarm, a Luna swarm, or an opencode-go/deepseek-flash swarm for scoped coding work.
+---
+
+# Use sheep-swarm
+
+sheep-swarm schedules local work through versioned artifacts, fixed acceptance checks, and a kernel. Lower workers use Luna by default; an upper Astra model observes failures and intervenes when needed. Do not add worker-to-manager consultation or upper approval of every change.
+
+## Locate and choose the path
+
+Locate the sheep-swarm checkout from the current project or the user's supplied path. Run commands from that checkout, not the repository whose code the user eventually wants changed. Verify `git status --short`, `package.json`, and `README.md`. If the checkout is unknown, resolve it before running commands; the installed skill directory is not the checkout. Node must be >=24.12.0. Run `npm ci` if dependencies are absent or changed.
+
+| Request | Entry point | Scope |
+|---|---|---|
+| Small swarm smoke / migration fixture | `npm run swarm -- …` | Built-in measurement task; `size` counts direct consumers, not all writable artifacts |
+| Compare methods | `npm run compare -- …` | Separate thermal fixture; `single-luna`, `manager-local`, `sheep-fixed`, `sheep-full` |
+| Static, semantic or staged experiment | `npm run mechanism -- …` | Fixed task families, token or credit admission |
+| Crash-safe sequential work / resume | `npm run durable -- …` | Dedicated C=1 runner; cannot resume a parallel swarm output |
+| Implement code in a Git repository | `npm run repo -- --repo PATH --task TASK.json` | Declared file targets, fixed host checks, candidate output; `--apply` adopts accepted changes |
+| Specialized task beyond the repo manifest | Trusted `runSwarm(..., task)` adapter | Read [task-adapter.md](references/task-adapter.md) |
+| Inspect prior work | Read saved JSON and receipts | No model calls needed |
+
+For ordinary use, read only the relevant CLI source (`src/cli.ts`, `src/compare-cli.ts`, `src/mechanism-cli.ts`, `src/durable-cli.ts`) if a flag is not covered here. The four experiment CLIs do not implement a help or dry-run mode (`repo --help` does); do not execute an incomplete command to discover defaults. For development, also read the checkout's `AGENTS.md` and its designated documents.
+
+## Run a repository task
+
+Use the separate `repo` entry point for real coding work. Read the target repository's instructions and working changes first. Write a task JSON with concrete `goal`, `files:[{path,instructions,dependsOn?,checks?}]`, optional `context`, nonempty `protected` and final `checks:[{argv:[...],timeoutMs?}]`, plus `version:1`. All paths are relative to the target Git root. `--task` is a JSON file, never free-text instructions. Freeze tests before worker calls; only declared targets can change. See [repository-task.md](references/repository-task.md) for the minimum complete manifest.
+
+```sh
+npm run repo -- --repo /absolute/project --task /absolute/task.json \
+  --runtime opencode-go --worker-model deepseek-flash --go-thinking disabled \
+  --workers 4 --concurrency 2 --max-calls 12 --max-meta-calls 0 \
+  --max-tokens 200000 --reserve-tokens 30000 --max-tokens-per-call 16000 \
+  --output .sheep/new-repository-run
+```
+
+This profile keeps upper calls off for the explicitly selected Go swarm. For normal upper intervention, configure its runtime/model and cap explicitly. `--go-thinking` controls the Go DeepSeek worker only; omission leaves the provider default. It is a `repo` flag, not a flag on the experiment CLIs. No credential-store auto-import: use an already configured `OPENCODE_GO_API_KEY` or explicitly authorized in-memory loading; never print or persist the key.
+
+The command runs from the sheep-swarm checkout. From another directory invoke `node /absolute/sheep-swarm/src/repo-cli.ts` with the same flags. `--help` makes no calls. Candidate-only is the default; add `--apply` when the requested coding task authorizes writing accepted changes. This applies only after final acceptance, settled known usage, and source drift checks. Do not restart a completed candidate run just to apply it; review its selected artifacts against the unchanged source and use the authorized edit workflow.
+
+Checks are trusted host commands in copied workspaces, **not an OS sandbox**. API workers have no local tools. Symlinks/submodules/special files, `.git`, `.sheep`, `.env*`, `node_modules`, and unrelated untracked files are outside snapshot support. Explicit existing targets/context/protected may be untracked. Arrange dependencies through supplied check commands; do not invent an install step. Snapshot limits are 10000 files/128 MiB, with 2 MiB UTF-8 text per target/context. Readonly context excludes implicit target dependencies: use `dependsOn` to order writable files. Repository runs have no durable resume.
+
+Read outer `result.json`, `artifacts.json`, `changes.json`, `profile.json`, `task.json`, and `budget.json`, then inner `swarm/` receipts and `checks/` logs. Require `success`, the expected `applied` state, completed artifacts and no unknown/active/overrun budget. Inspect real diff and fixed checks. Failed candidates remain evidence and must not be applied.
+
+## Bounded execution
+
+Honor the requested runtime, model, task, output location and limits. An execution request authorizes that bounded run; continue without asking again. For a planning-only request, produce a concrete command without calling models. Do not launch a full experiment series merely to check connectivity.
+
+Codex CLI needs access to its existing writable state directory and in-process app-server. An enclosing sandbox can prevent initialization even though the worker itself uses a read-only sandbox. If this environment is known to block initialization, use the execution tool's narrowly scoped permission request for the exact authorized command before launching it; keep the worker's sandbox, model and limits unchanged. A `readonly database` / app-server permission failure with no model events is an environment failure. Preserve its receipts and unknown usage; do not automatically retry the whole run or change authentication/configuration to bypass it.
+
+For a small first smoke, use a new output directory and an explicit call cap. This example calls real Luna through authenticated Codex CLI:
+
+```sh
+run_dir=".sheep/skill-smoke-$(date +%Y%m%d-%H%M%S)-$$"
+npm run swarm -- --runtime codex --worker-model gpt-5.6-luna \
+  --workers 2 --concurrency 1 --size 2 --max-calls 4 --max-meta-calls 0 \
+  --max-rounds 6 --timeout-ms 120000 --output "$run_dir"
+```
+
+The zero upper-call cap is a connectivity smoke setting. Preserve upper intervention for normal swarm work (e.g. `--max-meta-calls 2`); record the change when comparing runs. Keep registered workers N, maximum concurrency C, and observed activity separate. Four workers test operation; they do not establish scale benefits.
+
+`swarm` has call, round and timeout limits but no total `--max-tokens` flag. `compare` uses `--max-tokens`, `--reserve-tokens`, and **`--max-upper-calls`**. `mechanism` uses **`--max-meta-calls`** and supports `--budget-mode tokens --max-tokens … --reserve-tokens …`; credit options are a separate mode. Reservations control admission, not a provider-enforced spending ceiling. Do not silently increase exhausted limits.
+
+## Runtime selection
+
+| Runtime | Lower model / authentication | Tools and upper default |
+|---|---|---|
+| `codex` | `gpt-5.6-luna`, authenticated Codex CLI | Tool-less; upper Codex/Astra |
+| `docker-agent` | `gpt-5.6-luna`, configured host proxy | `--worker-tools local` enables local read/edit/test; upper Docker/Astra |
+| `deepseek` | Explicit raw API model ID; `DEEPSEEK_API_KEY` | Tool-less; upper **Codex/Astra**, unless explicitly changed |
+| `opencode-go` | Explicit catalog ID such as `gpt-5.6-luna`; `OPENCODE_GO_API_KEY` | Tool-less; upper **Codex/Astra**, unless explicitly changed |
+
+Do not prefix raw API IDs with provider names, silently substitute providers/models, or treat an expiring model ID as a permanent default. Keep keys out of commands, logs and artifacts; check presence without printing values. No automatic import of the OpenCode credential store is implemented.
+
+Go/DeepSeek `mechanism` runs require token mode. Go tokens are not Codex credits or direct DeepSeek charges. For provider-specific setup read the checkout's `docs/opencode-go.md` or README DeepSeek section; for Docker read `docs/docker-agent-sandbox.md` before creating VMs. Local tools require Docker; API runtimes cannot use `--worker-tools local`.
+
+For same-provider upper calls, specify both `--meta-runtime` and `--meta-model`. For no upper calls, use the runner's upper-call cap. Normal single-agent comparisons use Luna; do not start new Astra-only trials. Explicit DeepSeek trials remain a separately requested exception. Match runtime, tools, authority, acceptance and total budget for comparisons.
+
+## Read the evidence and decide
+
+Keep the original run directory intact. Read `result.json`, `artifacts.json`, call records and referenced `call-*.json` receipts. A process exit or model's “done” message does not prove acceptance. Distinguish an absent report (incomplete/unverified) from a recorded failed run.
+
+For `swarm`, check `success`, `finalErrors`, `completedArtifacts` versus `writableArtifacts`, and actual generated content. Inspect `calls` for requested model, effective-model evidence, role, outcome, tokens and usage completeness. For `compare`, also inspect `qualityPass` and the budget. For `mechanism`, require all expected stages (three for `staged`), quality/protocol checks, completed termination, and a settled budget with no unknown usage or overrun. Docker receipts also need successful cleanup; saved summaries do not replace the independent acceptance checks.
+
+Interpret usage using the receipt's runtime. Codex receipts can omit the adapter-specific `usageCompleteness` marker: check successful terminal execution, `turn.completed`, no timeout/cancellation or incomplete-transcript error, and exactly one normalized usage row with nonnegative integer input/output counts. That establishes a known final token count even if the marker is null. Multiple/partial rows or missing terminal evidence remain unknown; API/Docker explicit completeness evidence follows its adapter. See `src/model-runtime.ts` for the exact fallback. Effective model identity is a separate field and remains unknown if absent. Reasoning output is already included in output tokens; do not add it again.
+
+For Docker mechanism reports only:
+
+```sh
+npm run summarize:docker-mechanism -- /absolute/run/result.json
+```
+
+Missing receipts, unknown/partial usage, provider throttling, verification infrastructure errors or cleanup failure require stopping new admissions. Keep already issued calls and their cleanup accounted for. Do not turn unknown usage into zero, retry the series in a fresh directory to evade its stop, or rewrite the report to match a positive console message. Observed token totals may be lower bounds; actual billing and subscription use cannot be inferred.
+
+Classify a durable run from its saved JSON **before** using a resume command. If it records unknown usage, `token-usage-incomplete`, or unknown provider execution, diagnose it without resuming. `--resume` mutates counters, snapshots and reports even when it adds no model calls. Inspecting SQLite directly can also create WAL/SHM sidecars: prefer saved JSON; if database inspection is necessary, inspect a consistent disposable copy. Do not checkpoint the original, restore old values, or otherwise alter evidence after a probe.
+
+For an unlocked incomplete durable run that the user wants to continue, use its existing directory and saved configuration:
+
+```sh
+npm run durable -- --directory /absolute/durable-run --resume
+```
+
+Completed runs need no resume merely to report success; an explicitly requested resume should add no calls but still changes metadata. Unknown usage locks persist across resume; do not clear the lock or change the model/limits to force progress. Docker VM recovery/reaping is resource cleanup, not a parallel run resume or missing-usage reconstruction.
+
+Return the command/profile, output path, accepted or failed/incomplete status with evidence, lower/upper calls, N/C/observed activity, usage completeness, and remaining limitations. For coding tasks, review and validate the generated diff against the destination checkout before adopting it. A successful synthetic run proves only that fixture's acceptance, not arbitrary repository support, general dependency discovery or cost superiority.

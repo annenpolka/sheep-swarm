@@ -1,0 +1,861 @@
+{
+  "baseHead": "e14d5a8febcd418317caade7c00d60ce51b5e015",
+  "node": "v26.0.0",
+  "implementation": [
+    {
+      "directory": ".sheep/repo-adapter-build",
+      "runtime": "opencode-go",
+      "workerModel": "deepseek-flash",
+      "thinking": "provider-default",
+      "budget": {
+        "unit": "tokens",
+        "maxTokens": 300000,
+        "observedTokens": 133050,
+        "reservedTokens": 0,
+        "unknownUsageCalls": 0,
+        "exceeded": false,
+        "admissionDenied": false,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "settledCalls": 6,
+        "locked": false,
+        "calls": [
+          {
+            "callId": "build-1",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 20157,
+            "knownTokensLower": 20157,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-2",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 20172,
+            "knownTokensLower": 20172,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-3",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 19587,
+            "knownTokensLower": 19587,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-4",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 24255,
+            "knownTokensLower": 24255,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-5",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 24458,
+            "knownTokensLower": 24458,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-6",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 24421,
+            "knownTokensLower": 24421,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          }
+        ]
+      },
+      "calls": [
+        {
+          "id": "call-1",
+          "target": "src/repo-manifest.ts",
+          "outcome": "missing-output",
+          "model": "deepseek-flash",
+          "inputTokens": 4157,
+          "outputTokens": 16000,
+          "receipt": ".sheep/repo-adapter-build/swarm/call-1.json",
+          "sha256": "cc78d947bf5d0537dd7a3252322c30ec2382efe8f8f2c16e99a9366011e318e6"
+        },
+        {
+          "id": "call-2",
+          "target": "src/repo-manifest.ts",
+          "outcome": "missing-output",
+          "model": "deepseek-flash",
+          "inputTokens": 4172,
+          "outputTokens": 16000,
+          "receipt": ".sheep/repo-adapter-build/swarm/call-2.json",
+          "sha256": "a54a4f6f0c972f065333aa3b2d5ada45a4da3695d9cb5ad2ddb8ca32386b069c"
+        },
+        {
+          "id": "call-3",
+          "target": "src/repo-manifest.ts",
+          "outcome": "committed",
+          "model": "deepseek-flash",
+          "inputTokens": 4172,
+          "outputTokens": 15415,
+          "receipt": ".sheep/repo-adapter-build/swarm/call-3.json",
+          "sha256": "f20ec27f993943e6ce3aa701680125fab7e1477d2895fe2b41f6a3329ac91b4d"
+        },
+        {
+          "id": "call-4",
+          "target": "src/repo-files.ts",
+          "outcome": "missing-output",
+          "model": "deepseek-flash",
+          "inputTokens": 8255,
+          "outputTokens": 16000,
+          "receipt": ".sheep/repo-adapter-build/swarm/call-4.json",
+          "sha256": "cca50bcf4e39cdf9d8dd35c498f1578092698cd50ae296bfb9d6720f095aff9c"
+        },
+        {
+          "id": "call-5",
+          "target": "src/repo-files.ts",
+          "outcome": "missing-output",
+          "model": "deepseek-flash",
+          "inputTokens": 8458,
+          "outputTokens": 16000,
+          "receipt": ".sheep/repo-adapter-build/swarm/call-5.json",
+          "sha256": "11c68f7a6995c4f4575ebee9257dcfe0e42c88f241e3187a894d18120dba7342"
+        },
+        {
+          "id": "call-6",
+          "target": "src/repo-files.ts",
+          "outcome": "missing-output",
+          "model": "deepseek-flash",
+          "inputTokens": 8421,
+          "outputTokens": 16000,
+          "receipt": ".sheep/repo-adapter-build/swarm/call-6.json",
+          "sha256": "9df1946b6e804bf639904dacff30aceb80045747525bb035ade2c21c76c8fe62"
+        }
+      ]
+    },
+    {
+      "directory": ".sheep/repo-adapter-build-low",
+      "runtime": "opencode-go",
+      "workerModel": "deepseek-flash",
+      "thinking": "disabled",
+      "budget": {
+        "unit": "tokens",
+        "maxTokens": 166950,
+        "observedTokens": 68760,
+        "reservedTokens": 0,
+        "unknownUsageCalls": 0,
+        "exceeded": false,
+        "admissionDenied": false,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "settledCalls": 6,
+        "locked": false,
+        "calls": [
+          {
+            "callId": "build-1",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 7145,
+            "knownTokensLower": 7145,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-2",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 7124,
+            "knownTokensLower": 7124,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-3",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 7501,
+            "knownTokensLower": 7501,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-4",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 14822,
+            "knownTokensLower": 14822,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-5",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 16022,
+            "knownTokensLower": 16022,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-6",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 16146,
+            "knownTokensLower": 16146,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          }
+        ]
+      },
+      "calls": [
+        {
+          "id": "call-1",
+          "target": "src/repo-manifest.ts",
+          "outcome": "rejected",
+          "model": "deepseek-flash",
+          "inputTokens": 4132,
+          "outputTokens": 3013,
+          "receipt": ".sheep/repo-adapter-build-low/swarm/call-1.json",
+          "sha256": "1bc4eeb372999a25f493bed20ea54b9ec18ed78b6117a25ce816a19e561635bf"
+        },
+        {
+          "id": "call-2",
+          "target": "src/repo-manifest.ts",
+          "outcome": "rejected",
+          "model": "deepseek-flash",
+          "inputTokens": 4167,
+          "outputTokens": 2957,
+          "receipt": ".sheep/repo-adapter-build-low/swarm/call-2.json",
+          "sha256": "d25f8c348d95310c96b9e8a860c958bea42f8326559ec015944e3c9723a0f41f"
+        },
+        {
+          "id": "call-3",
+          "target": "src/repo-manifest.ts",
+          "outcome": "committed",
+          "model": "deepseek-flash",
+          "inputTokens": 4497,
+          "outputTokens": 3004,
+          "receipt": ".sheep/repo-adapter-build-low/swarm/call-3.json",
+          "sha256": "4cc85c9cec8cab3704e71fc8bcb320d14d31b4b471fa7b5b74f620efa8d9ecc9"
+        },
+        {
+          "id": "call-4",
+          "target": "src/repo-files.ts",
+          "outcome": "rejected",
+          "model": "deepseek-flash",
+          "inputTokens": 8565,
+          "outputTokens": 6257,
+          "receipt": ".sheep/repo-adapter-build-low/swarm/call-4.json",
+          "sha256": "d492f2a00905b4e8f08916f16ce68f12fefb42977fdfe864f558d7c9e189a206"
+        },
+        {
+          "id": "call-5",
+          "target": "src/repo-files.ts",
+          "outcome": "rejected",
+          "model": "deepseek-flash",
+          "inputTokens": 9209,
+          "outputTokens": 6813,
+          "receipt": ".sheep/repo-adapter-build-low/swarm/call-5.json",
+          "sha256": "7fd2ecd3aae8813b50df23c15e72980e9701550d2a44990c2f7c3ddb2020310d"
+        },
+        {
+          "id": "call-6",
+          "target": "src/repo-files.ts",
+          "outcome": "rejected",
+          "model": "deepseek-flash",
+          "inputTokens": 9537,
+          "outputTokens": 6609,
+          "receipt": ".sheep/repo-adapter-build-low/swarm/call-6.json",
+          "sha256": "c67897ec942d2801ff8eeaff4aca9141eb889b1511f4de1959bbe4497880b4ee"
+        }
+      ]
+    },
+    {
+      "directory": ".sheep/repo-adapter-build-repair",
+      "runtime": "opencode-go",
+      "workerModel": "deepseek-flash",
+      "thinking": "disabled",
+      "budget": {
+        "unit": "tokens",
+        "maxTokens": 98190,
+        "observedTokens": 72936,
+        "reservedTokens": 0,
+        "unknownUsageCalls": 0,
+        "exceeded": false,
+        "admissionDenied": false,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "settledCalls": 3,
+        "locked": false,
+        "calls": [
+          {
+            "callId": "build-1",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 20092,
+            "knownTokensLower": 20092,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-2",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 26001,
+            "knownTokensLower": 26001,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-3",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 26843,
+            "knownTokensLower": 26843,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          }
+        ]
+      },
+      "calls": [
+        {
+          "id": "call-1",
+          "target": "src/repo-files.ts",
+          "outcome": "rejected",
+          "model": "deepseek-flash",
+          "inputTokens": 14053,
+          "outputTokens": 6039,
+          "receipt": ".sheep/repo-adapter-build-repair/swarm/call-1.json",
+          "sha256": "e9a37ebb82129c10961fc5803d36c05869a52b536963b79e0faacf48545e26ee"
+        },
+        {
+          "id": "call-2",
+          "target": "src/repo-files.ts",
+          "outcome": "rejected",
+          "model": "deepseek-flash",
+          "inputTokens": 20104,
+          "outputTokens": 5897,
+          "receipt": ".sheep/repo-adapter-build-repair/swarm/call-2.json",
+          "sha256": "a6623ced3f13ea4a54f4dc7b3b85074de594eba6eee92db2c8edf0879cce4be2"
+        },
+        {
+          "id": "call-3",
+          "target": "src/repo-files.ts",
+          "outcome": "committed",
+          "model": "deepseek-flash",
+          "inputTokens": 20661,
+          "outputTokens": 6182,
+          "receipt": ".sheep/repo-adapter-build-repair/swarm/call-3.json",
+          "sha256": "e8ced4907709e47db78e0385779db62b8a577124e84f2dc29418cee9227c8d77"
+        },
+        {
+          "id": "call-4",
+          "target": "src/repo-checks.ts",
+          "outcome": "model-error",
+          "model": "deepseek-flash",
+          "inputTokens": null,
+          "outputTokens": null,
+          "receipt": null,
+          "sha256": null
+        },
+        {
+          "id": "call-5",
+          "target": "src/repo-checks.ts",
+          "outcome": "model-error",
+          "model": "deepseek-flash",
+          "inputTokens": null,
+          "outputTokens": null,
+          "receipt": null,
+          "sha256": null
+        },
+        {
+          "id": "call-6",
+          "target": "src/repo-checks.ts",
+          "outcome": "model-error",
+          "model": "deepseek-flash",
+          "inputTokens": null,
+          "outputTokens": null,
+          "receipt": null,
+          "sha256": null
+        }
+      ]
+    },
+    {
+      "directory": ".sheep/repo-adapter-build-final",
+      "runtime": "opencode-go",
+      "workerModel": "deepseek-flash",
+      "thinking": "disabled",
+      "budget": {
+        "unit": "tokens",
+        "maxTokens": 200000,
+        "observedTokens": 197849,
+        "reservedTokens": 0,
+        "unknownUsageCalls": 0,
+        "exceeded": false,
+        "admissionDenied": false,
+        "reservationOverruns": 2,
+        "activeReservations": 0,
+        "settledCalls": 6,
+        "locked": false,
+        "calls": [
+          {
+            "callId": "build-1",
+            "model": "deepseek-flash",
+            "reservedTokens": 48000,
+            "status": "settled",
+            "tokens": 16156,
+            "knownTokensLower": 16156,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-2",
+            "model": "deepseek-flash",
+            "reservedTokens": 48000,
+            "status": "settled",
+            "tokens": 19313,
+            "knownTokensLower": 19313,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-3",
+            "model": "deepseek-flash",
+            "reservedTokens": 48000,
+            "status": "settled",
+            "tokens": 19352,
+            "knownTokensLower": 19352,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-4",
+            "model": "deepseek-flash",
+            "reservedTokens": 48000,
+            "status": "settled",
+            "tokens": 43646,
+            "knownTokensLower": 43646,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-5",
+            "model": "deepseek-flash",
+            "reservedTokens": 48000,
+            "status": "settled",
+            "tokens": 50107,
+            "knownTokensLower": 50107,
+            "overrun": true,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-6",
+            "model": "deepseek-flash",
+            "reservedTokens": 48000,
+            "status": "settled",
+            "tokens": 49275,
+            "knownTokensLower": 49275,
+            "overrun": true,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          }
+        ]
+      },
+      "calls": [
+        {
+          "id": "call-1",
+          "target": "src/repo-checks.ts",
+          "outcome": "rejected",
+          "model": "deepseek-flash",
+          "inputTokens": 13175,
+          "outputTokens": 2981,
+          "receipt": ".sheep/repo-adapter-build-final/swarm/call-1.json",
+          "sha256": "d2ad7d3c42f49f029d72ce5d41556f7b5aab4b713332e2946aed64c3e35186d8"
+        },
+        {
+          "id": "call-2",
+          "target": "src/repo-checks.ts",
+          "outcome": "rejected",
+          "model": "deepseek-flash",
+          "inputTokens": 16416,
+          "outputTokens": 2897,
+          "receipt": ".sheep/repo-adapter-build-final/swarm/call-2.json",
+          "sha256": "23cc2fe5800cf43a0a2782b86a4225677f865242c1725a74b31a18446ce47903"
+        },
+        {
+          "id": "call-3",
+          "target": "src/repo-checks.ts",
+          "outcome": "committed",
+          "model": "deepseek-flash",
+          "inputTokens": 16337,
+          "outputTokens": 3015,
+          "receipt": ".sheep/repo-adapter-build-final/swarm/call-3.json",
+          "sha256": "086204a7dc28f75d69b3a59feba6f04a674fdf1f9eaf212f4568f01cefb54866"
+        },
+        {
+          "id": "call-4",
+          "target": "src/repo-run.ts",
+          "outcome": "rejected",
+          "model": "deepseek-flash",
+          "inputTokens": 37718,
+          "outputTokens": 5928,
+          "receipt": ".sheep/repo-adapter-build-final/swarm/call-4.json",
+          "sha256": "3b53c4ae16413d5ac2aba58af35b8c5e714aaeaa2d789596772b54e69279d062"
+        },
+        {
+          "id": "call-5",
+          "target": "src/repo-run.ts",
+          "outcome": "rejected",
+          "model": "deepseek-flash",
+          "inputTokens": 44405,
+          "outputTokens": 5702,
+          "receipt": ".sheep/repo-adapter-build-final/swarm/call-5.json",
+          "sha256": "91c8d4fdedc6eb0fad7115d3cad782e5703188007e6b7dd6dc80b4912a91eae2"
+        },
+        {
+          "id": "call-6",
+          "target": "src/repo-run.ts",
+          "outcome": "rejected",
+          "model": "deepseek-flash",
+          "inputTokens": 43625,
+          "outputTokens": 5650,
+          "receipt": ".sheep/repo-adapter-build-final/swarm/call-6.json",
+          "sha256": "60fc276d41429c3b5bf509bf65bd676467e302e5e9145d65faeefbdd96022995"
+        }
+      ]
+    },
+    {
+      "directory": ".sheep/repo-adapter-build-connect",
+      "runtime": "opencode-go",
+      "workerModel": "deepseek-flash",
+      "thinking": "disabled",
+      "budget": {
+        "unit": "tokens",
+        "maxTokens": 100000,
+        "observedTokens": 63793,
+        "reservedTokens": 0,
+        "unknownUsageCalls": 0,
+        "exceeded": false,
+        "admissionDenied": false,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "settledCalls": 3,
+        "locked": false,
+        "calls": [
+          {
+            "callId": "build-1",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 17360,
+            "knownTokensLower": 17360,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-2",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 22839,
+            "knownTokensLower": 22839,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "build-3",
+            "model": "deepseek-flash",
+            "reservedTokens": 32000,
+            "status": "settled",
+            "tokens": 23594,
+            "knownTokensLower": 23594,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          }
+        ]
+      },
+      "calls": [
+        {
+          "id": "call-1",
+          "target": "src/repo-run.ts",
+          "outcome": "rejected",
+          "model": "deepseek-flash",
+          "inputTokens": 11571,
+          "outputTokens": 5789,
+          "receipt": ".sheep/repo-adapter-build-connect/swarm/call-1.json",
+          "sha256": "43c844e0d2e0a6c75d638df9a736d282feea5c8226186b844e5bce9619974c4f"
+        },
+        {
+          "id": "call-2",
+          "target": "src/repo-run.ts",
+          "outcome": "rejected",
+          "model": "deepseek-flash",
+          "inputTokens": 17202,
+          "outputTokens": 5637,
+          "receipt": ".sheep/repo-adapter-build-connect/swarm/call-2.json",
+          "sha256": "7da0b6eced8f11cd8024efee110f923130d3b5334670450f007ee41eca2e2c45"
+        },
+        {
+          "id": "call-3",
+          "target": "src/repo-run.ts",
+          "outcome": "rejected",
+          "model": "deepseek-flash",
+          "inputTokens": 17988,
+          "outputTokens": 5606,
+          "receipt": ".sheep/repo-adapter-build-connect/swarm/call-3.json",
+          "sha256": "c1d891e2d63cc27233e88ea97f747023b63a8306941a27f0c995046cb9ec6f97"
+        }
+      ]
+    }
+  ],
+  "implementationObservedTokens": 536388,
+  "live": [
+    {
+      "language": "javascript",
+      "directory": ".sheep/repository-live/javascript-run",
+      "success": true,
+      "applied": false,
+      "registeredWorkers": 4,
+      "concurrency": 2,
+      "maxConcurrentModelCalls": 2,
+      "lowerCalls": 2,
+      "upperCalls": 0,
+      "changedPaths": [
+        "clamp.mjs",
+        "title.mjs"
+      ],
+      "budget": {
+        "unit": "tokens",
+        "maxTokens": 40000,
+        "observedTokens": 1811,
+        "reservedTokens": 0,
+        "unknownUsageCalls": 0,
+        "exceeded": false,
+        "admissionDenied": false,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "settledCalls": 2,
+        "locked": false,
+        "calls": [
+          {
+            "callId": "worker-1789032670028-6o5by5j0bb",
+            "model": "deepseek-flash",
+            "reservedTokens": 6000,
+            "status": "settled",
+            "tokens": 900,
+            "knownTokensLower": 900,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "worker-1789032670049-jwkx7c0tcm",
+            "model": "deepseek-flash",
+            "reservedTokens": 6000,
+            "status": "settled",
+            "tokens": 911,
+            "knownTokensLower": 911,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          }
+        ]
+      },
+      "receiptHashes": {
+        "call-2.json": "f190471350456ac3efe08cd7196ebdd333114bcae0fb212ad41552b9939db9ea",
+        "call-1.json": "3e02457f63e5dd0051f9cd913fde7e5ea703a79ed97f34cdbb3567e352b625f7"
+      }
+    },
+    {
+      "language": "python",
+      "directory": ".sheep/repository-live/python-run",
+      "success": true,
+      "applied": true,
+      "registeredWorkers": 4,
+      "concurrency": 2,
+      "maxConcurrentModelCalls": 2,
+      "lowerCalls": 2,
+      "upperCalls": 0,
+      "changedPaths": [
+        "maths.py",
+        "labels.py"
+      ],
+      "budget": {
+        "unit": "tokens",
+        "maxTokens": 40000,
+        "observedTokens": 1630,
+        "reservedTokens": 0,
+        "unknownUsageCalls": 0,
+        "exceeded": false,
+        "admissionDenied": false,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "settledCalls": 2,
+        "locked": false,
+        "calls": [
+          {
+            "callId": "worker-1789032672516-yd812zba36",
+            "model": "deepseek-flash",
+            "reservedTokens": 6000,
+            "status": "settled",
+            "tokens": 814,
+            "knownTokensLower": 814,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "worker-1789032672538-3cyk4ypbfa",
+            "model": "deepseek-flash",
+            "reservedTokens": 6000,
+            "status": "settled",
+            "tokens": 816,
+            "knownTokensLower": 816,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          }
+        ]
+      },
+      "receiptHashes": {
+        "call-2.json": "4b941685ba2783c24e4a54ed0c7d0d80bbeaeacbf7128b7fdb99c622eac4ca73",
+        "call-1.json": "7a15f31bc0a5892873f561eb9e55398f3961acef230979cebf4e86111c737c2f"
+      }
+    }
+  ],
+  "liveObservedTokens": 3441,
+  "sourceHashes": {
+    "src/repo-manifest.ts": "a8388cadf7f22001c038d95fe4ae36ed665e593d35541ba90ddd17bf3d4aed88",
+    "src/repo-files.ts": "c6241846ad54cc0b09032c1fc76ea7091e40caf65667240b8c9e8c6eddd50588",
+    "src/repo-checks.ts": "464a1c9df0695317a7c65cd1802595937a6f06c305264fc882998ff1dc7905ac",
+    "src/repo-run.ts": "1ce6e7e6ef0df1efe40511ff5b7bd7c208d747c6f0e89a51114e87e1285e5fec",
+    "src/repo-types.ts": "fbefcb51c0e76cc16083d19e42f62f3ba2bb1168e43dc44964a3202035c69a62",
+    "src/repo-cli.ts": "985e143787f140ad646fe1f0418073aba83b6bac54a6dbe4f55afff03aca4b0f",
+    "src/swarm.ts": "e2e562543e8915fc0561da70eb58575cec7dfbef83d8c0b55f7e1426ad2ab8d8",
+    "src/opencode-go-worker.ts": "2e6a4b49ae9f0d7c3e6c8813383518c2dddccbfb24891fa9dc76f67af12795b2"
+  },
+  "check": {
+    "tests": 429,
+    "passed": 429,
+    "failed": 0,
+    "referenceSnapshots": 2,
+    "log": ".sheep/repository-check-final.log"
+  },
+  "scope": "Observed token usage, not billing; implementation failures and parent repairs are retained.",
+  "generatedDrafts": {
+    "src/repo-manifest.ts": {
+      "receipt": ".sheep/repo-adapter-build-low/swarm/call-3.json",
+      "contentSha256": "767152747da435a79df8f49681458b8d8ebcdcf9bacea5e5828aa7dc407a97a5",
+      "parentRevised": true,
+      "acceptedBeforeParentReview": true
+    },
+    "src/repo-files.ts": {
+      "receipt": ".sheep/repo-adapter-build-repair/swarm/call-3.json",
+      "contentSha256": "321af8215bf082e1faba70352480ade84696e81e4cab4b14b3097b7f67b90fbf",
+      "parentRevised": true,
+      "acceptedBeforeParentReview": true
+    },
+    "src/repo-checks.ts": {
+      "receipt": ".sheep/repo-adapter-build-final/swarm/call-3.json",
+      "contentSha256": "296ce47ce0d92680ad87ee48d3710f548ddd991740594dc9371a85ac78d2fb15",
+      "parentRevised": true,
+      "acceptedBeforeParentReview": true
+    },
+    "src/repo-run.ts": {
+      "receipt": ".sheep/repo-adapter-build-connect/swarm/call-3.json",
+      "contentSha256": "bf24ba84f6f714348be5ef2ea63e06ed1434a5a61c785d604678b46db9452fdc",
+      "parentRevised": true,
+      "acceptedBeforeParentReview": false
+    }
+  },
+  "installedSkill": {
+    "SKILL.md": {
+      "sha256": "29f60b31358cf012e42e9d0d71c8315a76f618b5ac5a4169e9f8588170fa262b",
+      "mode": "0o644"
+    },
+    "agents/openai.yaml": {
+      "sha256": "dd7516a3275ff85142a2aea20c3fa2f9914f76bec3cf167d222ac7eae0a8ea75",
+      "mode": "0o644"
+    },
+    "references/task-adapter.md": {
+      "sha256": "24b2f4e4343626afef0f4a50c725b9dbcd1ce8e6f8d19b3feea58553ac03dacf",
+      "mode": "0o644"
+    },
+    "references/repository-task.md": {
+      "sha256": "2e4803a9a5c49191a497f94200b5cbcff0213115512e962b4d778f4051811cbf",
+      "mode": "0o644"
+    }
+  }
+}

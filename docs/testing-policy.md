@@ -122,3 +122,10 @@ CLIの途中errorの後にturn.completedとexit 0が来る回復経路を保持�
 OpenCode Goの通常gateは3形式の注入fetchとrunnerの注入callerで行う。sessionの同一worker内継続・worker間分離・durable再開、認証情報の反射時redaction、不正role/tool出力、usage算術、HTTP失敗・429・timeout・取消を検証する。既存DeepSeek snapshotの移行と、Go snapshotのsession欠損拒否を別ケースにする。live APIは既存認証を親processで明示使用し、通常gateから分離した小さな固定課題に限定する。
 
 Astraの独立レビューで固定した反例も通常gateに含める。混合API/Codex上位のusage欠落・数値付き途中終了・末尾JSONL破損は新規受付を止め、durableの予約・失敗receipt保存後の再開でも追加呼出を許さない。末尾破損はローカル偽CLIを実Codex adapter経由で検証する。規模比較の子run失敗・結果欠落・不正report・usage不明、上下を入れ替えたDocker cleanup、DeepSeekのtool/refusal混入とmetadata keyの伏字も検査する。[レビュー証拠](results/astra-go-review.md)。
+
+
+## Repository adapterのgate
+
+`repo-*.test.ts`は実tmp Git作業ツリーとNode subprocessを使い、manifestの不正値、dirty bytes・binary・mode・選択untracked・削除のsnapshot、symlink/parent置換、HEAD/index/bytes drift、新規衝突、候補改変、timeout、bounded stdout/stderr、credential環境の非継承を検査する。注入callerでkernel完了、明示依存順序、並列呼出し、予算の同時予約/拒否、不明usageでの停止、成功時だけのapplyを確認する。最終検査を重複実行しないことも確認する。既存swarmの却下案はread版付きでtargetごとに引き継ぎ、採用内容へ混ぜない。
+
+通常gateで実APIは呼ばない。実Go DeepSeekのJavaScript/Python fixture repoは別証拠に保存し、実call・結果・指定ファイル差分・dirty/untracked保存を確認する。実装swarmの失敗と親の補修を分離し、最初の固定テストに加えた境界テストは要求の追加検査として記録する。[結果](results/repository-runner.md)。

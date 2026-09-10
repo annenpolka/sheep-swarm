@@ -116,3 +116,10 @@ M4の実行系はsrc/durable-run.ts。SQLiteの世代比較と短いtransaction�
 `mechanism`のDocker経路では、要求中の追加readと、実callへ渡したreadを区別する。未読registry・policyの値を可視ケースや事前採点エラーから明かさない。必要な現stageの公開依存がcontextへ揃うまで候補採用も保留し、可視観測VMへはそのcontextのIDだけを送る。登録済みedgeから段階更新後の版を読み直し、最終oracleの失敗はstage barrierで止める。固定の期待値・境界値・必須importは従来どおりhostが保有する。
 
 OpenCode Goは別runtimeとして同じ局所成果物境界へ接続する。protocolはmodel catalogで選び、worker/roleごとのopaque session IDを送る。durableはseedを保存する。session headerを会話履歴やkernel権限とみなさず、全callで配信済み局所contextとschemaを明示する。使用量はGoのAPI形式で独立集計し、Go subscriptionを既存credit単価へ換算しない。[接続契約](opencode-go.md)
+
+
+## Repository adapter
+
+`src/repo-*.ts`はtask manifestとGit作業ツリーをhost-ownedな`CodeFixture`へ変換する。既存schedulerとkernelを再利用し、sourceの初期markerから固定goalへの変更で対象を起動する。upperが変えられるguidanceと、固定したmanifest/検査closureを分ける。却下された案は修正用contextとしてread版とともに保持するが、accepted checkoutへ採用しない。
+
+対象ファイルの完全なUTF-8内容だけをoverlayとして認め、現在のtracked bytesと選択済みuntrackedをfresh candidateへコピーする。宣言した局所検査と最終検査をhost subprocessで実行し、元候補のbytes・mode・path種別の変更も拒否する。最終判定はkernel完了と既知精算済みtoken予算の両方を必要とする。`--apply`は元HEAD・tracked path集合・snapshot bytes/mode・新規衝突を再確認し、全置換をstageしてから採用する。OS transaction・悪意ある並行filesystem・host隔離・crash resumeは保証しない。[詳細](repository-runner.md)。

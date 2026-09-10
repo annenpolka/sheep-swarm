@@ -195,3 +195,18 @@ Evidence: Stated; 利用者のOpenCode Go対応依頼と「luna swarmで実装�
 Evidence: Stated; 利用者が実装後の独立レビューをAstra、修正をOpenCode GoのDeepSeek V4.1 Flashに指定した。実装者と独立レビューを分け、再現を固定して修正後に再検証した。
 
 API runtimeを含むrunでは、上位Codexの数値usageも途中値かもしれない。timeout・取消・不完全な終了イベントは既知数値を保持して受付を止め、durable再開で解除しない。正常終了した単一usageと、完全に計測されたschema不適合を区別する。Docker cleanupは呼出roleのruntimeに従う。規模比較の子run失敗・不正reportで次条件へ進まない。[AstraレビューとGo修正の証拠](../docs/results/astra-go-review.md)。
+
+
+### 指定GitリポジトリをGo DeepSeekのswarmへ渡す
+Authority: Human stated
+Evidence: Stated; 2026-09-10「任意リポジトリで実行できるようにしよう。opencode-go/deepseek-flashのswarmで進める」。
+Working default:
+- 専用fixture factoryの代わりにtask JSONで対象・context・依存・固定検査を宣言し、既存runSwarm/kernelを再利用する。
+- 候補保存を既定にし、明示した`--apply`で受入・使用量・元ファイルのdrift確認後だけ書き戻す。
+- 今回の実装と実走は指定したGo/deepseek-flashを使う。既存比較の下位Luna方針を黙って置換しない。
+- 検査コマンドは信頼するhost subprocess。tool-less API workerの権限と、host検査の信頼境界を混同しない。
+Validation:
+- 通常gate、実JavaScript/Python repoのcandidate-onlyとapply、dirty/untracked保存。[記録](../docs/results/repository-runner.md)。
+Revisit when:
+- 削除/rename、巨大repo、複雑な依存setup、resume、隔離した検査が必要になったとき。
+Status: active
