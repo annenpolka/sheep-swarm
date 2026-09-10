@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "status": "proposal_not_executed",
+  "status": "partially_executed_mechanism_pilot",
   "preparedOn": "2026-09-10",
   "purpose": "Separate persistent local workers and selective upper intervention from model price, parallelism, cache, and total memory capacity.",
   "workerModel": "gpt-5.6-luna",
@@ -36,7 +36,7 @@
     ],
     "levelsFrozen": false,
     "ratesFile": "pricing/openai-2026-09-10.json",
-    "requiresRuntimeAdmissionImplementation": true,
+    "requiresRuntimeAdmissionImplementation": false,
     "includes": [
       "lower",
       "upper",
@@ -97,5 +97,36 @@
     "general-repository-cost-superiority",
     "independent-agent-errors"
   ],
-  "researchDocument": "docs/task-design.md"
+  "researchDocument": "docs/task-design.md",
+  "executionEvidence": {
+    "report": "docs/results/mechanism-findings.md",
+    "runtimeGuide": "docs/mechanism-experiment.md",
+    "perRunCreditEquivalentLimit": 30,
+    "originalStudy": {
+      "plannedConditions": 28,
+      "executedConditions": 2,
+      "unexecutedConditions": 26,
+      "status": "stopped_unknown_usage",
+      "unknownUsageCalls": 1
+    },
+    "authorizedScalingFollowup": {
+      "additionalCreditEquivalentLimit": 100,
+      "knownCreditEquivalent": 23.729217,
+      "registeredWorkers": [16, 32],
+      "concurrency": 8,
+      "family": "semantic-contract-dependencies",
+      "repetitionsPerCondition": 1,
+      "executedConditions": 2,
+      "status": "completed"
+    },
+    "unmetResearchConditions": [
+      "repeated-comparisons-at-fixed-C",
+      "successful-full-size-single-model-comparison",
+      "real-model-memory-and-upper-ablations",
+      "equal-total-memory-capacity",
+      "unknown-affected-target-discovery",
+      "OS-level-hidden-oracle-read-isolation",
+      "external-repository-holdouts"
+    ]
+  }
 }

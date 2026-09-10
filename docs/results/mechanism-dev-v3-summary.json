@@ -1,0 +1,1100 @@
+{
+  "format": 1,
+  "kind": "mechanism-summary",
+  "generatedAt": "2026-09-09T23:50:20.334Z",
+  "mode": "pilot",
+  "status": "completed",
+  "stopReason": null,
+  "sourceManifestSha256": "d6a86de85be472fc9c6fe0cd75c4c6ac439ae74f43f98a18327ed7593cffe63d",
+  "experimentSha256": "8bb42b91702c9649106de8dc040964316ec8063a5585b0179089fbd133ff2454",
+  "rateCardSha256": "e25991caebda1b840569e20a8774b11f9f14e95f3b365fe304dade7bf1ba1312",
+  "estimatorSha256": "b03d77a7ba2143a47897aa0ee0504910e36ca79d3fa4c7679edf78b1f2b696d6",
+  "summarizerSha256": "2939c4f1cb87c4aac32e39352a9eeb254b284b2bbc8d89e0451e7237e12b6bb1",
+  "sourceFilesVerified": 56,
+  "seed": 20260910,
+  "standardCreditCap": 1200,
+  "perRunCreditCap": 30,
+  "configuration": {
+    "lunaReservation": 0.25,
+    "astraReservation": 15,
+    "maxCalls": 400,
+    "timeoutMs": 90000,
+    "maxAttempts": 3,
+    "maxReadCalls": 2,
+    "maxMetaCalls": 3
+  },
+  "conditions": [
+    "Published Standard-rate equivalents with observed cached-input splits; neither observed account debits nor invoices.",
+    "API USD is the hypothetical API price for these tokens, not a Codex subscription charge.",
+    "All discovered call receipts count, including failed calls. Missing receipts produce unknown upper costs.",
+    "Never-started planned conditions remain in rows; their lack of a result is not a quality failure or a measured zero-cost success.",
+    "Numbers compare this frozen synthetic development experiment; case-level repeats do not establish generalization or emergence.",
+    "Semantic tasks exercise registry/JSON policy dependencies absent from the initial static graph; arbitrary semantic discovery is not established.",
+    "Private-memory measurements count entries, not tokens; worker participation counts actual model calls including read requests.",
+    "Registered-worker minima include idle workers; a single baseline counts its actual single actor, not the unused worker-pool slot."
+  ],
+  "total": {
+    "plannedRuns": 5,
+    "recordedRuns": 5,
+    "successfulRuns": 4,
+    "unexecutedRuns": 0,
+    "callReceipts": 52,
+    "missingReceipts": 0,
+    "unknownUsageCalls": 0,
+    "apiUsd": {
+      "lower": 0.8121403600000001,
+      "upper": 0.8121403600000001,
+      "exact": true
+    },
+    "codexCredits": {
+      "lower": 20.303509,
+      "upper": 20.303509,
+      "exact": true
+    }
+  },
+  "groupMetrics": [
+    {
+      "family": "static",
+      "method": "sheep",
+      "workers": 4,
+      "concurrency": 4,
+      "groups": 1,
+      "plannedRuns": 1,
+      "verifiedResults": 1,
+      "successfulRuns": 1,
+      "qualityPasses": 1,
+      "unexecutedRuns": 0,
+      "allRunDurationMs": {
+        "samples": 1,
+        "mean": 28772.496041,
+        "min": 28772.496041,
+        "max": 28772.496041
+      },
+      "successfulDurationMs": {
+        "samples": 1,
+        "mean": 28772.496041,
+        "min": 28772.496041,
+        "max": 28772.496041
+      },
+      "exactCredits": {
+        "samples": 1,
+        "mean": 0.666705,
+        "min": 0.666705,
+        "max": 0.666705
+      },
+      "exactApiUsd": {
+        "samples": 1,
+        "mean": 0.0266682,
+        "min": 0.0266682,
+        "max": 0.0266682
+      },
+      "minCallsPerRegisteredWorker": {
+        "samples": 1,
+        "mean": 1,
+        "min": 1,
+        "max": 1
+      },
+      "readCalls": {
+        "samples": 1,
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      },
+      "memoryEntriesDelivered": {
+        "samples": 1,
+        "mean": 2,
+        "min": 2,
+        "max": 2
+      },
+      "upperInterventions": {
+        "samples": 1,
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    {
+      "family": "semantic",
+      "method": "sheep",
+      "workers": 4,
+      "concurrency": 4,
+      "groups": 1,
+      "plannedRuns": 1,
+      "verifiedResults": 1,
+      "successfulRuns": 1,
+      "qualityPasses": 1,
+      "unexecutedRuns": 0,
+      "allRunDurationMs": {
+        "samples": 1,
+        "mean": 65330.393292,
+        "min": 65330.393292,
+        "max": 65330.393292
+      },
+      "successfulDurationMs": {
+        "samples": 1,
+        "mean": 65330.393292,
+        "min": 65330.393292,
+        "max": 65330.393292
+      },
+      "exactCredits": {
+        "samples": 1,
+        "mean": 1.2579050000000003,
+        "min": 1.2579050000000003,
+        "max": 1.2579050000000003
+      },
+      "exactApiUsd": {
+        "samples": 1,
+        "mean": 0.050316200000000005,
+        "min": 0.050316200000000005,
+        "max": 0.050316200000000005
+      },
+      "minCallsPerRegisteredWorker": {
+        "samples": 1,
+        "mean": 3,
+        "min": 3,
+        "max": 3
+      },
+      "readCalls": {
+        "samples": 1,
+        "mean": 9,
+        "min": 9,
+        "max": 9
+      },
+      "memoryEntriesDelivered": {
+        "samples": 1,
+        "mean": 21,
+        "min": 21,
+        "max": 21
+      },
+      "upperInterventions": {
+        "samples": 1,
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    {
+      "family": "staged",
+      "method": "sheep",
+      "workers": 4,
+      "concurrency": 4,
+      "groups": 1,
+      "plannedRuns": 1,
+      "verifiedResults": 1,
+      "successfulRuns": 1,
+      "qualityPasses": 1,
+      "unexecutedRuns": 0,
+      "allRunDurationMs": {
+        "samples": 1,
+        "mean": 131152.78716699997,
+        "min": 131152.78716699997,
+        "max": 131152.78716699997
+      },
+      "successfulDurationMs": {
+        "samples": 1,
+        "mean": 131152.78716699997,
+        "min": 131152.78716699997,
+        "max": 131152.78716699997
+      },
+      "exactCredits": {
+        "samples": 1,
+        "mean": 1.5924580000000002,
+        "min": 1.5924580000000002,
+        "max": 1.5924580000000002
+      },
+      "exactApiUsd": {
+        "samples": 1,
+        "mean": 0.06369832000000002,
+        "min": 0.06369832000000002,
+        "max": 0.06369832000000002
+      },
+      "minCallsPerRegisteredWorker": {
+        "samples": 1,
+        "mean": 6,
+        "min": 6,
+        "max": 6
+      },
+      "readCalls": {
+        "samples": 1,
+        "mean": 10,
+        "min": 10,
+        "max": 10
+      },
+      "memoryEntriesDelivered": {
+        "samples": 1,
+        "mean": 64,
+        "min": 64,
+        "max": 64
+      },
+      "upperInterventions": {
+        "samples": 1,
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    {
+      "family": "staged",
+      "method": "single-luna",
+      "workers": 1,
+      "concurrency": 1,
+      "groups": 1,
+      "plannedRuns": 1,
+      "verifiedResults": 1,
+      "successfulRuns": 1,
+      "qualityPasses": 1,
+      "unexecutedRuns": 0,
+      "allRunDurationMs": {
+        "samples": 1,
+        "mean": 98481.057459,
+        "min": 98481.057459,
+        "max": 98481.057459
+      },
+      "successfulDurationMs": {
+        "samples": 1,
+        "mean": 98481.057459,
+        "min": 98481.057459,
+        "max": 98481.057459
+      },
+      "exactCredits": {
+        "samples": 1,
+        "mean": 0.285941,
+        "min": 0.285941,
+        "max": 0.285941
+      },
+      "exactApiUsd": {
+        "samples": 1,
+        "mean": 0.01143764,
+        "min": 0.01143764,
+        "max": 0.01143764
+      },
+      "minCallsPerRegisteredWorker": {
+        "samples": 1,
+        "mean": 3,
+        "min": 3,
+        "max": 3
+      },
+      "readCalls": {
+        "samples": 1,
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      },
+      "memoryEntriesDelivered": {
+        "samples": 1,
+        "mean": 3,
+        "min": 3,
+        "max": 3
+      },
+      "upperInterventions": {
+        "samples": 1,
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    {
+      "family": "staged",
+      "method": "single-astra",
+      "workers": 1,
+      "concurrency": 1,
+      "groups": 1,
+      "plannedRuns": 1,
+      "verifiedResults": 1,
+      "successfulRuns": 0,
+      "qualityPasses": 0,
+      "unexecutedRuns": 0,
+      "allRunDurationMs": {
+        "samples": 1,
+        "mean": 97085.41625,
+        "min": 97085.41625,
+        "max": 97085.41625
+      },
+      "successfulDurationMs": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "exactCredits": {
+        "samples": 1,
+        "mean": 16.5005,
+        "min": 16.5005,
+        "max": 16.5005
+      },
+      "exactApiUsd": {
+        "samples": 1,
+        "mean": 0.66002,
+        "min": 0.66002,
+        "max": 0.66002
+      },
+      "minCallsPerRegisteredWorker": {
+        "samples": 1,
+        "mean": 2,
+        "min": 2,
+        "max": 2
+      },
+      "readCalls": {
+        "samples": 1,
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      },
+      "memoryEntriesDelivered": {
+        "samples": 1,
+        "mean": 1,
+        "min": 1,
+        "max": 1
+      },
+      "upperInterventions": {
+        "samples": 1,
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      }
+    }
+  ],
+  "rows": [
+    {
+      "id": "static-sheep-n4-r1",
+      "family": "static",
+      "method": "sheep",
+      "workers": 4,
+      "concurrency": 4,
+      "groups": 1,
+      "replicate": 1,
+      "configuration": {
+        "groups": 1,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCredits": 30,
+        "lunaReservation": 0.25,
+        "astraReservation": 15,
+        "maxCalls": 400,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 3,
+        "memoryLimit": 4
+      },
+      "integrity": "verified",
+      "resultSha256": "ee8aaab3be5e6f1255888e8dfab97bb488c34502e1d02dab69c22839cf3aedeb",
+      "fixtureFingerprint": "2658ec70777697ca7b4affb05e86c40566884c45e972b2962b98a13163e098b8",
+      "recordedSuccess": true,
+      "success": true,
+      "qualityPass": true,
+      "completionReason": "completed",
+      "recordedTerminationReason": null,
+      "durationMs": 28772.496041,
+      "lowerCalls": 6,
+      "upperCalls": 0,
+      "upperInterventions": 0,
+      "boundaryViolationCount": 0,
+      "maxActiveModelCalls": 4,
+      "reservationOverruns": 0,
+      "runnerUnknownUsageCalls": 0,
+      "budgetExceeded": false,
+      "budgetAdmissionDenied": false,
+      "observedRunnerCredits": 0.666705,
+      "stagesExpected": 1,
+      "stages": [
+        {
+          "stage": 0,
+          "success": true,
+          "qualityPass": true,
+          "terminationReason": null,
+          "protocolClean": true,
+          "durationMs": 28769.743125,
+          "calls": 6,
+          "lowerCalls": 6,
+          "upperCalls": 0,
+          "readCalls": 0,
+          "interventions": 0
+        }
+      ],
+      "participation": {
+        "registered": 4,
+        "active": 4,
+        "minCalls": 1,
+        "maxCalls": 2,
+        "perWorker": [
+          {
+            "id": "sheep-1",
+            "actualCalls": 2,
+            "scheduledAssignments": 2,
+            "committedPatches": 2,
+            "finalMemoryEntries": 2
+          },
+          {
+            "id": "sheep-2",
+            "actualCalls": 2,
+            "scheduledAssignments": 2,
+            "committedPatches": 2,
+            "finalMemoryEntries": 2
+          },
+          {
+            "id": "sheep-3",
+            "actualCalls": 1,
+            "scheduledAssignments": 1,
+            "committedPatches": 1,
+            "finalMemoryEntries": 1
+          },
+          {
+            "id": "sheep-4",
+            "actualCalls": 1,
+            "scheduledAssignments": 1,
+            "committedPatches": 1,
+            "finalMemoryEntries": 1
+          }
+        ]
+      },
+      "discovery": {
+        "deliveredEdges": 0,
+        "totalEdges": 19,
+        "readCalls": 0,
+        "requestedReadArtifacts": 0
+      },
+      "memory": {
+        "callsWithMemory": 2,
+        "deliveredEntries": 2,
+        "finalEntries": 6
+      },
+      "accounting": {
+        "calls": 6,
+        "missingReceipts": 0,
+        "extraReceipts": 0,
+        "unknownUsageCalls": 0,
+        "identityConflicts": 0,
+        "identityUnverifiedCalls": 6,
+        "complete": true,
+        "receiptManifestSha256": "a7aa9655516b055ddb1faa7e0e9687c9d2a1eedc4b6129699e9b628bc65caa99",
+        "apiUsd": {
+          "lower": 0.0266682,
+          "upper": 0.0266682,
+          "exact": true
+        },
+        "codexCredits": {
+          "lower": 0.666705,
+          "upper": 0.666705,
+          "exact": true
+        },
+        "byModel": [
+          {
+            "model": "gpt-5.6-luna",
+            "calls": 6,
+            "apiUsd": {
+              "lower": 0.0266682,
+              "upper": 0.0266682,
+              "exact": true
+            },
+            "codexCredits": {
+              "lower": 0.666705,
+              "upper": 0.666705,
+              "exact": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "semantic-sheep-n4-r1",
+      "family": "semantic",
+      "method": "sheep",
+      "workers": 4,
+      "concurrency": 4,
+      "groups": 1,
+      "replicate": 1,
+      "configuration": {
+        "groups": 1,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCredits": 30,
+        "lunaReservation": 0.25,
+        "astraReservation": 15,
+        "maxCalls": 400,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 3,
+        "memoryLimit": 4
+      },
+      "integrity": "verified",
+      "resultSha256": "8bcbaa27c1f75d95a44be0f4f4c2245e74d28778d1e796aee606bfe4dfee1291",
+      "fixtureFingerprint": "f386d4f5cc60f453dae3be096e4fab290b576abb6ae78f064312aa9eb84d90ed",
+      "recordedSuccess": true,
+      "success": true,
+      "qualityPass": true,
+      "completionReason": "completed",
+      "recordedTerminationReason": null,
+      "durationMs": 65330.393292,
+      "lowerCalls": 15,
+      "upperCalls": 0,
+      "upperInterventions": 0,
+      "boundaryViolationCount": 0,
+      "maxActiveModelCalls": 4,
+      "reservationOverruns": 0,
+      "runnerUnknownUsageCalls": 0,
+      "budgetExceeded": false,
+      "budgetAdmissionDenied": false,
+      "observedRunnerCredits": 1.2579050000000003,
+      "stagesExpected": 1,
+      "stages": [
+        {
+          "stage": 0,
+          "success": true,
+          "qualityPass": true,
+          "terminationReason": null,
+          "protocolClean": true,
+          "durationMs": 65327.014625,
+          "calls": 15,
+          "lowerCalls": 15,
+          "upperCalls": 0,
+          "readCalls": 9,
+          "interventions": 0
+        }
+      ],
+      "participation": {
+        "registered": 4,
+        "active": 4,
+        "minCalls": 3,
+        "maxCalls": 4,
+        "perWorker": [
+          {
+            "id": "sheep-1",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 1,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-2",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-3",
+            "actualCalls": 4,
+            "scheduledAssignments": 4,
+            "committedPatches": 2,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-4",
+            "actualCalls": 3,
+            "scheduledAssignments": 3,
+            "committedPatches": 1,
+            "finalMemoryEntries": 3
+          }
+        ]
+      },
+      "discovery": {
+        "deliveredEdges": 12,
+        "totalEdges": 25,
+        "readCalls": 9,
+        "requestedReadArtifacts": 12
+      },
+      "memory": {
+        "callsWithMemory": 11,
+        "deliveredEntries": 21,
+        "finalEntries": 15
+      },
+      "accounting": {
+        "calls": 15,
+        "missingReceipts": 0,
+        "extraReceipts": 0,
+        "unknownUsageCalls": 0,
+        "identityConflicts": 0,
+        "identityUnverifiedCalls": 15,
+        "complete": true,
+        "receiptManifestSha256": "6e49dfcf2b37b1d1b56baf4234643591349a2be35598cf974a8bc2bafaaf77d4",
+        "apiUsd": {
+          "lower": 0.050316200000000005,
+          "upper": 0.050316200000000005,
+          "exact": true
+        },
+        "codexCredits": {
+          "lower": 1.2579050000000003,
+          "upper": 1.2579050000000003,
+          "exact": true
+        },
+        "byModel": [
+          {
+            "model": "gpt-5.6-luna",
+            "calls": 15,
+            "apiUsd": {
+              "lower": 0.050316200000000005,
+              "upper": 0.050316200000000005,
+              "exact": true
+            },
+            "codexCredits": {
+              "lower": 1.2579050000000003,
+              "upper": 1.2579050000000003,
+              "exact": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "staged-sheep-n4-r1",
+      "family": "staged",
+      "method": "sheep",
+      "workers": 4,
+      "concurrency": 4,
+      "groups": 1,
+      "replicate": 1,
+      "configuration": {
+        "groups": 1,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCredits": 30,
+        "lunaReservation": 0.25,
+        "astraReservation": 15,
+        "maxCalls": 400,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 3,
+        "memoryLimit": 4
+      },
+      "integrity": "verified",
+      "resultSha256": "f4e881700699b0c29e16e073a3a0e34a6403d1ceedefd52d286d1b3f41027507",
+      "fixtureFingerprint": "65f71403e7b0c27a1ed66181b853bf638bc70ed1c6a5f2c08eaa72040e523197",
+      "recordedSuccess": true,
+      "success": true,
+      "qualityPass": true,
+      "completionReason": "completed",
+      "recordedTerminationReason": null,
+      "durationMs": 131152.78716699997,
+      "lowerCalls": 26,
+      "upperCalls": 0,
+      "upperInterventions": 0,
+      "boundaryViolationCount": 0,
+      "maxActiveModelCalls": 4,
+      "reservationOverruns": 0,
+      "runnerUnknownUsageCalls": 0,
+      "budgetExceeded": false,
+      "budgetAdmissionDenied": false,
+      "observedRunnerCredits": 1.5924580000000002,
+      "stagesExpected": 3,
+      "stages": [
+        {
+          "stage": 0,
+          "success": true,
+          "qualityPass": true,
+          "terminationReason": null,
+          "protocolClean": true,
+          "durationMs": 62281.062167,
+          "calls": 14,
+          "lowerCalls": 14,
+          "upperCalls": 0,
+          "readCalls": 8,
+          "interventions": 0
+        },
+        {
+          "stage": 1,
+          "success": true,
+          "qualityPass": true,
+          "terminationReason": null,
+          "protocolClean": true,
+          "durationMs": 41501.994834,
+          "calls": 7,
+          "lowerCalls": 7,
+          "upperCalls": 0,
+          "readCalls": 2,
+          "interventions": 0
+        },
+        {
+          "stage": 2,
+          "success": true,
+          "qualityPass": true,
+          "terminationReason": null,
+          "protocolClean": true,
+          "durationMs": 27361.912584000005,
+          "calls": 5,
+          "lowerCalls": 5,
+          "upperCalls": 0,
+          "readCalls": 0,
+          "interventions": 0
+        }
+      ],
+      "participation": {
+        "registered": 4,
+        "active": 4,
+        "minCalls": 6,
+        "maxCalls": 7,
+        "perWorker": [
+          {
+            "id": "sheep-1",
+            "actualCalls": 6,
+            "scheduledAssignments": 6,
+            "committedPatches": 4,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-2",
+            "actualCalls": 7,
+            "scheduledAssignments": 7,
+            "committedPatches": 3,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-3",
+            "actualCalls": 7,
+            "scheduledAssignments": 7,
+            "committedPatches": 4,
+            "finalMemoryEntries": 4
+          },
+          {
+            "id": "sheep-4",
+            "actualCalls": 6,
+            "scheduledAssignments": 6,
+            "committedPatches": 5,
+            "finalMemoryEntries": 4
+          }
+        ]
+      },
+      "discovery": {
+        "deliveredEdges": 12,
+        "totalEdges": 25,
+        "readCalls": 10,
+        "requestedReadArtifacts": 12
+      },
+      "memory": {
+        "callsWithMemory": 22,
+        "deliveredEntries": 64,
+        "finalEntries": 16
+      },
+      "accounting": {
+        "calls": 26,
+        "missingReceipts": 0,
+        "extraReceipts": 0,
+        "unknownUsageCalls": 0,
+        "identityConflicts": 0,
+        "identityUnverifiedCalls": 26,
+        "complete": true,
+        "receiptManifestSha256": "15314b7e8de6cc3a0ca6b2e50f3407218bc812bcdfd666861f78ec3511ead298",
+        "apiUsd": {
+          "lower": 0.06369832000000002,
+          "upper": 0.06369832000000002,
+          "exact": true
+        },
+        "codexCredits": {
+          "lower": 1.5924580000000002,
+          "upper": 1.5924580000000002,
+          "exact": true
+        },
+        "byModel": [
+          {
+            "model": "gpt-5.6-luna",
+            "calls": 26,
+            "apiUsd": {
+              "lower": 0.06369832000000002,
+              "upper": 0.06369832000000002,
+              "exact": true
+            },
+            "codexCredits": {
+              "lower": 1.5924580000000002,
+              "upper": 1.5924580000000002,
+              "exact": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "staged-single-luna-n1-r1",
+      "family": "staged",
+      "method": "single-luna",
+      "workers": 1,
+      "concurrency": 1,
+      "groups": 1,
+      "replicate": 1,
+      "configuration": {
+        "groups": 1,
+        "workers": 1,
+        "concurrency": 1,
+        "maxCredits": 30,
+        "lunaReservation": 0.25,
+        "astraReservation": 15,
+        "maxCalls": 400,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 3,
+        "memoryLimit": 4
+      },
+      "integrity": "verified",
+      "resultSha256": "01336500758d2bc07db3951a680898025e24be088252b42780d2daa47fca3640",
+      "fixtureFingerprint": "65f71403e7b0c27a1ed66181b853bf638bc70ed1c6a5f2c08eaa72040e523197",
+      "recordedSuccess": true,
+      "success": true,
+      "qualityPass": true,
+      "completionReason": "completed",
+      "recordedTerminationReason": null,
+      "durationMs": 98481.057459,
+      "lowerCalls": 3,
+      "upperCalls": 0,
+      "upperInterventions": 0,
+      "boundaryViolationCount": 0,
+      "maxActiveModelCalls": 1,
+      "reservationOverruns": 0,
+      "runnerUnknownUsageCalls": 0,
+      "budgetExceeded": false,
+      "budgetAdmissionDenied": false,
+      "observedRunnerCredits": 0.285941,
+      "stagesExpected": 3,
+      "stages": [
+        {
+          "stage": 0,
+          "success": true,
+          "qualityPass": true,
+          "terminationReason": null,
+          "protocolClean": true,
+          "durationMs": 36676.917959,
+          "calls": 1,
+          "lowerCalls": 1,
+          "upperCalls": 0,
+          "readCalls": 0,
+          "interventions": 0
+        },
+        {
+          "stage": 1,
+          "success": true,
+          "qualityPass": true,
+          "terminationReason": null,
+          "protocolClean": true,
+          "durationMs": 31203.411999999997,
+          "calls": 1,
+          "lowerCalls": 1,
+          "upperCalls": 0,
+          "readCalls": 0,
+          "interventions": 0
+        },
+        {
+          "stage": 2,
+          "success": true,
+          "qualityPass": true,
+          "terminationReason": null,
+          "protocolClean": true,
+          "durationMs": 30594.404624999996,
+          "calls": 1,
+          "lowerCalls": 1,
+          "upperCalls": 0,
+          "readCalls": 0,
+          "interventions": 0
+        }
+      ],
+      "participation": {
+        "registered": 1,
+        "active": 1,
+        "minCalls": 3,
+        "maxCalls": 3,
+        "perWorker": [
+          {
+            "id": "single",
+            "actualCalls": 3,
+            "scheduledAssignments": 3,
+            "committedPatches": 3,
+            "finalMemoryEntries": 3
+          }
+        ]
+      },
+      "discovery": {
+        "deliveredEdges": 0,
+        "totalEdges": 13,
+        "readCalls": 0,
+        "requestedReadArtifacts": 0
+      },
+      "memory": {
+        "callsWithMemory": 2,
+        "deliveredEntries": 3,
+        "finalEntries": 3
+      },
+      "accounting": {
+        "calls": 3,
+        "missingReceipts": 0,
+        "extraReceipts": 0,
+        "unknownUsageCalls": 0,
+        "identityConflicts": 0,
+        "identityUnverifiedCalls": 3,
+        "complete": true,
+        "receiptManifestSha256": "9094557c8a557e3758ceb7497a64811818598c27096ae9ac09d36185ce43b274",
+        "apiUsd": {
+          "lower": 0.01143764,
+          "upper": 0.01143764,
+          "exact": true
+        },
+        "codexCredits": {
+          "lower": 0.285941,
+          "upper": 0.285941,
+          "exact": true
+        },
+        "byModel": [
+          {
+            "model": "gpt-5.6-luna",
+            "calls": 3,
+            "apiUsd": {
+              "lower": 0.01143764,
+              "upper": 0.01143764,
+              "exact": true
+            },
+            "codexCredits": {
+              "lower": 0.285941,
+              "upper": 0.285941,
+              "exact": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "staged-single-astra-n1-r1",
+      "family": "staged",
+      "method": "single-astra",
+      "workers": 1,
+      "concurrency": 1,
+      "groups": 1,
+      "replicate": 1,
+      "configuration": {
+        "groups": 1,
+        "workers": 1,
+        "concurrency": 1,
+        "maxCredits": 30,
+        "lunaReservation": 0.25,
+        "astraReservation": 15,
+        "maxCalls": 400,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 3,
+        "memoryLimit": 4
+      },
+      "integrity": "verified",
+      "resultSha256": "bc27e8b0fff6f926e9ce7b9a0d22f8e6bc409f7784a612f8e460076feecd9817",
+      "fixtureFingerprint": "65f71403e7b0c27a1ed66181b853bf638bc70ed1c6a5f2c08eaa72040e523197",
+      "recordedSuccess": false,
+      "success": false,
+      "qualityPass": false,
+      "completionReason": "budget-admission-limit",
+      "recordedTerminationReason": null,
+      "durationMs": 97085.41625,
+      "lowerCalls": 0,
+      "upperCalls": 2,
+      "upperInterventions": 0,
+      "boundaryViolationCount": 0,
+      "maxActiveModelCalls": 1,
+      "reservationOverruns": 0,
+      "runnerUnknownUsageCalls": 0,
+      "budgetExceeded": false,
+      "budgetAdmissionDenied": true,
+      "observedRunnerCredits": 16.5005,
+      "stagesExpected": 3,
+      "stages": [
+        {
+          "stage": 0,
+          "success": true,
+          "qualityPass": true,
+          "terminationReason": null,
+          "protocolClean": true,
+          "durationMs": 50087.571207999994,
+          "calls": 1,
+          "lowerCalls": 0,
+          "upperCalls": 1,
+          "readCalls": 0,
+          "interventions": 0
+        },
+        {
+          "stage": 1,
+          "success": true,
+          "qualityPass": true,
+          "terminationReason": null,
+          "protocolClean": true,
+          "durationMs": 46605.048333,
+          "calls": 1,
+          "lowerCalls": 0,
+          "upperCalls": 1,
+          "readCalls": 0,
+          "interventions": 0
+        },
+        {
+          "stage": 2,
+          "success": false,
+          "qualityPass": false,
+          "terminationReason": null,
+          "protocolClean": false,
+          "durationMs": 387.0268750000105,
+          "calls": 0,
+          "lowerCalls": 0,
+          "upperCalls": 0,
+          "readCalls": 0,
+          "interventions": 0
+        }
+      ],
+      "participation": {
+        "registered": 1,
+        "active": 1,
+        "minCalls": 2,
+        "maxCalls": 2,
+        "perWorker": [
+          {
+            "id": "single",
+            "actualCalls": 2,
+            "scheduledAssignments": 2,
+            "committedPatches": 2,
+            "finalMemoryEntries": 2
+          }
+        ]
+      },
+      "discovery": {
+        "deliveredEdges": 0,
+        "totalEdges": 13,
+        "readCalls": 0,
+        "requestedReadArtifacts": 0
+      },
+      "memory": {
+        "callsWithMemory": 1,
+        "deliveredEntries": 1,
+        "finalEntries": 2
+      },
+      "accounting": {
+        "calls": 2,
+        "missingReceipts": 0,
+        "extraReceipts": 0,
+        "unknownUsageCalls": 0,
+        "identityConflicts": 0,
+        "identityUnverifiedCalls": 2,
+        "complete": true,
+        "receiptManifestSha256": "2cf5a670438f7f6ac9afe51ce7368e8af29df8536a74d22430b467b766b5515e",
+        "apiUsd": {
+          "lower": 0.66002,
+          "upper": 0.66002,
+          "exact": true
+        },
+        "codexCredits": {
+          "lower": 16.5005,
+          "upper": 16.5005,
+          "exact": true
+        },
+        "byModel": [
+          {
+            "model": "gpt-6-astra",
+            "calls": 2,
+            "apiUsd": {
+              "lower": 0.66002,
+              "upper": 0.66002,
+              "exact": true
+            },
+            "codexCredits": {
+              "lower": 16.5005,
+              "upper": 16.5005,
+              "exact": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

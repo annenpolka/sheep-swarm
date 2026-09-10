@@ -17,7 +17,9 @@
     "swarm": "node src/cli.ts",
     "durable": "node src/durable-cli.ts",
     "compare": "node src/compare-cli.ts",
-    "estimate:cost": "node scripts/estimate-costs.mjs"
+    "estimate:cost": "node scripts/estimate-costs.mjs",
+    "mechanism": "node src/mechanism-cli.ts",
+    "mechanism:experiment": "node scripts/mechanism-experiment.mjs"
   },
   "devDependencies": {
     "@types/node": "24.13.3",

@@ -1,0 +1,870 @@
+{
+  "format": 1,
+  "kind": "mechanism-summary",
+  "generatedAt": "2026-09-09T23:50:20.153Z",
+  "mode": "pilot",
+  "status": "error",
+  "stopReason": "execution-error",
+  "sourceManifestSha256": "52c36dab954686569fa8a74f0687057cb0b2d91c026d3f19ae0c67eeff94a9e9",
+  "experimentSha256": "d11137bbb1ffc9fef11a89e8b78fd3fc8fa7b195f31bda13ef83ce2e5a595e19",
+  "rateCardSha256": "e25991caebda1b840569e20a8774b11f9f14e95f3b365fe304dade7bf1ba1312",
+  "estimatorSha256": "b03d77a7ba2143a47897aa0ee0504910e36ca79d3fa4c7679edf78b1f2b696d6",
+  "summarizerSha256": "2939c4f1cb87c4aac32e39352a9eeb254b284b2bbc8d89e0451e7237e12b6bb1",
+  "sourceFilesVerified": 56,
+  "seed": 20260910,
+  "standardCreditCap": 1200,
+  "perRunCreditCap": 30,
+  "configuration": {
+    "lunaReservation": 0.25,
+    "astraReservation": 15,
+    "maxCalls": 400,
+    "timeoutMs": 90000,
+    "maxAttempts": 3,
+    "maxReadCalls": 2,
+    "maxMetaCalls": 3
+  },
+  "conditions": [
+    "Published Standard-rate equivalents with observed cached-input splits; neither observed account debits nor invoices.",
+    "API USD is the hypothetical API price for these tokens, not a Codex subscription charge.",
+    "All discovered call receipts count, including failed calls. Missing receipts produce unknown upper costs.",
+    "Never-started planned conditions remain in rows; their lack of a result is not a quality failure or a measured zero-cost success.",
+    "Numbers compare this frozen synthetic development experiment; case-level repeats do not establish generalization or emergence.",
+    "Semantic tasks exercise registry/JSON policy dependencies absent from the initial static graph; arbitrary semantic discovery is not established.",
+    "Private-memory measurements count entries, not tokens; worker participation counts actual model calls including read requests.",
+    "Registered-worker minima include idle workers; a single baseline counts its actual single actor, not the unused worker-pool slot."
+  ],
+  "total": {
+    "plannedRuns": 5,
+    "recordedRuns": 1,
+    "successfulRuns": 1,
+    "unexecutedRuns": 4,
+    "callReceipts": 6,
+    "missingReceipts": 0,
+    "unknownUsageCalls": 0,
+    "apiUsd": {
+      "lower": 0.026731400000000002,
+      "upper": 0.026731400000000002,
+      "exact": true
+    },
+    "codexCredits": {
+      "lower": 0.668285,
+      "upper": 0.668285,
+      "exact": true
+    }
+  },
+  "groupMetrics": [
+    {
+      "family": "static",
+      "method": "sheep",
+      "workers": 4,
+      "concurrency": 4,
+      "groups": 1,
+      "plannedRuns": 1,
+      "verifiedResults": 1,
+      "successfulRuns": 1,
+      "qualityPasses": 1,
+      "unexecutedRuns": 0,
+      "allRunDurationMs": {
+        "samples": 1,
+        "mean": 33006.991584,
+        "min": 33006.991584,
+        "max": 33006.991584
+      },
+      "successfulDurationMs": {
+        "samples": 1,
+        "mean": 33006.991584,
+        "min": 33006.991584,
+        "max": 33006.991584
+      },
+      "exactCredits": {
+        "samples": 1,
+        "mean": 0.668285,
+        "min": 0.668285,
+        "max": 0.668285
+      },
+      "exactApiUsd": {
+        "samples": 1,
+        "mean": 0.026731400000000002,
+        "min": 0.026731400000000002,
+        "max": 0.026731400000000002
+      },
+      "minCallsPerRegisteredWorker": {
+        "samples": 1,
+        "mean": 1,
+        "min": 1,
+        "max": 1
+      },
+      "readCalls": {
+        "samples": 1,
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      },
+      "memoryEntriesDelivered": {
+        "samples": 1,
+        "mean": 2,
+        "min": 2,
+        "max": 2
+      },
+      "upperInterventions": {
+        "samples": 1,
+        "mean": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    {
+      "family": "semantic",
+      "method": "sheep",
+      "workers": 4,
+      "concurrency": 4,
+      "groups": 1,
+      "plannedRuns": 1,
+      "verifiedResults": 0,
+      "successfulRuns": 0,
+      "qualityPasses": 0,
+      "unexecutedRuns": 1,
+      "allRunDurationMs": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "successfulDurationMs": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "exactCredits": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "exactApiUsd": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "minCallsPerRegisteredWorker": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "readCalls": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "memoryEntriesDelivered": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "upperInterventions": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      }
+    },
+    {
+      "family": "staged",
+      "method": "sheep",
+      "workers": 4,
+      "concurrency": 4,
+      "groups": 1,
+      "plannedRuns": 1,
+      "verifiedResults": 0,
+      "successfulRuns": 0,
+      "qualityPasses": 0,
+      "unexecutedRuns": 1,
+      "allRunDurationMs": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "successfulDurationMs": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "exactCredits": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "exactApiUsd": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "minCallsPerRegisteredWorker": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "readCalls": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "memoryEntriesDelivered": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "upperInterventions": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      }
+    },
+    {
+      "family": "staged",
+      "method": "single-luna",
+      "workers": 1,
+      "concurrency": 1,
+      "groups": 1,
+      "plannedRuns": 1,
+      "verifiedResults": 0,
+      "successfulRuns": 0,
+      "qualityPasses": 0,
+      "unexecutedRuns": 1,
+      "allRunDurationMs": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "successfulDurationMs": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "exactCredits": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "exactApiUsd": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "minCallsPerRegisteredWorker": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "readCalls": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "memoryEntriesDelivered": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "upperInterventions": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      }
+    },
+    {
+      "family": "staged",
+      "method": "single-astra",
+      "workers": 1,
+      "concurrency": 1,
+      "groups": 1,
+      "plannedRuns": 1,
+      "verifiedResults": 0,
+      "successfulRuns": 0,
+      "qualityPasses": 0,
+      "unexecutedRuns": 1,
+      "allRunDurationMs": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "successfulDurationMs": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "exactCredits": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "exactApiUsd": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "minCallsPerRegisteredWorker": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "readCalls": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "memoryEntriesDelivered": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      },
+      "upperInterventions": {
+        "samples": 0,
+        "mean": null,
+        "min": null,
+        "max": null
+      }
+    }
+  ],
+  "rows": [
+    {
+      "id": "static-sheep-n4-r1",
+      "family": "static",
+      "method": "sheep",
+      "workers": 4,
+      "concurrency": 4,
+      "groups": 1,
+      "replicate": 1,
+      "configuration": {
+        "groups": 1,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCredits": 30,
+        "lunaReservation": 0.25,
+        "astraReservation": 15,
+        "maxCalls": 400,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 3,
+        "memoryLimit": 4
+      },
+      "integrity": "verified",
+      "resultSha256": "1adc2b3a72e5b96354949f17bc6994c766d2df9827fb72b204811f31782945c7",
+      "fixtureFingerprint": "2658ec70777697ca7b4affb05e86c40566884c45e972b2962b98a13163e098b8",
+      "recordedSuccess": true,
+      "success": true,
+      "qualityPass": true,
+      "completionReason": "completed",
+      "recordedTerminationReason": null,
+      "durationMs": 33006.991584,
+      "lowerCalls": 6,
+      "upperCalls": 0,
+      "upperInterventions": 0,
+      "boundaryViolationCount": 0,
+      "maxActiveModelCalls": 4,
+      "reservationOverruns": 0,
+      "runnerUnknownUsageCalls": 0,
+      "budgetExceeded": false,
+      "budgetAdmissionDenied": false,
+      "observedRunnerCredits": 0.668285,
+      "stagesExpected": 1,
+      "stages": [
+        {
+          "stage": 0,
+          "success": true,
+          "qualityPass": true,
+          "terminationReason": null,
+          "protocolClean": true,
+          "durationMs": 33003.955208,
+          "calls": 6,
+          "lowerCalls": 6,
+          "upperCalls": 0,
+          "readCalls": 0,
+          "interventions": 0
+        }
+      ],
+      "participation": {
+        "registered": 4,
+        "active": 4,
+        "minCalls": 1,
+        "maxCalls": 2,
+        "perWorker": [
+          {
+            "id": "sheep-1",
+            "actualCalls": 2,
+            "scheduledAssignments": 2,
+            "committedPatches": 2,
+            "finalMemoryEntries": 2
+          },
+          {
+            "id": "sheep-2",
+            "actualCalls": 2,
+            "scheduledAssignments": 2,
+            "committedPatches": 2,
+            "finalMemoryEntries": 2
+          },
+          {
+            "id": "sheep-3",
+            "actualCalls": 1,
+            "scheduledAssignments": 1,
+            "committedPatches": 1,
+            "finalMemoryEntries": 1
+          },
+          {
+            "id": "sheep-4",
+            "actualCalls": 1,
+            "scheduledAssignments": 1,
+            "committedPatches": 1,
+            "finalMemoryEntries": 1
+          }
+        ]
+      },
+      "discovery": {
+        "deliveredEdges": 0,
+        "totalEdges": 19,
+        "readCalls": 0,
+        "requestedReadArtifacts": 0
+      },
+      "memory": {
+        "callsWithMemory": 2,
+        "deliveredEntries": 2,
+        "finalEntries": 6
+      },
+      "accounting": {
+        "calls": 6,
+        "missingReceipts": 0,
+        "extraReceipts": 0,
+        "unknownUsageCalls": 0,
+        "identityConflicts": 0,
+        "identityUnverifiedCalls": 6,
+        "complete": true,
+        "receiptManifestSha256": "a1490f997c4a8d6319255fca5a9841d76c97291130479b1b602058c85571571d",
+        "apiUsd": {
+          "lower": 0.026731400000000002,
+          "upper": 0.026731400000000002,
+          "exact": true
+        },
+        "codexCredits": {
+          "lower": 0.668285,
+          "upper": 0.668285,
+          "exact": true
+        },
+        "byModel": [
+          {
+            "model": "gpt-5.6-luna",
+            "calls": 6,
+            "apiUsd": {
+              "lower": 0.026731400000000002,
+              "upper": 0.026731400000000002,
+              "exact": true
+            },
+            "codexCredits": {
+              "lower": 0.668285,
+              "upper": 0.668285,
+              "exact": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "semantic-sheep-n4-r1",
+      "family": "semantic",
+      "method": "sheep",
+      "workers": 4,
+      "concurrency": 4,
+      "groups": 1,
+      "replicate": 1,
+      "configuration": {
+        "groups": 1,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCredits": 30,
+        "lunaReservation": 0.25,
+        "astraReservation": 15,
+        "maxCalls": 400,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 3
+      },
+      "integrity": "not-run",
+      "resultSha256": null,
+      "fixtureFingerprint": null,
+      "recordedSuccess": null,
+      "success": null,
+      "qualityPass": null,
+      "completionReason": "not-run",
+      "recordedTerminationReason": null,
+      "durationMs": null,
+      "lowerCalls": null,
+      "upperCalls": null,
+      "upperInterventions": null,
+      "boundaryViolationCount": null,
+      "maxActiveModelCalls": null,
+      "reservationOverruns": null,
+      "runnerUnknownUsageCalls": null,
+      "budgetExceeded": null,
+      "budgetAdmissionDenied": null,
+      "observedRunnerCredits": null,
+      "stagesExpected": 1,
+      "stages": [],
+      "participation": {
+        "registered": 4,
+        "active": null,
+        "minCalls": null,
+        "maxCalls": null,
+        "perWorker": [
+          {
+            "id": "sheep-1",
+            "actualCalls": null,
+            "scheduledAssignments": null,
+            "committedPatches": null,
+            "finalMemoryEntries": null
+          },
+          {
+            "id": "sheep-2",
+            "actualCalls": null,
+            "scheduledAssignments": null,
+            "committedPatches": null,
+            "finalMemoryEntries": null
+          },
+          {
+            "id": "sheep-3",
+            "actualCalls": null,
+            "scheduledAssignments": null,
+            "committedPatches": null,
+            "finalMemoryEntries": null
+          },
+          {
+            "id": "sheep-4",
+            "actualCalls": null,
+            "scheduledAssignments": null,
+            "committedPatches": null,
+            "finalMemoryEntries": null
+          }
+        ]
+      },
+      "discovery": {
+        "deliveredEdges": null,
+        "totalEdges": null,
+        "readCalls": null,
+        "requestedReadArtifacts": null
+      },
+      "memory": {
+        "callsWithMemory": null,
+        "deliveredEntries": null,
+        "finalEntries": null
+      },
+      "accounting": {
+        "calls": 0,
+        "missingReceipts": 0,
+        "extraReceipts": 0,
+        "unknownUsageCalls": 0,
+        "identityConflicts": 0,
+        "identityUnverifiedCalls": 0,
+        "complete": false,
+        "receiptManifestSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "apiUsd": null,
+        "codexCredits": null,
+        "byModel": []
+      }
+    },
+    {
+      "id": "staged-sheep-n4-r1",
+      "family": "staged",
+      "method": "sheep",
+      "workers": 4,
+      "concurrency": 4,
+      "groups": 1,
+      "replicate": 1,
+      "configuration": {
+        "groups": 1,
+        "workers": 4,
+        "concurrency": 4,
+        "maxCredits": 30,
+        "lunaReservation": 0.25,
+        "astraReservation": 15,
+        "maxCalls": 400,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 3
+      },
+      "integrity": "not-run",
+      "resultSha256": null,
+      "fixtureFingerprint": null,
+      "recordedSuccess": null,
+      "success": null,
+      "qualityPass": null,
+      "completionReason": "not-run",
+      "recordedTerminationReason": null,
+      "durationMs": null,
+      "lowerCalls": null,
+      "upperCalls": null,
+      "upperInterventions": null,
+      "boundaryViolationCount": null,
+      "maxActiveModelCalls": null,
+      "reservationOverruns": null,
+      "runnerUnknownUsageCalls": null,
+      "budgetExceeded": null,
+      "budgetAdmissionDenied": null,
+      "observedRunnerCredits": null,
+      "stagesExpected": 3,
+      "stages": [],
+      "participation": {
+        "registered": 4,
+        "active": null,
+        "minCalls": null,
+        "maxCalls": null,
+        "perWorker": [
+          {
+            "id": "sheep-1",
+            "actualCalls": null,
+            "scheduledAssignments": null,
+            "committedPatches": null,
+            "finalMemoryEntries": null
+          },
+          {
+            "id": "sheep-2",
+            "actualCalls": null,
+            "scheduledAssignments": null,
+            "committedPatches": null,
+            "finalMemoryEntries": null
+          },
+          {
+            "id": "sheep-3",
+            "actualCalls": null,
+            "scheduledAssignments": null,
+            "committedPatches": null,
+            "finalMemoryEntries": null
+          },
+          {
+            "id": "sheep-4",
+            "actualCalls": null,
+            "scheduledAssignments": null,
+            "committedPatches": null,
+            "finalMemoryEntries": null
+          }
+        ]
+      },
+      "discovery": {
+        "deliveredEdges": null,
+        "totalEdges": null,
+        "readCalls": null,
+        "requestedReadArtifacts": null
+      },
+      "memory": {
+        "callsWithMemory": null,
+        "deliveredEntries": null,
+        "finalEntries": null
+      },
+      "accounting": {
+        "calls": 0,
+        "missingReceipts": 0,
+        "extraReceipts": 0,
+        "unknownUsageCalls": 0,
+        "identityConflicts": 0,
+        "identityUnverifiedCalls": 0,
+        "complete": false,
+        "receiptManifestSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "apiUsd": null,
+        "codexCredits": null,
+        "byModel": []
+      }
+    },
+    {
+      "id": "staged-single-luna-n1-r1",
+      "family": "staged",
+      "method": "single-luna",
+      "workers": 1,
+      "concurrency": 1,
+      "groups": 1,
+      "replicate": 1,
+      "configuration": {
+        "groups": 1,
+        "workers": 1,
+        "concurrency": 1,
+        "maxCredits": 30,
+        "lunaReservation": 0.25,
+        "astraReservation": 15,
+        "maxCalls": 400,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 3
+      },
+      "integrity": "not-run",
+      "resultSha256": null,
+      "fixtureFingerprint": null,
+      "recordedSuccess": null,
+      "success": null,
+      "qualityPass": null,
+      "completionReason": "not-run",
+      "recordedTerminationReason": null,
+      "durationMs": null,
+      "lowerCalls": null,
+      "upperCalls": null,
+      "upperInterventions": null,
+      "boundaryViolationCount": null,
+      "maxActiveModelCalls": null,
+      "reservationOverruns": null,
+      "runnerUnknownUsageCalls": null,
+      "budgetExceeded": null,
+      "budgetAdmissionDenied": null,
+      "observedRunnerCredits": null,
+      "stagesExpected": 3,
+      "stages": [],
+      "participation": {
+        "registered": 1,
+        "active": null,
+        "minCalls": null,
+        "maxCalls": null,
+        "perWorker": [
+          {
+            "id": "single",
+            "actualCalls": null,
+            "scheduledAssignments": null,
+            "committedPatches": null,
+            "finalMemoryEntries": null
+          }
+        ]
+      },
+      "discovery": {
+        "deliveredEdges": null,
+        "totalEdges": null,
+        "readCalls": null,
+        "requestedReadArtifacts": null
+      },
+      "memory": {
+        "callsWithMemory": null,
+        "deliveredEntries": null,
+        "finalEntries": null
+      },
+      "accounting": {
+        "calls": 0,
+        "missingReceipts": 0,
+        "extraReceipts": 0,
+        "unknownUsageCalls": 0,
+        "identityConflicts": 0,
+        "identityUnverifiedCalls": 0,
+        "complete": false,
+        "receiptManifestSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "apiUsd": null,
+        "codexCredits": null,
+        "byModel": []
+      }
+    },
+    {
+      "id": "staged-single-astra-n1-r1",
+      "family": "staged",
+      "method": "single-astra",
+      "workers": 1,
+      "concurrency": 1,
+      "groups": 1,
+      "replicate": 1,
+      "configuration": {
+        "groups": 1,
+        "workers": 1,
+        "concurrency": 1,
+        "maxCredits": 30,
+        "lunaReservation": 0.25,
+        "astraReservation": 15,
+        "maxCalls": 400,
+        "timeoutMs": 90000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 3
+      },
+      "integrity": "not-run",
+      "resultSha256": null,
+      "fixtureFingerprint": null,
+      "recordedSuccess": null,
+      "success": null,
+      "qualityPass": null,
+      "completionReason": "not-run",
+      "recordedTerminationReason": null,
+      "durationMs": null,
+      "lowerCalls": null,
+      "upperCalls": null,
+      "upperInterventions": null,
+      "boundaryViolationCount": null,
+      "maxActiveModelCalls": null,
+      "reservationOverruns": null,
+      "runnerUnknownUsageCalls": null,
+      "budgetExceeded": null,
+      "budgetAdmissionDenied": null,
+      "observedRunnerCredits": null,
+      "stagesExpected": 3,
+      "stages": [],
+      "participation": {
+        "registered": 1,
+        "active": null,
+        "minCalls": null,
+        "maxCalls": null,
+        "perWorker": [
+          {
+            "id": "single",
+            "actualCalls": null,
+            "scheduledAssignments": null,
+            "committedPatches": null,
+            "finalMemoryEntries": null
+          }
+        ]
+      },
+      "discovery": {
+        "deliveredEdges": null,
+        "totalEdges": null,
+        "readCalls": null,
+        "requestedReadArtifacts": null
+      },
+      "memory": {
+        "callsWithMemory": null,
+        "deliveredEntries": null,
+        "finalEntries": null
+      },
+      "accounting": {
+        "calls": 0,
+        "missingReceipts": 0,
+        "extraReceipts": 0,
+        "unknownUsageCalls": 0,
+        "identityConflicts": 0,
+        "identityUnverifiedCalls": 0,
+        "complete": false,
+        "receiptManifestSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "apiUsd": null,
+        "codexCredits": null,
+        "byModel": []
+      }
+    }
+  ]
+}

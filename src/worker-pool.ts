@@ -71,7 +71,9 @@ export class WorkerPool {
     positiveInteger(options.concurrency, "concurrency");
     if (options.concurrency > options.workers) throw new RangeError("concurrency must not exceed workers");
     const memoryLimit = options.memoryLimit ?? 4;
-    positiveInteger(memoryLimit, "memoryLimit");
+    if (!Number.isSafeInteger(memoryLimit) || memoryLimit < 0) {
+      throw new RangeError("memoryLimit must be a nonnegative integer");
+    }
     this.#concurrency = options.concurrency;
     this.#memoryLimit = memoryLimit;
     this.#workers = Array.from({ length: options.workers }, (_, index) => ({
@@ -129,8 +131,10 @@ export class WorkerPool {
         id, { version: read.version, evidenceEpoch: read.evidenceEpoch },
       ])),
     };
-    worker.memory.push(memory);
-    worker.memory = worker.memory.slice(-this.#memoryLimit);
+    if (this.#memoryLimit > 0) {
+      worker.memory.push(memory);
+      worker.memory = worker.memory.slice(-this.#memoryLimit);
+    }
     worker.activeTarget = null;
   }
 

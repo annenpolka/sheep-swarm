@@ -52,6 +52,20 @@ test("read-neighborhood affinity wins between equally used available individuals
   assert.deepEqual(next.memory[0]!.reads, { beta: { version: 7, evidenceEpoch: 9 } });
 });
 
+test("zero memory removes both retained prompt history and read affinity", () => {
+  const pool = new WorkerPool({ workers: 2, concurrency: 2, memoryLimit: 0 });
+  const initial = pool.assign([{ target: "a", neighbors: [] }, { target: "b", neighbors: [] }]);
+  finish(pool, initial[0]!, "alpha", { alpha: { version: 1, evidenceEpoch: 1 } });
+  finish(pool, initial[1]!, "beta", { beta: { version: 1, evidenceEpoch: 1 } });
+  const next = pool.assign([{ target: "new-b", neighbors: ["beta"] }])[0]!;
+  assert.equal(next.workerId, initial[0]!.workerId);
+  assert.deepEqual(next.memory, []);
+  assert.ok(pool.stats().every(worker => worker.memory.length === 0));
+  for (const memoryLimit of [-1, NaN, 0.5]) {
+    assert.throws(() => new WorkerPool({ workers: 1, concurrency: 1, memoryLimit }), /nonnegative integer/);
+  }
+});
+
 test("each worker receives only its own bounded history, including failed observations and versions", () => {
   const pool = new WorkerPool({ workers: 2, concurrency: 2, memoryLimit: 2 });
   for (let round = 0; round < 3; round++) {
