@@ -146,3 +146,7 @@
 [TS自己実装・N/C対照・static impact](results/repository-scale-activation.md)を実装・実走した。16targetの8条件で7成功、N16/C4 localはread上限による未完了。成功品質の比較からこの失敗を除外するだけでなく、失敗率と消費として残す。登録32でもbroadでは16個体しか参加せず、Nと実際の稼働を同一視しない。
 
 activationはhostのchangedPathsと既知の静的/明示依存に限定する。初期起動の候補を絞ること、本文を実配信すること、書込権限を与えることは別の操作。見えていない意味依存は全体oracleで非成功となる場合を検査し、confidenceだけで完了範囲を広げない。
+
+## MoonBitの追加対応
+
+[限定adapter](moonbit-repositories.md)を追加した。package依存と同一packageのreadonly補助宣言を用い、各packageの書換対象1ファイルに限定する。公開catalog不足や未対応構成を黙認せず、確定条件は実compilerと固定oracleに置く。[Go実走](results/moonbit-repository.md)は2target/2call。N4は動作確認で、規模や費用の優位へ一般化しない。

@@ -131,3 +131,7 @@ OpenCode Goは別runtimeとして同じ局所成果物境界へ接続する。pr
 TSの言語adapterは固定compilerのASTを別processの仮想filesystemで抽出する。解析対象の実行やpackageの自動解決を行わず、既存のpath検査・source hash・配信stampへ接続する。構文と型だけの参照はstatic証拠であり、モデルの理解や意味依存の完全性を示さない。
 
 task v2のactivation.changedPathsはhost入力。既知graphの逆向きclosureで初期goal依存を絞り、全targetの既知依存とmanifestのwrite権限は保持する。以後の変更通知と受入はkernelを通る。起動対象を絞った場合も全体oracleを実行し、未起動targetを採点対象から外さない。[検証](results/repository-scale-activation.md)。
+
+## MoonBit repository discovery
+
+`moonbit-manifest.ts`が新旧設定の宣言的subsetを純粋解析し、`repo-moonbit.ts`がmodule/source directoryとpackage importをpublic catalog内で解決する。`.mbt` consumerからmodule/package設定・import先sourceへのedgeを張り、書換targetだけが同一packageのreadonly companionsへedgeを持つ。複数writableを同一packageへ置く場合は拒否する。これによりpackageの相互可視性をkernelの循環writeへ変換しない。test/wbtest importも保守的に合併する。新形式を優先し、snapshot内の該当package全sourceとmetadataがpublic範囲にあることを事前確認する。Moonやbuild scriptは探索中に実行しない。外部依存・生成・条件付き等は未対応issue、意味・構文・型の受入はhost checkが担う。[詳細](moonbit-repositories.md)。

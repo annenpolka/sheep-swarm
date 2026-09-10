@@ -151,3 +151,7 @@ Astraの独立レビューで固定した反例も通常gateに含める。混�
 `remaining-*.test.ts`はASTでの通常/型import、reexport、型import式、非公開参照、構文不正、循環とソース非実行、疎な配列や入力変異、全opaque資料のregistry切替、TS moduleの実読み込みとJSON import attribute不備を検査する。changedPathsのscopeとv1拒否、関連targetだけの起動、受入後のprovider版の配信、元ファイル不変、0callの全体受入、見逃した意味依存による非成功を含む。
 
 実Goの部品生成、TS自己実装、規模比較、影響起動は[別証拠](results/repository-scale-activation.md)。各1回の比較を反復や一般的な有用性にしない。既知usageの意味的失敗はそのまま記録し、未知usage/予約超過/検証障害と分ける。自己実装でsnapshotに含まれなかった追加testは、存在を検査する独立snapshotで再検証した。原runのcase数を増やして書き換えない。
+
+## MoonBit adapter
+
+`tests/moonbit-*.test.ts`の8件はJSON/DSLのtokenization・拒否境界、source root・package edge・cycle、catalog不足と非公開file、activation・helper配信・受理済みprovider版を検査する。通常gateはMoon installationやAPIを使わない。実compiler検証は別の固定fixtureでbaseline失敗/reference成功/境界誤実装失敗を先に保存し、実Go候補を同一oracleと独立再実行で確認した。[実走証拠](results/moonbit-repository.md)。

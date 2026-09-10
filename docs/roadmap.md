@@ -2,6 +2,10 @@
 
 2026-09-09の [現在の方針](current-direction.md) に基づく計画。小さなkernelから実workerへ進み、人数を変えた振る舞いを早く観測する。各段階の状態は実行証拠に合わせる。詳細な進捗は [ExecPlan](execplan.md)、M2の証拠は [4体pilot](results/luna-four-worker-pilot.md) を参照。
 
+## MoonBit adapter — 限定対応と実走済み
+
+利用者の追加指定により[MoonBit対応](moonbit-repositories.md)を実装。[計画](execplan-moonbit.md)の完了条件は、新旧manifestの純粋解析、public catalogの完全性検査、package依存と補助ファイルの配信、関連targetだけの起動、実compilerの固定oracle受入。Go実走は関連2target/2call/2,323tokens、通常gateは488テスト成功。[証拠](results/moonbit-repository.md)。各packageの書換対象1ファイル、module内通常sourceの範囲。外部依存・workspace・生成等は未対応として明示拒否する。
+
 ## M8: TS自己実装・N/C対照・static impact/activation — 実装・初期実走済み
 
 「残りも順次進めて。swarmで」に従い、[計画](execplan-repository-scale-activation.md)のTS adapter、自己実装、8条件のN/C対照、変更からの対象起動を実装した。[結果](results/repository-scale-activation.md)。TS type-only依存の配信、Goの自己実装1call、固定16targetの7成功/1未完了、関連2targetだけの実起動、480テストと原資料照合を確認した。

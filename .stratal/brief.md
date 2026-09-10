@@ -228,3 +228,7 @@ Working default: 言語別解析は既存compilerのAST、起点はhostのchange
 Validation: 480テスト、8条件の7成功/1未完了、実影響起動2call。最初の停止分も総予算へ繰り越した。[証拠](../docs/results/repository-scale-activation.md)。
 Revisit: 新family/反復、総記憶量の対照、Luna/Manager-localとの有用性、意味依存の取りこぼし。今回のGo小規模対照をLuna系列へ置換しない。
 Status: active
+
+### MoonBit repository support
+
+利用者の追加指定により、MoonBit packageの静的依存と補助ファイル配信を追加。各packageのv2 write対象は1つとし、公開catalog不足や外部/生成/条件付き等の未対応依存は拒否する。指定のGo swarmを継続使用。parser生成後は親が型・入力境界を補修し、実MoonBit修正は2callで固定compiler oracleに合格。通常gate488件。[結果](../docs/results/moonbit-repository.md)。

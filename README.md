@@ -75,6 +75,8 @@ task v2には1要求のpath上限を追加した。opaqueな24文書からregist
 
 `.ts`/`.mts`の型だけのimportを含む静的解析と、`activation.changedPaths`から依存先のtargetだけを初期起動するopt-inを追加した。TSの実自己実装、16targetでN8/16/32・C4/8の8条件、関連2targetだけの実起動を確認した。規模対照は7成功・1未完了で、失敗分も含めて報告する。TS解析は既存typescript 7.0.2のnative APIを使うため、通常のdevDependenciesを含む `npm ci` が必要。[実測・検証](docs/results/repository-scale-activation.md)。
 
+MoonBitの`.mbt`にもtask v2のpackage依存探索・補助ファイル配信・変更からの対象選択を追加した。新旧manifestに対応し、各packageの書換対象は1ファイル。実Go swarmで関連2targetを修正し、`moon check`と固定`moon test`に合格した。[使い方と対応境界](docs/moonbit-repositories.md)、[実走証拠](docs/results/moonbit-repository.md)。
+
 独立レビューで、検査後のprocess group回収、親Gitの誤参照防止、検査基盤障害での呼出し停止、局所検査の診断引継ぎを補修した。[再現と検証](docs/results/repository-runner-astra-review.md)。
 
 `swarm --runtime deepseek`はDeepSeek APIへ直接接続する。CLIでは環境変数`DEEPSEEK_API_KEY`を設定し、`--worker-model`にprovider prefixのないAPI model idを明示する。OpenCodeの認証storeは自動で読み込まない。toolは使わず、局所promptとschemaを送信し、`finish_reason: stop`と要求schemaへの適合を検査する。要求modelとproviderが返したmodel名は別に保存する。接続仕様は[DeepSeek公式API](https://api-docs.deepseek.com/api/create-chat-completion/)を参照。

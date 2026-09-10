@@ -1,0 +1,221 @@
+{
+  "format": 1,
+  "date": "2026-09-10",
+  "runtime": "opencode-go",
+  "model": "deepseek-flash",
+  "thinking": "disabled",
+  "compiler": "moon 0.1.20260427 (48d7def 2026-04-27)",
+  "node": "v26.0.0",
+  "runs": [
+    {
+      "name": "parser-run",
+      "rawDirectory": ".sheep/moonbit-build/parser-run",
+      "success": true,
+      "applied": false,
+      "changedPaths": [
+        "src/moonbit-manifest.ts"
+      ],
+      "workers": 4,
+      "concurrency": 2,
+      "maxActiveWorkers": 1,
+      "participants": 3,
+      "lowerCalls": 3,
+      "upperCalls": 0,
+      "durationMs": 50413,
+      "budget": {
+        "observedTokens": 30669,
+        "unknownUsageCalls": 0,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "locked": false
+      },
+      "calls": [
+        {
+          "id": "call-1",
+          "agent": "sheep-1",
+          "target": "src/moonbit-manifest.ts",
+          "model": "deepseek-flash",
+          "effectiveModelEvidence": "deepseek-flash",
+          "usageCompleteness": "complete",
+          "outcome": "rejected",
+          "inputTokens": 2392,
+          "outputTokens": 3676,
+          "contextBytes": 7600
+        },
+        {
+          "id": "call-2",
+          "agent": "sheep-2",
+          "target": "src/moonbit-manifest.ts",
+          "model": "deepseek-flash",
+          "effectiveModelEvidence": "deepseek-flash",
+          "usageCompleteness": "complete",
+          "outcome": "malformed-output",
+          "inputTokens": 6401,
+          "outputTokens": 6267,
+          "contextBytes": 7600
+        },
+        {
+          "id": "call-3",
+          "agent": "sheep-3",
+          "target": "src/moonbit-manifest.ts",
+          "model": "deepseek-flash",
+          "effectiveModelEvidence": "deepseek-flash",
+          "usageCompleteness": "complete",
+          "outcome": "committed",
+          "inputTokens": 5879,
+          "outputTokens": 6054,
+          "contextBytes": 7600
+        }
+      ],
+      "hashes": {
+        "result.json": "757f6af8665b6b558784bb2481486544db844738a205b85620bfebcb9d3eace8",
+        "artifacts.json": "3deaf0ff364d6044bad82edc7425c49acbc7725d7c01ecb8184745685a4ce76a",
+        "task.json": "777d433fc5b0e8051b0e84892c156ebdc10b05f151a3095db8f6efde28d92d9e",
+        "profile.json": "4ba6b1664a3135dd52877f5f31a36a41813beb7b22fc49a7ef0442906189e6cf",
+        "budget.json": "caf30fe5281152a957c41ecd98f30d2cb473e1ca2ed6cb2b3a053a657ee7631e"
+      }
+    },
+    {
+      "name": "live-run",
+      "rawDirectory": ".sheep/moonbit-build/live-run",
+      "success": true,
+      "applied": false,
+      "changedPaths": [
+        "a/main.mbt",
+        "b/main.mbt"
+      ],
+      "workers": 4,
+      "concurrency": 2,
+      "maxActiveWorkers": 1,
+      "participants": 2,
+      "lowerCalls": 2,
+      "upperCalls": 0,
+      "durationMs": 4911,
+      "budget": {
+        "observedTokens": 2323,
+        "unknownUsageCalls": 0,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "locked": false
+      },
+      "calls": [
+        {
+          "id": "call-1",
+          "agent": "sheep-1",
+          "target": "a/main.mbt",
+          "model": "deepseek-flash",
+          "effectiveModelEvidence": "deepseek-flash",
+          "usageCompleteness": "complete",
+          "outcome": "committed",
+          "inputTokens": 1012,
+          "outputTokens": 122,
+          "contextBytes": 868
+        },
+        {
+          "id": "call-2",
+          "agent": "sheep-2",
+          "target": "b/main.mbt",
+          "model": "deepseek-flash",
+          "effectiveModelEvidence": "deepseek-flash",
+          "usageCompleteness": "complete",
+          "outcome": "committed",
+          "inputTokens": 1089,
+          "outputTokens": 100,
+          "contextBytes": 948
+        }
+      ],
+      "hashes": {
+        "result.json": "2c111d1709058fd97baf347da31a757654d7abbe0e0e0b4ddad6e885659b33cc",
+        "artifacts.json": "ee0d57805e34d476b0f3d6b7e748f644fd92a386da74420826eba67a920f35c6",
+        "task.json": "5bec326b7667824393bca43bb19ce1221500e0f958d18e7d7bf0215a8345cbb3",
+        "profile.json": "72f3b8f19bcafa7ac619b84286a5c4f09ad81feb885a9b82668f8fe7f36d8237",
+        "budget.json": "62be020ed7a85ab38580e8ad053582be0b928e2a182427ec209502686dd106e5",
+        "activation.json": "b871e5ccb0a024109228cb048fe5a2acf98cd2050ad117483f0d5f48cacbe2c4",
+        "read-deliveries.json": "bbe361894a6a216c812d870d8af5ca2979f57d1a747f8853f2fcb6173a603170",
+        "dependency-evidence.json": "9ff9da76e70eab882d7c4b59fb049a2614b3654a8f7eeb57aba323042457c10f"
+      }
+    }
+  ],
+  "totalObservedTokens": 32992,
+  "cacheWriteTokens": null,
+  "currencyCost": null,
+  "parentUsage": null,
+  "preflight": {
+    "baseline": {
+      "ok": false,
+      "checkExitCodes": [
+        1
+      ]
+    },
+    "reference": {
+      "ok": true,
+      "checkExitCodes": [
+        0
+      ]
+    },
+    "wrong": {
+      "ok": false,
+      "checkExitCodes": [
+        1
+      ]
+    }
+  },
+  "independent": {
+    "ok": true,
+    "sourceStatus": "",
+    "activation": {
+      "format": 1,
+      "mode": "changed",
+      "changedPaths": [
+        "policy/policy.mbt"
+      ],
+      "activeTargets": [
+        "a/main.mbt",
+        "b/main.mbt"
+      ],
+      "unaffectedTargets": [
+        "unused/main.mbt"
+      ],
+      "limitations": [
+        "static-and-declared-context-impact-only",
+        "changed-paths-are-host-declared",
+        "final-oracle-still-covers-all-targets"
+      ]
+    },
+    "acceptedProviderDelivered": true,
+    "helperDelivered": true,
+    "artifactHashes": {
+      "a/main.mbt": "153f7d8bb33c14b376177e1f1eaa11127a0e279b788a3e7f9ff01a77340b656f",
+      "b/main.mbt": "b44712f19b5f0831ca6b9ea8a612c0b9bf489285bf03fae3000968c4aec5a8f3",
+      "unused/main.mbt": "ceca583b87188b083776d18a68b12aa0d5edb20325f0d250544ebd0ae68972d3"
+    }
+  },
+  "gate": {
+    "tests": 488,
+    "passed": 488,
+    "typecheck": true,
+    "referenceSnapshots": 2
+  },
+  "adoptedSourceHashes": {
+    "src/moonbit-manifest.ts": "f4705883d8a6d7e69b9b8ced28998ced3ac5e5303e106e515ede916e0da1f024",
+    "src/repo-moonbit.ts": "e57bc5d7e1b5ec84324b7ef94fd4c9e062ecb0041200b359c0ea46d934b759dd",
+    "src/repo-dependencies.ts": "2fc815fbbb9d72e4b7d0ae89177304dc6d5f3d441ee761cbf47e2ce23d44dee0",
+    "src/repo-discovery.ts": "af3a6966599e22206482f0ff7c8d20cc4e9a99e7a69b17774ff386ecf55f637d",
+    "scripts/moonbit-repository-fixture.mjs": "8b89a2bd374e52bb72e91114aa59c41c64db031fd5afa2f6c7d40336c388d539",
+    "tests/moonbit-manifest.test.ts": "5998fb1a9dbf75016c5ce4a9193e8399563048b80f41137fd94d3b7d8809388a",
+    "tests/moonbit-discovery.test.ts": "780aa98e614efd228b9997da3c91cabb61aace3a026ed3547320615fab0ac95c",
+    "tests/moonbit-repository.test.ts": "c15c25796198c4e9f1d400f5c4814d95790e44981ecad1690484e2263cb519a7"
+  },
+  "evidenceHashes": {
+    "preflight.json": "184a05bb94e4fa2623f6808ab6ec5a84a66ae23246dcd5b8db6edd86fa70b104",
+    "independent.json": "a526db9341c55b1b815d3fea251e5e183f25662eaab3db4d93ce7cde0bd858d8",
+    "check.log": "c7c497eb15e4899395e926cdd7594484a776a8d142def3d016fa2ee0c6834b53",
+    "verify-live.ts": "795561813ded30f56b9ad2322d5b65ca340df21727e46c1912d3ca79fd1b5583",
+    "audit-live.ts": "2d1b0d6c3c5d79ac347c03017044b9831f9cc3e788677c9fb70c9540f80610c6"
+  },
+  "provenance": [
+    "Go parser generated candidate passed its original fixed runtime tests; parent repaired typecheck and input boundaries before adoption.",
+    "After live Moon trial, parent added explicit rejection of literate sources and tested it in the full gate.",
+    "New module DSL was parser-tested; live compiler fixture uses moon.mod.json."
+  ]
+}

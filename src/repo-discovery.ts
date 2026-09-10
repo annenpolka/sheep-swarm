@@ -7,6 +7,7 @@ import type {SwarmTaskControl} from './swarm.ts';
 import {discoverRepoDependencies, type RepoDependencyScan} from './repo-dependencies.ts';
 import {REPO_WORKER_SCHEMA, parseWorkerResponse} from './worker-proposal.ts';
 import {selectImpactedTargets} from './repo-impact.ts';
+import {validateMoonBitCatalog} from './repo-moonbit.ts';
 
 export const REPO_GOAL='.sheep-internal/goal.md';
 export const REPO_GUIDANCE='.sheep-internal/guidance.md';
@@ -48,7 +49,7 @@ export class RepositoryDiscovery implements SwarmTaskControl {
     const impactEdges=[...scan.edges,...snapshot.task.files.flatMap(f=>[...f.dependsOn,...snapshot.task.context].filter(p=>p!==f.path).map(provider=>({consumer:f.path,provider})))];
     const selectedImpact=changed===undefined?{activeTargets:[...this.#targets],unaffectedTargets:[]}:
       selectImpactedTargets({targets:[...this.#targets],changedPaths:changed,edges:impactEdges,
-        uncertainConsumers:[...this.#targets].filter(p=>! /\.(?:mjs|ts|mts)$/.test(p))});
+        uncertainConsumers:[...this.#targets].filter(p=>! /\.(?:mjs|ts|mts|mbt)$/.test(p))});
     this.activation={mode:changed===undefined?'all':'changed',changedPaths:changed??[],...selectedImpact};
     const active=new Set(this.activation.activeTargets);
     for(const path of this.#public)this.artifacts[path]=snapshot.initialTargets[path]??snapshot.entries.get(path)!.bytes.toString('utf8');
@@ -67,8 +68,9 @@ export class RepositoryDiscovery implements SwarmTaskControl {
   static async create(snapshot:RepoSnapshot):Promise<RepositoryDiscovery> {
     if(!snapshot.task.discovery)throw new Error('repository discovery requires task v2');
     const paths=[...new Set([...snapshot.task.files.map(f=>f.path),...snapshot.task.context,...snapshot.task.discovery.readable])];
+    validateMoonBitCatalog([...snapshot.entries.keys()],paths);
     const contents=Object.fromEntries(paths.map(p=>[p,snapshot.initialTargets[p]??snapshot.entries.get(p)!.bytes.toString('utf8')]));
-    const scan=await discoverRepoDependencies(contents,paths);
+    const scan=await discoverRepoDependencies(contents,paths,snapshot.task.files.map(f=>f.path));
     return new RepositoryDiscovery(snapshot,scan);
   }
 
@@ -154,7 +156,7 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
     }
     if(action.kind==='read')return this.request(target,context,callId,action.paths);
     const contents=Object.fromEntries([...this.#public].map(p=>[p,p===target?action.content:(context.contents[p]??kernel.artifact(p).content)]));
-    const scan=await discoverRepoDependencies(contents,[...this.#public]);this.scans.push(scan);
+    const scan=await discoverRepoDependencies(contents,[...this.#public],[...this.#targets]);this.scans.push(scan);
     let required:Set<string>;
     try{required=this.closure([target],scan);}catch(error){return this.defer(target,context,callId,String(error),false);}
     required.delete(target);

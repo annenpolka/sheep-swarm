@@ -2,6 +2,7 @@ import { Buffer } from 'node:buffer';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { safeRepoPath } from './repo-manifest.ts';
+import {discoverMoonBit, isMoonManifest} from './repo-moonbit.ts';
 
 export interface RepoDependencyScan {
   edges: { consumer: string; provider: string; specifier: string; sourceHash: string }[];
@@ -16,7 +17,7 @@ export interface RepoDependencyScan {
 const MAX_OUTPUT_BYTES = 4 * 1024 * 1024;
 const MAX_TIMEOUT_MS = 10000;
 
-const LIMITATIONS = ['dynamic-imports-not-covered', 'semantic-dependencies-not-covered', 'only-mjs-ts-mts-scanned', 'no-tsconfig-path-or-package-resolution'];
+const LIMITATIONS = ['dynamic-imports-not-covered', 'semantic-dependencies-not-covered', 'only-mjs-ts-mts-moonbit-scanned', 'moonbit-single-module-one-writable-per-package', 'moonbit-no-external-generated-or-conditional-dependencies', 'no-tsconfig-path-or-package-resolution'];
 
 const RESERVED_COMPONENTS = new Set(['.git', '.sheep', 'node_modules', '.sheep-internal']);
 const ENV_BASENAME = /^\.env(\..*)?$/;
@@ -359,6 +360,7 @@ function computeCycles(
 export async function discoverRepoDependencies(
   contents: Readonly<Record<string, string>>,
   readable: readonly string[],
+  writable: readonly string[] = [],
 ): Promise<RepoDependencyScan> {
   const started = Date.now();
 
@@ -386,7 +388,12 @@ export async function discoverRepoDependencies(
     bytesRead += Buffer.byteLength(text, 'utf8');
   }
 
-  const raw = await runChild(parsedEntries);
+  const moonContents=Object.fromEntries(sortedReadable.filter(p=>Object.hasOwn(contents,p)).map(p=>[p,contents[p]!]));
+  const moon=discoverMoonBit(moonContents,writable);
+  for(const p of sortedReadable)if((p.endsWith('.mbt')||isMoonManifest(p))&&Object.hasOwn(contents,p)){
+    filesRead++;bytesRead+=Buffer.byteLength(contents[p]!, 'utf8');
+  }
+  const raw = parsedEntries.length ? await runChild(parsedEntries) : {edges:[],issues:[]};
 
   const edgeMap = new Map<
     string,
@@ -414,7 +421,8 @@ export async function discoverRepoDependencies(
     issueMap.set(key, { consumer, specifier, reason });
   };
 
-  for (const issue of raw.issues) {
+  for(const edge of moon.edges)addEdge(edge.consumer,edge.provider,edge.specifier);
+  for (const issue of [...raw.issues,...moon.issues]) {
     if (typeof issue !== 'object' || issue === null) continue;
     const consumer = (issue as RawChildIssue).consumer;
     if (typeof consumer !== 'string') continue;
