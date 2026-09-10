@@ -24,7 +24,8 @@ const defaults = { runtime: "docker-agent", workerTools: "local", groups: 1, wor
 function supplied(options: Parameters<MechanismCaller>[0]) {
   return JSON.parse(options.prompt.split("PUBLIC_INPUT_JSON\n")[1]!) as {
     stage: number; role: string; target: string | null; context: { contents: Record<string, string>; reads: Record<string, unknown> };
-    requiredReads?: string[]; previousVisibleErrors: unknown; readyTargets?: string[];
+    requiredReads?: string[]; locallyCheckableTargets?: string[]; remainingReadCalls?: number;
+    previousVisibleErrors: unknown; readyTargets?: string[];
   };
 }
 function correct(family: MechanismFamily): MechanismCaller {
@@ -137,6 +138,26 @@ test("Docker mechanism preserves paid discovery, stage rereads and method roles"
     fingerprints.add(report.fixtureFingerprint);
   }
   assert.equal(fingerprints.size, 1);
+});
+
+test("paid delivery updates current read status without repeating historical requests", async t => {
+  const caller = correct("semantic"), sequence: unknown[] = [];
+  const report = await runMechanism({ ...defaults, family: "semantic", concurrency: 1, maxCalls: 3,
+    outputDirectory: await output(t) }, async options => {
+    const input = supplied(options);
+    sequence.push([input.requiredReads, input.remainingReadCalls, input.locallyCheckableTargets]);
+    assert.match(options.prompt, /runner records all delivered reads/);
+    return caller(options);
+  }, observe);
+  const target = "domains/domain-01/ingest.mjs";
+  assert.deepEqual(sequence, [
+    [["config/domain-registry.json"], 2, []],
+    [["policies/policy-003.json"], 1, []],
+    [[], 0, [target]],
+  ]);
+  assert.deepEqual(report.calls.map(call => call.outcome), ["read-requested", "read-requested", "committed"]);
+  assert.equal(report.discovery.deliveredEdges.length, 2);
+  assert.equal(report.budget.settledCalls, 3);
 });
 
 test("unread writes, mixed actual edits plus read requests, and unauthorized deltas never commit", async t => {

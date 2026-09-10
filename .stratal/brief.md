@@ -160,3 +160,11 @@ Status: active
 Evidence: Stated / implementation; 利用者の継続指示により、`mechanism`のDocker tool経路を実装。読取要求は次の有料callで配信し、未配信の選択をverifierの自動確定に使わない。registryを読む前にpolicy所有先を明かさず、必要な現版policyが揃うまで可視ケース・値を含むフィードバック・編集採用を解禁しない。
 
 既存oracleの期待値と最終stage barrierを保持する。可視観測VMはそのcontextだけ、最終観測VMは全候補を受け取り、期待値はhostで比較する。旧Codex凍結系列の予算・結果をDocker条件へ流用せず、単独Lunaと上位のguidance権限を保つ。[検証](../docs/results/docker-agent-mechanism.md)
+
+### 完了goalとswarm自身による実装を区別して記録する
+
+Evidence: Stated; 2026-09-10の「一通り終わらせることをgoalとして。実装の際、今あるswarmを試すこともしてみて」。[固定した完了条件と実装課題](../docs/tasks/docker-goal-completion.md)を置き、下位Lunaの2 helper実装を、既存runSwarmのtrusted fixture接続口から実行する。親は接続口・独立oracle・CLIを実装し、helperを先に書かない。返却コードの受入、自己修正、採用時の変更有無を記録する。
+
+前回の使用量不明は保持したまま、goal内の終了形式・semantic全工程・3段階更新を別runで実行する。実行が重なる区間の所要時間は性能比較に使わない。完了には実Lunaの正常終了・完全usage・固定採点とkernel確定・cleanupが必要である。
+
+Evidence: Observed; semantic 18call、staged 28callで完走し、生成helperは3call・固定91ケース後に本体変更0で採用した。システム側の終了指示と、現在の配信済みreadと過去の要求を区別する説明を修正した。oracleや予算上限は維持し、以前のunknown usageを復元済みとは扱わない。[完了検証](../docs/results/docker-agent-completion.md)

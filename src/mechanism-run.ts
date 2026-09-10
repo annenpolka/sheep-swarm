@@ -213,12 +213,13 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
           ? "Finish by calling the __structured_output__ tool with {writes:[],readRequests:[id],note}. Plain-text JSON does not finish this run. After editing, use readRequests:[]; for additional reads, change no files."
           : "Return strict JSON {writes:[{id,content}],readRequests:[id],note}.";
         const toolInstruction = localTools
-          ? "Use the supplied workspace files and check_local for visible feedback. Edit authorized files on disk; actual file deltas are authoritative. Do not copy file bodies into your final tool arguments. Requested files arrive in the next separately charged call. Do not change visible.test.mjs or pinned files."
+          ? "Use the supplied workspace files and check_local for visible feedback. Edit authorized files on disk; actual file deltas are authoritative. Do not copy file bodies into your final tool arguments. Requested files arrive in the next separately charged call. The runner records all delivered reads and their versions automatically. Files already in context.contents are delivered now: inspect them locally instead of requesting them again. requiredReads lists only missing current public inputs; when it is empty and your target is locallyCheckableTargets, implement it with readRequests:[]. previousVisibleErrors and private memory are historical; an earlier request for files may already be satisfied by this checkout. Do not change visible.test.mjs or pinned files."
           : "Do not use any tools, shell, browser, file access, or paths outside supplied JSON.";
         const prompt = `${instruction}\n${responseInstruction} Use either reads or writes in a call, never both. ${toolInstruction} Only the provided public contents and catalog may be used. Shared guidance is advisory; current normative specification takes precedence. Private memories are past observations; versions are stage-local and must be reread.\nPUBLIC_INPUT_JSON\n${JSON.stringify({ task: fixture.task, family: fixture.family, stage, target,
           role, context: { contents: context.contents, reads: context.reads }, catalog: fixture.catalog,
           writableIds: role === "worker" ? [target] : role === "meta" ? [fixture.guidanceId] : [...fixture.writableIds, fixture.guidanceId],
-          memory, ...(feedback ? { requiredReads: feedback.requiredReads, locallyCheckableTargets: feedback.readyTargets } : {}), previousVisibleErrors: target ? failures.get(target) ?? [] : [], ...extra })}`;
+          memory, ...(feedback ? { requiredReads: feedback.requiredReads, locallyCheckableTargets: feedback.readyTargets,
+            remainingReadCalls: target ? Math.max(0, configuration.maxReadCalls - (reads.get(target) ?? 0)) : 0 } : {}), previousVisibleErrors: target ? failures.get(target) ?? [] : [], ...extra })}`;
         const at = performance.now();
         let receipt: unknown = { requestedModel: model, error: "no receipt" };
         let value: MechanismResponse | null = null;

@@ -1,0 +1,4289 @@
+{
+  "date": "2026-09-10",
+  "scope": "Docker sandbox goal continuation; earlier PR evidence remains separate",
+  "goalAcceptance": true,
+  "runs": [
+    {
+      "label": "ingest-completion",
+      "kind": "probe",
+      "directory": ".sheep/docker-completion-probe-1789010854883",
+      "reportSha256": "49ccc63c73a781c782278018a1110a6e033f6c784067bb28f1a2cc1b609a3338",
+      "success": true,
+      "progress": null,
+      "calls": [
+        {
+          "id": "call-1",
+          "sha256": "8a0de306d4c58a1062817a8b3505c30dbb83f8b93ee53599e75c92c88fde3de9",
+          "target": "domains/domain-01/ingest.mjs",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": null,
+          "tools": {
+            "calls": 9,
+            "byTool": {
+              "check_local": 2,
+              "search_files_content": 1,
+              "list_directory": 1,
+              "read_multiple_files": 2,
+              "read_file": 1,
+              "edit_file": 1,
+              "__structured_output__": 1
+            },
+            "responded": 9,
+            "pending": [],
+            "errors": [
+              "call_GOrZVALho1xwzRHa42m3xQjs"
+            ],
+            "structuredOutputDelivered": true
+          }
+        }
+      ],
+      "budget": {
+        "maxCredits": 1,
+        "observedCredits": 0.072924,
+        "unknownUsageCalls": 0,
+        "activeReservations": 0,
+        "exceeded": false,
+        "settledCalls": 1
+      },
+      "vmCount": 2,
+      "allVmsCleaned": true,
+      "vms": [
+        {
+          "path": ".sheep/docker-completion-probe-1789010854883/acceptance/sheep-accept-c8af53e0-ed53-49d1-9f93-6b953ec9e902/receipt.json",
+          "sha256": "15de108867c9277d4eb91c30d08c4b9da7dc6ba94f77951901c325a0a1521fed",
+          "name": "sheep-accept-c8af53e0-ed53-49d1-9f93-6b953ec9e902",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-completion-probe-1789010854883/transcripts/sheep-docker-call-Gc2T2c/receipt.json",
+          "sha256": "bad7b65e24e6b1b9fb8cc9c7bed0b4a6af47a04d35781ddf921d691bc9296cb4",
+          "name": "sheep-f8b7661b-0ed0-4659-8586-926bee73e184",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        }
+      ]
+    },
+    {
+      "label": "swarm-implementation",
+      "kind": "swarm",
+      "directory": ".sheep/swarm-docker-diagnostics-1789011147397",
+      "reportSha256": "70531fdc4821a6186e3f09213e5143b2ba824a6807f9d399470fff43fa145252",
+      "success": true,
+      "configuration": {
+        "workers": 4,
+        "concurrency": 2,
+        "size": 2,
+        "workerModel": "gpt-5.6-luna",
+        "metaModel": "gpt-6-astra",
+        "timeoutMs": 240000,
+        "maxCalls": 8,
+        "maxMetaCalls": 0,
+        "maxRounds": 6,
+        "fault": "none",
+        "memoryLimit": 4,
+        "runtime": "docker-agent",
+        "workerTools": "local",
+        "maxTokensPerCall": 60000
+      },
+      "progress": null,
+      "calls": [
+        {
+          "id": "call-1",
+          "sha256": "40e65747026726b90a5deee35ae329acba8360d8ef81d47d6cb1d60b03ef5bdf",
+          "target": "scripts/lib/docker-tool-summary.mjs",
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": null,
+          "tools": {
+            "calls": 7,
+            "byTool": {
+              "search_files_content": 1,
+              "check_local": 2,
+              "list_directory": 1,
+              "read_file": 1,
+              "write_file": 1,
+              "__structured_output__": 1
+            },
+            "responded": 7,
+            "pending": [],
+            "errors": [
+              "call_xgF93jNinOg4V1P4CLdayyoq"
+            ],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-2",
+          "sha256": "e87dbf804bd57ba61d26b026860add958058209c2c80e91c15499aa1d0664efe",
+          "target": "scripts/lib/mechanism-progress.mjs",
+          "outcome": "rejected",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": null,
+          "tools": {
+            "calls": 7,
+            "byTool": {
+              "list_directory": 1,
+              "check_local": 2,
+              "search_files_content": 1,
+              "read_file": 1,
+              "write_file": 1,
+              "__structured_output__": 1
+            },
+            "responded": 7,
+            "pending": [],
+            "errors": [
+              "call_K9Hu009jaetwevrdGxkVgKFU"
+            ],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-3",
+          "sha256": "4b66a08f92a20fdf68aa7bc4498481bacdcbbca3c174ba9aac998751b9161179",
+          "target": "scripts/lib/mechanism-progress.mjs",
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": null,
+          "tools": {
+            "calls": 7,
+            "byTool": {
+              "write_file": 1,
+              "check_local": 2,
+              "read_file": 1,
+              "edit_file": 2,
+              "__structured_output__": 1
+            },
+            "responded": 7,
+            "pending": [],
+            "errors": [
+              "call_wlUrIIGfFvpxT6sJOR9N1Uay"
+            ],
+            "structuredOutputDelivered": true
+          }
+        }
+      ],
+      "budget": {
+        "maxCredits": 3,
+        "observedCredits": 0.337782,
+        "unknownUsageCalls": 0,
+        "activeReservations": 0,
+        "exceeded": false,
+        "settledCalls": 3
+      },
+      "vmCount": 7,
+      "allVmsCleaned": true,
+      "vms": [
+        {
+          "path": ".sheep/swarm-docker-diagnostics-1789011147397/acceptance/sheep-accept-7f56e4f6-7ec0-45f9-b113-688683c47e4b/receipt.json",
+          "sha256": "83675a905f40e32d35e1b9dbdd29e2b9e0e39ddbc7b3aa9805aad1fccc94f373",
+          "name": "sheep-accept-7f56e4f6-7ec0-45f9-b113-688683c47e4b",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/swarm-docker-diagnostics-1789011147397/acceptance/sheep-accept-f489da47-a37e-4369-8c01-d41b6a0c59ab/receipt.json",
+          "sha256": "54b802259ddb3460e8f91a124f65d1eaf8edbe2bf0a5109422588cc8d86abc0d",
+          "name": "sheep-accept-f489da47-a37e-4369-8c01-d41b6a0c59ab",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/swarm-docker-diagnostics-1789011147397/acceptance/sheep-accept-f57f91bb-cf33-4c63-82dc-08df400468dc/receipt.json",
+          "sha256": "743b837f7293e0c502148d2c9f3f2fd846dad27dc72c7315b8a07f9eddd5dcff",
+          "name": "sheep-accept-f57f91bb-cf33-4c63-82dc-08df400468dc",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/swarm-docker-diagnostics-1789011147397/acceptance/sheep-accept-f6b37730-58d5-4b47-be3e-2ae8a133b2c3/receipt.json",
+          "sha256": "23588cc92a173ea5090b0d42f787e0f0116cae867584a67a72c148ce9965c6cb",
+          "name": "sheep-accept-f6b37730-58d5-4b47-be3e-2ae8a133b2c3",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/swarm-docker-diagnostics-1789011147397/transcripts/sheep-docker-call-199Iuy/receipt.json",
+          "sha256": "6140ab506fb79d8a00dc2bcb25bcc5ee9857ec1d751fd9652fd4c26d73ea1265",
+          "name": "sheep-7f0a7062-1be8-4fc9-b63a-9b71b5e9060e",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/swarm-docker-diagnostics-1789011147397/transcripts/sheep-docker-call-MG1bf6/receipt.json",
+          "sha256": "869750dbc7403efc15c8097966c8eb32af7cca2d2603af893afcc885a485b745",
+          "name": "sheep-e01e8874-4ae5-4546-83b9-dfdb7e9bd9f8",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/swarm-docker-diagnostics-1789011147397/transcripts/sheep-docker-call-m9iCFA/receipt.json",
+          "sha256": "266983fff43b75f31b608e5e4d6f308b215a4c3928be0d5f19ad295aaa8e502a",
+          "name": "sheep-1480b872-9bf1-4896-a7ec-a164a3d3c3be",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        }
+      ]
+    },
+    {
+      "label": "semantic-before-system-fix",
+      "kind": "mechanism",
+      "directory": ".sheep/docker-goal-semantic-20260910",
+      "reportSha256": "06b311b0be3b09d5c5932caa0baebe4f7ddf63f4dd5a5fac46a12daffcdb29ba",
+      "success": false,
+      "configuration": {
+        "runtime": "docker-agent",
+        "workerTools": "local",
+        "maxTokensPerCall": 60000,
+        "method": "sheep",
+        "family": "semantic",
+        "groups": 1,
+        "workers": 4,
+        "concurrency": 2,
+        "maxCredits": 3,
+        "lunaReservation": 0.5,
+        "astraReservation": 15,
+        "maxCalls": 24,
+        "timeoutMs": 240000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 0,
+        "workerModel": "gpt-5.6-luna",
+        "metaModel": "gpt-6-astra",
+        "memoryLimit": 4
+      },
+      "progress": {
+        "complete": false,
+        "expectedStages": 1,
+        "stages": [
+          {
+            "stage": 0,
+            "success": false,
+            "qualityPass": false,
+            "protocolClean": false
+          }
+        ],
+        "calls": 16,
+        "lowerCalls": 16,
+        "upperCalls": 0,
+        "readCalls": 10,
+        "committedTargets": [
+          "domains/domain-01/window.mjs",
+          "domains/domain-01/ingest.mjs",
+          "domains/domain-01/aggregate.mjs",
+          "domains/domain-01/persist.mjs"
+        ],
+        "unknownUsageCalls": 1,
+        "terminationReason": "budget-unknown"
+      },
+      "stages": [
+        {
+          "stage": 0,
+          "success": false,
+          "qualityPass": false,
+          "protocolClean": false,
+          "readCalls": 10,
+          "patchAttempts": {
+            "domains/domain-01/window.mjs": 1,
+            "domains/domain-01/ingest.mjs": 1,
+            "domains/domain-01/persist.mjs": 1,
+            "domains/domain-01/aggregate.mjs": 1,
+            "domains/domain-01/report.mjs": 1,
+            "domains/domain-01/cache.mjs": 1
+          }
+        }
+      ],
+      "discovery": [
+        {
+          "stage": 0,
+          "callId": "call-3",
+          "target": "domains/domain-01/ingest.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-4",
+          "target": "domains/domain-01/window.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-4",
+          "target": "domains/domain-01/window.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-5",
+          "target": "domains/domain-01/ingest.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-7",
+          "target": "domains/domain-01/aggregate.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-10",
+          "target": "domains/domain-01/persist.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-10",
+          "target": "domains/domain-01/persist.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-9",
+          "target": "domains/domain-01/aggregate.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-14",
+          "target": "domains/domain-01/report.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-13",
+          "target": "domains/domain-01/cache.mjs",
+          "provider": "config/domain-registry.json"
+        }
+      ],
+      "calls": [
+        {
+          "id": "call-1",
+          "sha256": "3d86e0399620c76073bd9ad88e4cb4bbbc6c060a281465f22cff6d3cd9089d19",
+          "target": "domains/domain-01/ingest.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "lib/decode.mjs"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-2",
+          "sha256": "84535ac6c648355051ce6a920277e4e6ae0772d12d8286439334a1f234ce5331",
+          "target": "domains/domain-01/window.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-3",
+          "sha256": "4a89d88803914a297643378a7e36c2c8e6bb81b71c173967e8c5868d678d0d38",
+          "target": "domains/domain-01/ingest.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "lib/decode.mjs"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-4",
+          "sha256": "555902422a40b5b8a00327e519a1259b7ff369623cacfeac0fbffab22d25100f",
+          "target": "domains/domain-01/window.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-5",
+          "sha256": "541ee5da7b6b5350f374b4a359b9c0fde8c57975659e21a4ce7378b681b65796",
+          "target": "domains/domain-01/ingest.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json",
+            "lib/decode.mjs"
+          ],
+          "tools": {
+            "calls": 2,
+            "byTool": {
+              "write_file": 1,
+              "__structured_output__": 1
+            },
+            "responded": 2,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-6",
+          "sha256": "27afd50526f24216620fcbb783ba982bde219e4d8f6bd856a4056684afca27b9",
+          "target": "domains/domain-01/aggregate.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-7",
+          "sha256": "be0670c481b1b646dcd3b48dfd9c1cdc2e7223cd85cce553efdc0b26ea5ffd4e",
+          "target": "domains/domain-01/aggregate.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-8",
+          "sha256": "165c4e63f721a70ad9f6bf87347e484150064f9d7a85b74c1d302216fe48a4cb",
+          "target": "domains/domain-01/persist.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-9",
+          "sha256": "28767caf361ab429ec96f4a7c0d872aa8b271f1e527ef57927e58ebc6cd787ab",
+          "target": "domains/domain-01/aggregate.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "write_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-10",
+          "sha256": "767d82537b16aa533020d05b20ea8f1967412b637ce5d7300246d08b41356797",
+          "target": "domains/domain-01/persist.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-11",
+          "sha256": "f4bd3e199ab8eb6ade82f2102bd20cc9e63ff2caf18a71afb579aabfa1a89534",
+          "target": "domains/domain-01/cache.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-12",
+          "sha256": "2f096da187715db9f3381820b13dd34ab2e7b0a187324f05843872e749a73a97",
+          "target": "domains/domain-01/report.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-13",
+          "sha256": "f4b97dc7a07f2a522ac90d883d4c6970f269837e1218b3a6229356668978cc03",
+          "target": "domains/domain-01/cache.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-14",
+          "sha256": "527c461313f37f0ed1eefe4f9cce4ac29f6ebf2ab5e28ec17ac8d8ff63033c23",
+          "target": "domains/domain-01/report.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-15",
+          "sha256": "e22b6de52bd85f0435c67309a9281edb5b183bd2278f8fc6a2812c30e4736c03",
+          "target": "domains/domain-01/cache.mjs",
+          "stage": 0,
+          "outcome": "budget-or-boundary-rejected",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-16",
+          "sha256": "bf4fbb84b9071fdc9bffa7be742e4a314d97fe92fa316920b90cf5cb4619cbe4",
+          "target": "domains/domain-01/report.mjs",
+          "stage": 0,
+          "outcome": "model-error",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "partial-or-unknown",
+          "cleanupSucceeded": true,
+          "exitCode": 1,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 2,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1
+            },
+            "responded": 2,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": false
+          }
+        }
+      ],
+      "budget": {
+        "maxCredits": 3,
+        "observedCredits": 0.414186,
+        "unknownUsageCalls": 1,
+        "activeReservations": 0,
+        "exceeded": false,
+        "settledCalls": 16
+      },
+      "vmCount": 21,
+      "allVmsCleaned": true,
+      "vms": [
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/acceptance/sheep-accept-27d61037-8774-47e9-bd48-3c3efc50bff3/receipt.json",
+          "sha256": "2af4d1bb0eb5f82b1e9087e703ff6c9e2a3efe18a3d67b072b92210091ca9b3a",
+          "name": "sheep-accept-27d61037-8774-47e9-bd48-3c3efc50bff3",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/acceptance/sheep-accept-463e8cae-02b8-4e94-bdb9-d330d8a04519/receipt.json",
+          "sha256": "6cf13e3f705f347134bb9049ef56c133ba2ac137ce9e04c401ab5a5764501a4e",
+          "name": "sheep-accept-463e8cae-02b8-4e94-bdb9-d330d8a04519",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/acceptance/sheep-accept-60a8de27-b386-4534-a96b-910caf21e8eb/receipt.json",
+          "sha256": "ebba5ae127887407db535127fc18d0748a5d48fa9855fd33a1f6678a0d727119",
+          "name": "sheep-accept-60a8de27-b386-4534-a96b-910caf21e8eb",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/acceptance/sheep-accept-8f5badfd-7d02-4429-9aaf-2ce263669480/receipt.json",
+          "sha256": "0cd9b409f8d6e14b1ebeb5c261550a60df36d2b02a31bc13c43c7bb0db690532",
+          "name": "sheep-accept-8f5badfd-7d02-4429-9aaf-2ce263669480",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/acceptance/sheep-accept-f731c244-7d02-4934-ad62-ac556e9c14ee/receipt.json",
+          "sha256": "225a760bb7f772bd0c9d622260808a5de46db32f907c593b53c3e1a89a41e937",
+          "name": "sheep-accept-f731c244-7d02-4934-ad62-ac556e9c14ee",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/transcripts/sheep-docker-call-2ACVJg/receipt.json",
+          "sha256": "047864294d1c100b5d1ec58e3bcc8e67572c8e744b528a1ce3400e2887ea1d99",
+          "name": "sheep-66bd6c0b-0d67-469c-aa3b-ee9229d9fd72",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/transcripts/sheep-docker-call-2IOpwH/receipt.json",
+          "sha256": "ddb8954fe8bc3558d16d31f691afb0ba7a1af7deaafe2be4009037dda33950da",
+          "name": "sheep-0613d21f-e1ba-4e2d-8c0d-a88a355cbba5",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/transcripts/sheep-docker-call-2IbR6Z/receipt.json",
+          "sha256": "e6184518c645964453175f300bfc45833616db513063763feda3ca4fc2dec063",
+          "name": "sheep-533a082a-6b7d-4f15-a007-8264471123ca",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": true
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/transcripts/sheep-docker-call-2e6KQS/receipt.json",
+          "sha256": "83aa499cd06d01da7f22b0a716332fd85c17cb2c69e1d3620b1b859e801258d7",
+          "name": "sheep-46f93b55-18cc-43ed-93cb-dad075312579",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/transcripts/sheep-docker-call-7hMG8S/receipt.json",
+          "sha256": "fc5b7637543bf2bfa1001d1c19fa4656b31577d2cd95e0339660c46c9b3eeed2",
+          "name": "sheep-28babb14-c453-48fc-8922-0fe6d389c42a",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/transcripts/sheep-docker-call-8BAscx/receipt.json",
+          "sha256": "d2be038c2849968561ee6b2fdec7051147744ea07c6658a31d86cfac788564f0",
+          "name": "sheep-bbea6857-fafc-4fb7-9537-f1c7794f4d5b",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/transcripts/sheep-docker-call-FY541z/receipt.json",
+          "sha256": "0f44b80960a4532cf5c0cd89034c7effafd7efd9fc1810982356324cd8c4edca",
+          "name": "sheep-6e0864f7-ebed-4838-9d6b-9e0f4be05bf6",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/transcripts/sheep-docker-call-RIiaB3/receipt.json",
+          "sha256": "9ce6ed4016f20b763bef2d10a6512f1bfbb86aeeb9ed230ba1cd91b281e2eeef",
+          "name": "sheep-60982ae6-f6e3-4398-a677-fceaddbc8a48",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/transcripts/sheep-docker-call-VE2MjH/receipt.json",
+          "sha256": "7c43bf2d0ccac653f8d3878b852c8cfc0caa0c15c7fe71f9d81fafa0b70e8fe6",
+          "name": "sheep-0e181772-42a9-4889-b8a0-6a35d9a5b6fc",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/transcripts/sheep-docker-call-ctqGb2/receipt.json",
+          "sha256": "d8c1b4bbc11add0a472163780631a322a59e15aa1e9e3ad2e9ddfcef12fd2537",
+          "name": "sheep-96526424-75a6-41ef-8f85-c29e0d19a22b",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/transcripts/sheep-docker-call-gXhMul/receipt.json",
+          "sha256": "3c3e2309524daad8daba26a83640aa3626c49da43e4a2a9d3b575da4952f2a30",
+          "name": "sheep-0778a567-72c7-49cc-a537-379e18f08a8c",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/transcripts/sheep-docker-call-kMqstc/receipt.json",
+          "sha256": "bc545ce37bc0db6ca380715d9ccb223e7dc378726c983d8a0c6f230527f439c2",
+          "name": "sheep-5522016e-067a-432c-97b2-2091b8c7c930",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/transcripts/sheep-docker-call-p6Btt1/receipt.json",
+          "sha256": "7807f05e714085902df5812879c2ca1170a055d75c6f11b7f0c1f1e5ad021e63",
+          "name": "sheep-3817d4c2-f80b-4b24-818e-215e75caa5d4",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/transcripts/sheep-docker-call-rypLag/receipt.json",
+          "sha256": "4bb04d7e5220767a0f2864aa581ff45ff5339d60793ed7123dfaa8225ca8a06a",
+          "name": "sheep-75c5d5a7-ae07-45c9-9687-02a4eeab4f77",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/transcripts/sheep-docker-call-vGueCF/receipt.json",
+          "sha256": "84f8f963cda93ff5b64ed46a7e08a087c596cf2cde56fb0501fb810425633b0c",
+          "name": "sheep-830fcc7f-1fb9-4972-bad3-651dec476336",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-20260910/transcripts/sheep-docker-call-vZhrTX/receipt.json",
+          "sha256": "a7a5aeea62ececb983ac04344d6995e9d64262c3f9564eba0e5c30754d440d50",
+          "name": "sheep-d26ae9fe-1004-437c-99d2-b4847a95dadd",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        }
+      ]
+    },
+    {
+      "label": "staged-before-read-fix",
+      "kind": "mechanism",
+      "directory": ".sheep/docker-goal-staged-20260910",
+      "reportSha256": "daac3b132b61ef463f6511f60ffd4ef1b1037b48a20e8ebbf57baafb531dd2f6",
+      "success": false,
+      "configuration": {
+        "runtime": "docker-agent",
+        "workerTools": "local",
+        "maxTokensPerCall": 60000,
+        "method": "sheep",
+        "family": "staged",
+        "groups": 1,
+        "workers": 4,
+        "concurrency": 2,
+        "maxCredits": 5,
+        "lunaReservation": 0.5,
+        "astraReservation": 15,
+        "maxCalls": 48,
+        "timeoutMs": 240000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 0,
+        "workerModel": "gpt-5.6-luna",
+        "metaModel": "gpt-6-astra",
+        "memoryLimit": 4
+      },
+      "progress": {
+        "complete": false,
+        "expectedStages": 3,
+        "stages": [
+          {
+            "stage": 0,
+            "success": false,
+            "qualityPass": false,
+            "protocolClean": false
+          }
+        ],
+        "calls": 18,
+        "lowerCalls": 18,
+        "upperCalls": 0,
+        "readCalls": 12,
+        "committedTargets": [
+          "domains/domain-01/aggregate.mjs",
+          "domains/domain-01/persist.mjs",
+          "domains/domain-01/cache.mjs"
+        ],
+        "unknownUsageCalls": 0,
+        "terminationReason": "attempt-limit"
+      },
+      "stages": [
+        {
+          "stage": 0,
+          "success": false,
+          "qualityPass": false,
+          "protocolClean": false,
+          "readCalls": 12,
+          "patchAttempts": {
+            "domains/domain-01/window.mjs": 3,
+            "domains/domain-01/ingest.mjs": 3,
+            "domains/domain-01/aggregate.mjs": 1,
+            "domains/domain-01/persist.mjs": 1,
+            "domains/domain-01/report.mjs": 3,
+            "domains/domain-01/cache.mjs": 1
+          }
+        }
+      ],
+      "discovery": [
+        {
+          "stage": 0,
+          "callId": "call-3",
+          "target": "domains/domain-01/ingest.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-4",
+          "target": "domains/domain-01/window.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-6",
+          "target": "domains/domain-01/window.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-5",
+          "target": "domains/domain-01/ingest.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-11",
+          "target": "domains/domain-01/aggregate.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-12",
+          "target": "domains/domain-01/persist.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-13",
+          "target": "domains/domain-01/aggregate.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-14",
+          "target": "domains/domain-01/persist.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-17",
+          "target": "domains/domain-01/cache.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-18",
+          "target": "domains/domain-01/report.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-20",
+          "target": "domains/domain-01/report.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-19",
+          "target": "domains/domain-01/cache.mjs",
+          "provider": "policies/policy-003.json"
+        }
+      ],
+      "calls": [
+        {
+          "id": "call-1",
+          "sha256": "e23d7b86dfdc1acccd6e02842e678836d99c66ab2aa0f24f11601658ddd8ac2e",
+          "target": "domains/domain-01/ingest.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "lib/decode.mjs"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-2",
+          "sha256": "2eff66c9a2efdd3ca181f8c6441d668b07d645fab29fcec47dd12c9e0d640cb3",
+          "target": "domains/domain-01/window.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-3",
+          "sha256": "fd4161a84af587dda4256cdef0abe691315b0b5a105624716fdedb2d50fd1ec8",
+          "target": "domains/domain-01/ingest.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "lib/decode.mjs"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-4",
+          "sha256": "39a00dac6407a3188bb0ce537e8e6737b0ae0a5be35c6579dcc5a06bc409379f",
+          "target": "domains/domain-01/window.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-5",
+          "sha256": "2b8bd4db365e6862fdfdbcf447daf67d621b651df8a60249f1a7281c943629ad",
+          "target": "domains/domain-01/ingest.mjs",
+          "stage": 0,
+          "outcome": "invalid-read-request",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json",
+            "lib/decode.mjs"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-6",
+          "sha256": "f07a39e48e0c91a98aaef2e60b05d1954bc2b2b470d653ed0faa6d777999c3a4",
+          "target": "domains/domain-01/window.mjs",
+          "stage": 0,
+          "outcome": "invalid-read-request",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-9",
+          "sha256": "5f233fad7521ef4acd807b79d2981755893a4e5102bee17191c44f3f0c75f482",
+          "target": "domains/domain-01/aggregate.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-10",
+          "sha256": "53a10e06e92bb3fe98e9d9679c16b1aadb4b78d9afe470e2f1aa870b3c0fd532",
+          "target": "domains/domain-01/persist.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-11",
+          "sha256": "dcf05a875667a1826d412707cd12c610a66a9fba409aa6171c423c18fb2c8096",
+          "target": "domains/domain-01/aggregate.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-12",
+          "sha256": "9d7bb086a3aa0e20955ebe6b7e83b4ab413122bc11247ee4cd82b1ef609d747b",
+          "target": "domains/domain-01/persist.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-13",
+          "sha256": "675746c8ac149bf56159b70be2528520e7acdf217ff86d70985ccec30d0759ef",
+          "target": "domains/domain-01/aggregate.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-14",
+          "sha256": "1735e1c51e4dadb7989c030e446d7e875a6ad58c5c3fff18e1382607c77b5b3d",
+          "target": "domains/domain-01/persist.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-15",
+          "sha256": "52f76fd3dedf5de572c2007701bfd6b56bebb52d670f22087184fb4643c58783",
+          "target": "domains/domain-01/cache.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-16",
+          "sha256": "397252baf88d73f48b0e7a3c436f4ea2b30e84228490f5bd807241eaede03919",
+          "target": "domains/domain-01/report.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-17",
+          "sha256": "1ce55dbe438d538c80a79fc23c5031e7c10f6c266ca34ae3a8f758264e8e432f",
+          "target": "domains/domain-01/cache.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-18",
+          "sha256": "8375ea4f54e4fc5958dbce08121b597669581c1da45b53f06c18601f8a0c55d4",
+          "target": "domains/domain-01/report.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-19",
+          "sha256": "8de409a6a123622acef4ed9835a02b9441918c374549fa3ab00148f4d7c53087",
+          "target": "domains/domain-01/cache.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-20",
+          "sha256": "7a94acae955c4da6eb804b2e0503a79efb05f39ce67bc7a2f985f61d630ac987",
+          "target": "domains/domain-01/report.mjs",
+          "stage": 0,
+          "outcome": "invalid-read-request",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        }
+      ],
+      "budget": {
+        "maxCredits": 5,
+        "observedCredits": 0.38122000000000006,
+        "unknownUsageCalls": 0,
+        "activeReservations": 0,
+        "exceeded": false,
+        "settledCalls": 18
+      },
+      "vmCount": 25,
+      "allVmsCleaned": true,
+      "vms": [
+        {
+          "path": ".sheep/docker-goal-staged-20260910/acceptance/sheep-accept-0bcad849-7dc6-416d-bbeb-a1d815c58c92/receipt.json",
+          "sha256": "dd03d340e3af47127edd6e84d7ff829c7b46bb3494b560e99b5b723f53bc7641",
+          "name": "sheep-accept-0bcad849-7dc6-416d-bbeb-a1d815c58c92",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/acceptance/sheep-accept-0f83d8ec-660d-429c-86ba-6e22587d1945/receipt.json",
+          "sha256": "a78ee5dcbc4a23a85ac4db4078fe424cc34dd4e6322fe37778ded4cda2b271ce",
+          "name": "sheep-accept-0f83d8ec-660d-429c-86ba-6e22587d1945",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/acceptance/sheep-accept-16aac93b-3324-43b5-b955-28ec3e8b9e6c/receipt.json",
+          "sha256": "563aaf3c09eadda3d134d08b31f7f5d38b2896121518bc9030e620216ccdf10e",
+          "name": "sheep-accept-16aac93b-3324-43b5-b955-28ec3e8b9e6c",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/acceptance/sheep-accept-7746cd3f-f406-4adf-b828-c287d5b095fa/receipt.json",
+          "sha256": "bcebb2d2b0d1b4f52c1c047a9725b4c2386dcabc8ecdc3c927a409c14c67f2f3",
+          "name": "sheep-accept-7746cd3f-f406-4adf-b828-c287d5b095fa",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/acceptance/sheep-accept-7b483bcb-cab2-46da-a617-e8e33b531e0f/receipt.json",
+          "sha256": "bfeaf7cdae6b38576d57bd5fc1a1c59ce90c4abca2b99ef9d55b8251bceea626",
+          "name": "sheep-accept-7b483bcb-cab2-46da-a617-e8e33b531e0f",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/acceptance/sheep-accept-8a8b7bbf-f540-47b5-b539-41dab3211119/receipt.json",
+          "sha256": "e680d12703da552c2d7d1519a9bcf9d29ccc795f30d2bb2c08be77a92e73d1dc",
+          "name": "sheep-accept-8a8b7bbf-f540-47b5-b539-41dab3211119",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/acceptance/sheep-accept-ec2ee133-f1a0-4408-9cd3-5700f65b40aa/receipt.json",
+          "sha256": "94681a32c9b7651fcfeb32af72f43e188e4c2090421ad59d77f3f6251a1b3575",
+          "name": "sheep-accept-ec2ee133-f1a0-4408-9cd3-5700f65b40aa",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-4qO8Zn/receipt.json",
+          "sha256": "ce8ab09e155f1cf807b87bd4cf0585f648046cb347c5aa098a19855075766f94",
+          "name": "sheep-27a7672b-b82d-4e29-95c8-5de7d824cee3",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-9JeWAY/receipt.json",
+          "sha256": "d3783f41d9553ec1761076b703e43162c60dc5eaff05881427e2b7059f0764fa",
+          "name": "sheep-21dd4277-ed95-4a97-af8b-23d7aa578630",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-BfUFch/receipt.json",
+          "sha256": "baf9c16e91b166e64e0e04f43882373cefcf3e800cbf21e313c458142f46d45f",
+          "name": "sheep-9e8196c1-0df7-4453-bca7-9db5d235c66b",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-GZv2eC/receipt.json",
+          "sha256": "3476b5a734299257db4e8fa7cea1829d1764ac112317361a3fb53b09fcfbc61c",
+          "name": "sheep-a43a5172-f5a2-476d-a6fa-46d49295c07b",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-HJGYQ5/receipt.json",
+          "sha256": "dd826a5f9393f0f439f4ace141eb822261ec2c699e1bb896969de98b6353e2ef",
+          "name": "sheep-b512390f-1ae5-4396-816b-da740e54269c",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-JfD549/receipt.json",
+          "sha256": "e00f8b6c8f392bd60449f9210127637ac476bb6ea9862bab7caa8070f01904b5",
+          "name": "sheep-2f070cff-6db3-4dc9-a71a-d64f1724cea9",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-KfAkXy/receipt.json",
+          "sha256": "a6d063d684f7a01091ba21ef9d458355a2f1cb943e65991b7f2188ecfa3d9dc0",
+          "name": "sheep-a548a093-55b4-40e5-bd36-2c3d4512073b",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-Nq1HwO/receipt.json",
+          "sha256": "522b3ce936d709d555b05a487db19da9d1026d2f05a28ebc67888dbae24937bd",
+          "name": "sheep-07304cf4-b821-4619-b1c8-1029c1c48030",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-O9KuI7/receipt.json",
+          "sha256": "428a54a07268423a3ad62aa69cb2acebc626fdde4d49f3270a46e24ffcf2ea16",
+          "name": "sheep-90b9f412-ad1b-4951-a26f-653578af3da6",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-Q4VQpF/receipt.json",
+          "sha256": "8a8e3ff8fcb1039e6722740e43f81f4b675c43c9d6fbe6a952d1ec8da3fcdbe6",
+          "name": "sheep-84b2183b-c6e5-411c-841b-4dde2ca56f2e",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-SghuMC/receipt.json",
+          "sha256": "34470079a7ff60bb8a1da3ac6aceac1ea9d8adaec90cc185c72e2adf7e196b5a",
+          "name": "sheep-ffb70034-e0dd-468e-84fe-345fb558504c",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-X3rBBX/receipt.json",
+          "sha256": "cb0b4e5a96751b916e641294e0cbbf545c137005fd70391f750816a7e1474951",
+          "name": "sheep-e873dc17-e94a-4e24-82cc-ccf46aed79f7",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-bJcFZH/receipt.json",
+          "sha256": "bcebbc60411fcd4306b43fd57bc1c9b84937129d94bba260a21ad26fccd89307",
+          "name": "sheep-d00d522b-4a7c-471c-aa2f-b5a33b988748",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-cbnnsa/receipt.json",
+          "sha256": "cd2e10f886a7f45ee2435e498e2f2a7e7dd4860fb65303a166fbf956b57bf789",
+          "name": "sheep-f2c05d11-307c-4de3-9d53-da2b0c47c349",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-lmkOup/receipt.json",
+          "sha256": "c315835e1ae6506d71773b898065a0484aac24a41fe91a96eab1726cd6935545",
+          "name": "sheep-120b3a83-4165-4617-92b9-be6ceedf31b4",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-mK9h1Y/receipt.json",
+          "sha256": "a4a1bf05b149fc2642fac8df19c71b43e5cc61d98fe30940a0088bc1b552d654",
+          "name": "sheep-8871406b-65ef-4411-bdb1-a6e6de016c95",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-urgXui/receipt.json",
+          "sha256": "203bf061dddc3ef77d76927266609e5feef285a2a7a8f9648f4c4bc9c0211426",
+          "name": "sheep-c079cc7d-a51b-4398-9caa-525aa0635df4",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-20260910/transcripts/sheep-docker-call-zM83SD/receipt.json",
+          "sha256": "7e0ab5aaf4a3d94ad118d8f52ef26f8aeeccb1e717b77551215fbd2900c80dd9",
+          "name": "sheep-b42c635c-eb2c-4f0a-accc-8d33ca104b2b",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        }
+      ]
+    },
+    {
+      "label": "report-after-system-fix",
+      "kind": "probe",
+      "directory": ".sheep/docker-completion-probe-1789012477403",
+      "reportSha256": "ce817f41b451712ff07d4c02442dbc16d5a92e54d8e8e6d46e2da0050e1eea74",
+      "success": true,
+      "progress": null,
+      "calls": [
+        {
+          "id": "call-1",
+          "sha256": "a61556ca6746d669f5f359badd7844396f3152406199e359541d465bc1af09bf",
+          "target": "domains/domain-01/report.mjs",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": null,
+          "tools": {
+            "calls": 9,
+            "byTool": {
+              "check_local": 2,
+              "search_files_content": 1,
+              "list_directory": 1,
+              "read_multiple_files": 2,
+              "read_file": 1,
+              "edit_file": 1,
+              "__structured_output__": 1
+            },
+            "responded": 9,
+            "pending": [],
+            "errors": [
+              "call_bnGEV28qWreUFH4GjMNaePxs"
+            ],
+            "structuredOutputDelivered": true
+          }
+        }
+      ],
+      "budget": {
+        "maxCredits": 1,
+        "observedCredits": 0.051984,
+        "unknownUsageCalls": 0,
+        "activeReservations": 0,
+        "exceeded": false,
+        "settledCalls": 1
+      },
+      "vmCount": 2,
+      "allVmsCleaned": true,
+      "vms": [
+        {
+          "path": ".sheep/docker-completion-probe-1789012477403/acceptance/sheep-accept-92d68096-9e54-40f9-90c8-66b9d6d2ad3c/receipt.json",
+          "sha256": "0edf33c2d43f340a3936321cdeac78ca62bc7179f6a165e0e927642eca2c3e51",
+          "name": "sheep-accept-92d68096-9e54-40f9-90c8-66b9d6d2ad3c",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-completion-probe-1789012477403/transcripts/sheep-docker-call-wQmd1b/receipt.json",
+          "sha256": "0d27c1485bbccc6631491344325e5b177b905dab9bd171890b33511f5c2071ff",
+          "name": "sheep-6c3908a0-f2cd-4960-8ebb-2ebd049478c5",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        }
+      ]
+    },
+    {
+      "label": "semantic-after-fixes",
+      "kind": "mechanism",
+      "directory": ".sheep/docker-goal-semantic-finish-20260910",
+      "reportSha256": "e2e300f06f6ef4b5b63da42d4866bd5602f622fe7d32587660b5eb0ed68108e6",
+      "success": true,
+      "configuration": {
+        "runtime": "docker-agent",
+        "workerTools": "local",
+        "maxTokensPerCall": 60000,
+        "method": "sheep",
+        "family": "semantic",
+        "groups": 1,
+        "workers": 4,
+        "concurrency": 2,
+        "maxCredits": 3,
+        "lunaReservation": 0.5,
+        "astraReservation": 15,
+        "maxCalls": 24,
+        "timeoutMs": 240000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 0,
+        "workerModel": "gpt-5.6-luna",
+        "metaModel": "gpt-6-astra",
+        "memoryLimit": 4
+      },
+      "progress": {
+        "complete": true,
+        "expectedStages": 1,
+        "stages": [
+          {
+            "stage": 0,
+            "success": true,
+            "qualityPass": true,
+            "protocolClean": true
+          }
+        ],
+        "calls": 18,
+        "lowerCalls": 18,
+        "upperCalls": 0,
+        "readCalls": 12,
+        "committedTargets": [
+          "domains/domain-01/ingest.mjs",
+          "domains/domain-01/window.mjs",
+          "domains/domain-01/aggregate.mjs",
+          "domains/domain-01/persist.mjs",
+          "domains/domain-01/cache.mjs",
+          "domains/domain-01/report.mjs"
+        ],
+        "unknownUsageCalls": 0,
+        "terminationReason": "completed"
+      },
+      "stages": [
+        {
+          "stage": 0,
+          "success": true,
+          "qualityPass": true,
+          "protocolClean": true,
+          "readCalls": 12,
+          "patchAttempts": {
+            "domains/domain-01/ingest.mjs": 1,
+            "domains/domain-01/window.mjs": 1,
+            "domains/domain-01/aggregate.mjs": 1,
+            "domains/domain-01/persist.mjs": 1,
+            "domains/domain-01/cache.mjs": 1,
+            "domains/domain-01/report.mjs": 1
+          }
+        }
+      ],
+      "discovery": [
+        {
+          "stage": 0,
+          "callId": "call-3",
+          "target": "domains/domain-01/ingest.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-4",
+          "target": "domains/domain-01/window.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-5",
+          "target": "domains/domain-01/ingest.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-6",
+          "target": "domains/domain-01/window.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-10",
+          "target": "domains/domain-01/persist.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-9",
+          "target": "domains/domain-01/aggregate.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-11",
+          "target": "domains/domain-01/aggregate.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-12",
+          "target": "domains/domain-01/persist.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-15",
+          "target": "domains/domain-01/cache.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-16",
+          "target": "domains/domain-01/report.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-17",
+          "target": "domains/domain-01/cache.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-18",
+          "target": "domains/domain-01/report.mjs",
+          "provider": "policies/policy-003.json"
+        }
+      ],
+      "calls": [
+        {
+          "id": "call-1",
+          "sha256": "8e7e3262274a12d3786273b645260f6b85b751885c33095abb247b344531f990",
+          "target": "domains/domain-01/ingest.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "lib/decode.mjs"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-2",
+          "sha256": "b056ba54e9634ab69e7db696d04c1313d25397723be505d33a66b4d930b14708",
+          "target": "domains/domain-01/window.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-3",
+          "sha256": "ba60ce0539960e797e1f58c1954c2a54d66053380558735c3a3a1e16858f6713",
+          "target": "domains/domain-01/ingest.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "lib/decode.mjs"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-4",
+          "sha256": "e529533cf1ecb04bab1b887895f98ef44f6824b50cfd13f4e5535abaec2c3a84",
+          "target": "domains/domain-01/window.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-5",
+          "sha256": "2c7a631187d4b71f6d35999c4955146356b7bbc9a879d759293ca40f1fc81efd",
+          "target": "domains/domain-01/ingest.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json",
+            "lib/decode.mjs"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-6",
+          "sha256": "3c5ba1dcd3a0017ec14270c9af5f6231dc13c699ec4fa4ea66013ee6f8e21262",
+          "target": "domains/domain-01/window.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-7",
+          "sha256": "b909f416bb641bedb071f8b7a6d71b2cef11399f6d6216b836dac9d51bb58462",
+          "target": "domains/domain-01/aggregate.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-8",
+          "sha256": "23549d5b3720f934c56fb24b8cbcd6f62d725fbd81b2ab3f664b3ec4b998a5dd",
+          "target": "domains/domain-01/persist.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-9",
+          "sha256": "fbdda184b71135c38191d9471193c4ead4e81dc1936bf68ffec18e02e9842086",
+          "target": "domains/domain-01/aggregate.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-10",
+          "sha256": "575883d0dd1e26e5bd69526078cd4540e8ac158db4e0e1986c0fb16794e23d4b",
+          "target": "domains/domain-01/persist.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-11",
+          "sha256": "0634126c5dc5d7e0e1d93686ea96bbff8ed0b1c1d109e52ee593baf5ca849abb",
+          "target": "domains/domain-01/aggregate.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-12",
+          "sha256": "7aea46dfe23feb652c1f2f1d30c70d8e01b4dba2fd283c13ff9a7c8b72502108",
+          "target": "domains/domain-01/persist.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-13",
+          "sha256": "fb4d49ff0e3370ede8390b52f0050da53e6004ca75723e25a053596acd7b961f",
+          "target": "domains/domain-01/cache.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-14",
+          "sha256": "fd0d13deb1b85b2aae4776df483db79eb3eab366e2316080c6dc19886797fc18",
+          "target": "domains/domain-01/report.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-15",
+          "sha256": "1a788b881d27c7266e33c22613082be772b488d8f4c9a1af6de1a9d3449a2a24",
+          "target": "domains/domain-01/cache.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-16",
+          "sha256": "ced8a0054729c854e049695f51a8eca7be7ac7a44d2ba015c60bc73faddffa76",
+          "target": "domains/domain-01/report.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-17",
+          "sha256": "f2d36b3bc2c68641a84ffbc09bddfa0078d0759baa5f9d5686225c2110ddbc5a",
+          "target": "domains/domain-01/cache.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-18",
+          "sha256": "7b49392d6500afe9a21ec28119ee0b1d0b9a37b0875a33fc0e46825962d82714",
+          "target": "domains/domain-01/report.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "write_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        }
+      ],
+      "budget": {
+        "maxCredits": 3,
+        "observedCredits": 0.444392,
+        "unknownUsageCalls": 0,
+        "activeReservations": 0,
+        "exceeded": false,
+        "settledCalls": 18
+      },
+      "vmCount": 25,
+      "allVmsCleaned": true,
+      "vms": [
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/acceptance/sheep-accept-01552590-31be-48b2-bb50-248a836b41c1/receipt.json",
+          "sha256": "dc6961a165f43cb9c0cfc14df9b9bb73cb380f92386491f7ae6153a72276662b",
+          "name": "sheep-accept-01552590-31be-48b2-bb50-248a836b41c1",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/acceptance/sheep-accept-2953d351-6849-4138-9ff8-0c7e2cc0ec5c/receipt.json",
+          "sha256": "09a922c5ccf83279a8c9e153fc0c7e8e984de334105bd796a1bde134ece17527",
+          "name": "sheep-accept-2953d351-6849-4138-9ff8-0c7e2cc0ec5c",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/acceptance/sheep-accept-40cb948a-e559-4960-8c1b-23cf02edd742/receipt.json",
+          "sha256": "fca8db94fe4118890c00a2238b039318d090ac7188c3c01728c436b9c0134068",
+          "name": "sheep-accept-40cb948a-e559-4960-8c1b-23cf02edd742",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/acceptance/sheep-accept-5cc35452-3d1d-4b8c-9604-195a2a1c74c7/receipt.json",
+          "sha256": "db9471258def1816950f2fea04938f4ffa06d4fe58085c46e7d8288704789f19",
+          "name": "sheep-accept-5cc35452-3d1d-4b8c-9604-195a2a1c74c7",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/acceptance/sheep-accept-92040bf4-496a-4c3a-acb5-ab1c4cd000b1/receipt.json",
+          "sha256": "6c4c2060242b0fb1757ea282af1ea5c858184f961e834b662bd68986dff7f150",
+          "name": "sheep-accept-92040bf4-496a-4c3a-acb5-ab1c4cd000b1",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/acceptance/sheep-accept-b698a462-0ac9-4fb8-9454-f2db98c809cd/receipt.json",
+          "sha256": "4b12804fa6a91e06244e741031216d0412fb169274c1e8382653cfbbcc243d23",
+          "name": "sheep-accept-b698a462-0ac9-4fb8-9454-f2db98c809cd",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/acceptance/sheep-accept-ec3a98b8-1242-4a1f-88c9-1372e4a53c7d/receipt.json",
+          "sha256": "66e6244b45ec48835a64a77dfdaac6de0df59f5e460ac25970449bf5d13e0f15",
+          "name": "sheep-accept-ec3a98b8-1242-4a1f-88c9-1372e4a53c7d",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-0AQ8eB/receipt.json",
+          "sha256": "dcd918d5afe5da53af99d452ca5cfc258f97d447272d4463be7c21743a01d5e8",
+          "name": "sheep-55c545df-dbd5-4170-ac2c-5c38114c7066",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-0xnwOU/receipt.json",
+          "sha256": "16ac68176ac06959f4685436ab0d7b7395cbb8a691467572bd3ab72fef435a86",
+          "name": "sheep-750b26a7-b45f-465a-af17-3379ebc672bb",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-BLTe58/receipt.json",
+          "sha256": "29587279cf4818d06b76916ba295392f119582f0c6b0dc15095661e1e0c3f0f0",
+          "name": "sheep-2277003a-f9b5-43da-b432-97752137d135",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-GJwUlW/receipt.json",
+          "sha256": "fcd48df506fc31a08e8563b3e3aa665e579ae63743beea842b3c687d16525508",
+          "name": "sheep-f19b0aa9-2872-40bc-8aee-17c9682eb337",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-PFLxOO/receipt.json",
+          "sha256": "b6a0a97cdc53931eec8b0cd42c7f7c0932beebd498b734c40c2abe9ec374da55",
+          "name": "sheep-a9dfb958-0d46-4e99-a32b-5a45faaa3d56",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-QSHAEU/receipt.json",
+          "sha256": "fc8d35bbb7ce6087a5863d26880fb11dd11627207b638853e0b8175135099136",
+          "name": "sheep-05294fdb-aab5-476f-823f-f0854b3bea84",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-QmiK4I/receipt.json",
+          "sha256": "305acb6d5f8eaa3605be95c8fb8f288c91b7d632bcb4d9d332ff189c9144379e",
+          "name": "sheep-90d23f84-e8ce-47d0-a801-6afb6aae297d",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-U1iqSl/receipt.json",
+          "sha256": "2d05e9acafa995b7c02757b12d11df3e08825cc90ebdc6392d0fe85bd8bb209e",
+          "name": "sheep-38dbd7dd-5d62-4862-a79d-1b7bc23b4e3c",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-XCwWlD/receipt.json",
+          "sha256": "17dc57a8fdd8fb066fb370020ad4228655403b5d31dfbca4aabb8619397831f9",
+          "name": "sheep-9c08297c-bb74-42e8-bcab-51b7936e8560",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-XSxxep/receipt.json",
+          "sha256": "9ac9264b73d34757bc183dee3898d99121e0cf723a6a911f7f1dd141cf7240a3",
+          "name": "sheep-57ad8031-9790-4e8d-ba53-2a25e7ca13ed",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-bycMlG/receipt.json",
+          "sha256": "4315375ae457c4a03c1f0a5b767ac02b4b01aeb7ccd1e7661bac706d0afd10de",
+          "name": "sheep-b5cc310f-e002-489a-acf0-efa380814d11",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-lSTQ7f/receipt.json",
+          "sha256": "7f113f0b3b66025af035765df25ae94f7cb62f8f69ec92d5fbf873d7ee68c996",
+          "name": "sheep-53cfa6f1-2e42-4d68-a805-57ea93d73d36",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-mbog1x/receipt.json",
+          "sha256": "322be71ce6423f002e19b27697d199d3eb7f62c1aa60aed664b8560cf9b10f22",
+          "name": "sheep-c2cb75e4-73bf-4d46-ac83-beff99bb8195",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-oP37Lz/receipt.json",
+          "sha256": "ff08e8d95a070fa6ca80d56f5fd515af791f7ef4a63ec6ba93451174a27d4efe",
+          "name": "sheep-806e562c-4968-451a-8d26-d30d2262858e",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-sKhFeL/receipt.json",
+          "sha256": "4eca34c696211ca429864ebf44340d49f16daeb085aeb359fbc3a4df3d1e0503",
+          "name": "sheep-fb2c6fec-3fe4-4235-8257-7736bd3ce2ca",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-scO0Ua/receipt.json",
+          "sha256": "194425c36f49211a131a013cf4acb24f74f46868a08acb5386ba8677195b33af",
+          "name": "sheep-39721a4e-7012-4e19-a2a8-e96200d3a654",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-tM3F3Y/receipt.json",
+          "sha256": "5d04b71b8885cc0620d3cd0946fdc4c967432ae533f5d2f23271056df62d1496",
+          "name": "sheep-0fe2e3a4-9a89-4858-bbd9-62f838d5121b",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-semantic-finish-20260910/transcripts/sheep-docker-call-tgDgeI/receipt.json",
+          "sha256": "5815bd693a184549bfbd09994849b22b11cba1175b546df04ba08a78a550e0f6",
+          "name": "sheep-7810423a-c134-4ca7-a357-220c5ba01794",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        }
+      ]
+    },
+    {
+      "label": "staged-after-fixes",
+      "kind": "mechanism",
+      "directory": ".sheep/docker-goal-staged-finish-20260910",
+      "reportSha256": "5f964f85f0c8c2a1774d928d5abc67e2984bb7daf95db966bbaead1f2bde2259",
+      "success": true,
+      "configuration": {
+        "runtime": "docker-agent",
+        "workerTools": "local",
+        "maxTokensPerCall": 60000,
+        "method": "sheep",
+        "family": "staged",
+        "groups": 1,
+        "workers": 4,
+        "concurrency": 2,
+        "maxCredits": 5,
+        "lunaReservation": 0.5,
+        "astraReservation": 15,
+        "maxCalls": 48,
+        "timeoutMs": 240000,
+        "maxAttempts": 3,
+        "maxReadCalls": 2,
+        "maxMetaCalls": 0,
+        "workerModel": "gpt-5.6-luna",
+        "metaModel": "gpt-6-astra",
+        "memoryLimit": 4
+      },
+      "progress": {
+        "complete": true,
+        "expectedStages": 3,
+        "stages": [
+          {
+            "stage": 0,
+            "success": true,
+            "qualityPass": true,
+            "protocolClean": true
+          },
+          {
+            "stage": 1,
+            "success": true,
+            "qualityPass": true,
+            "protocolClean": true
+          },
+          {
+            "stage": 2,
+            "success": true,
+            "qualityPass": true,
+            "protocolClean": true
+          }
+        ],
+        "calls": 28,
+        "lowerCalls": 28,
+        "upperCalls": 0,
+        "readCalls": 12,
+        "committedTargets": [
+          "domains/domain-01/ingest.mjs",
+          "domains/domain-01/window.mjs",
+          "domains/domain-01/aggregate.mjs",
+          "domains/domain-01/persist.mjs",
+          "domains/domain-01/cache.mjs",
+          "domains/domain-01/report.mjs"
+        ],
+        "unknownUsageCalls": 0,
+        "terminationReason": "completed"
+      },
+      "stages": [
+        {
+          "stage": 0,
+          "success": true,
+          "qualityPass": true,
+          "protocolClean": true,
+          "readCalls": 12,
+          "patchAttempts": {
+            "domains/domain-01/window.mjs": 1,
+            "domains/domain-01/ingest.mjs": 1,
+            "domains/domain-01/persist.mjs": 1,
+            "domains/domain-01/aggregate.mjs": 1,
+            "domains/domain-01/cache.mjs": 1,
+            "domains/domain-01/report.mjs": 1
+          }
+        },
+        {
+          "stage": 1,
+          "success": true,
+          "qualityPass": true,
+          "protocolClean": true,
+          "readCalls": 0,
+          "patchAttempts": {
+            "domains/domain-01/ingest.mjs": 1,
+            "domains/domain-01/window.mjs": 1,
+            "domains/domain-01/aggregate.mjs": 1,
+            "domains/domain-01/persist.mjs": 1,
+            "domains/domain-01/cache.mjs": 1
+          }
+        },
+        {
+          "stage": 2,
+          "success": true,
+          "qualityPass": true,
+          "protocolClean": true,
+          "readCalls": 0,
+          "patchAttempts": {
+            "domains/domain-01/ingest.mjs": 1,
+            "domains/domain-01/window.mjs": 1,
+            "domains/domain-01/aggregate.mjs": 1,
+            "domains/domain-01/persist.mjs": 1,
+            "domains/domain-01/cache.mjs": 1
+          }
+        }
+      ],
+      "discovery": [
+        {
+          "stage": 0,
+          "callId": "call-3",
+          "target": "domains/domain-01/ingest.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-4",
+          "target": "domains/domain-01/window.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-6",
+          "target": "domains/domain-01/window.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-5",
+          "target": "domains/domain-01/ingest.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-10",
+          "target": "domains/domain-01/persist.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-9",
+          "target": "domains/domain-01/aggregate.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-12",
+          "target": "domains/domain-01/persist.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-11",
+          "target": "domains/domain-01/aggregate.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-15",
+          "target": "domains/domain-01/cache.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-16",
+          "target": "domains/domain-01/report.mjs",
+          "provider": "config/domain-registry.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-17",
+          "target": "domains/domain-01/cache.mjs",
+          "provider": "policies/policy-003.json"
+        },
+        {
+          "stage": 0,
+          "callId": "call-18",
+          "target": "domains/domain-01/report.mjs",
+          "provider": "policies/policy-003.json"
+        }
+      ],
+      "calls": [
+        {
+          "id": "call-1",
+          "sha256": "d90a4415182c05e88e6a5274319e3ec09c58525127db5295ccb02fdfc80b1924",
+          "target": "domains/domain-01/ingest.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "lib/decode.mjs"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-2",
+          "sha256": "13d1665010635a739a3237f10f13cba00f7f96a30a6ab8b2ddb9f469c9998153",
+          "target": "domains/domain-01/window.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-3",
+          "sha256": "cc166472cce35cedaf62c53f9c597397b5ce89f288eb28cae4a1b08f6aae1e1d",
+          "target": "domains/domain-01/ingest.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "lib/decode.mjs"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-4",
+          "sha256": "c3bc29363dab4f29debf2080cd9e7e299cc167d438e6be8bf4c93b96c3c00c0d",
+          "target": "domains/domain-01/window.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-5",
+          "sha256": "ee0b76a45e3df1d9ae42094ed9aa9ba113f2a0d217a9185a5c8d574de07d1274",
+          "target": "domains/domain-01/ingest.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json",
+            "lib/decode.mjs"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-6",
+          "sha256": "da3646da5dfdd933c82d364b539fa0d1b72f00ca1ecebe2bbcdf7fb115afee7e",
+          "target": "domains/domain-01/window.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-7",
+          "sha256": "2a02d0e0948ef13c927a2a4675dca8224d64f9ac53d8a6f1d2e97c0a48e9e73c",
+          "target": "domains/domain-01/aggregate.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-8",
+          "sha256": "cc9530f878449806eed419f6a699f6710c8469a68723e39007095ba9eee0c34a",
+          "target": "domains/domain-01/persist.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-9",
+          "sha256": "030fd2ea31fad35c2908803a5d99d310e26ed81239c8ce7ceff61793ffe8343e",
+          "target": "domains/domain-01/aggregate.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-10",
+          "sha256": "105299179d9fcf7fef681fd5b9be98b11577de20298266a537fd1cfcdd598aea",
+          "target": "domains/domain-01/persist.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-11",
+          "sha256": "60fa9e88fa6946c4c623e749b7707b955ac8f0ae13cc629c5e311c612e40b380",
+          "target": "domains/domain-01/aggregate.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "write_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-12",
+          "sha256": "e591ba6106f13d85554cd5d46fbd8fd17dfa9aca9d44765e81e950391e9db5f8",
+          "target": "domains/domain-01/persist.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-13",
+          "sha256": "77e7f6175e13ffb75fa3c7f5a3e924bd12625c826c453a0298579925fe050bb1",
+          "target": "domains/domain-01/cache.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-14",
+          "sha256": "b5c97279a9df6c930a1bd63929729a22d57297bf70bac2c56aa7716850dc9bf4",
+          "target": "domains/domain-01/report.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-15",
+          "sha256": "b7d1d6c37b937560a4e8913839c7089d48ff0da060b405d2ca7ec94732f56baf",
+          "target": "domains/domain-01/cache.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-16",
+          "sha256": "8f45dd76dc20bd22786fd8c65a7b1ac85b1700e0b02f4acc6027f4ae2917999c",
+          "target": "domains/domain-01/report.mjs",
+          "stage": 0,
+          "outcome": "read-requested",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json"
+          ],
+          "tools": {
+            "calls": 1,
+            "byTool": {
+              "__structured_output__": 1
+            },
+            "responded": 1,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-17",
+          "sha256": "d703f7e1a74485464a6e49aaddd1f5440c10bec5d99383a71621c90e717871aa",
+          "target": "domains/domain-01/cache.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-18",
+          "sha256": "7155992a0a10a9f927f77cc8d5a6248e0beaebbcfd9a4c7f58fc26493d31dd00",
+          "target": "domains/domain-01/report.mjs",
+          "stage": 0,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-25",
+          "sha256": "22ad913cf30e773159bfc93bef8702a617b3eaff96e10252978a645fef6b566e",
+          "target": "domains/domain-01/ingest.mjs",
+          "stage": 1,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json",
+            "lib/decode.mjs"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-26",
+          "sha256": "0f9dc9ef8d91fdd07f6ad82d1a0ca580f88a2d5466d107ff5b25913477e48de1",
+          "target": "domains/domain-01/window.mjs",
+          "stage": 1,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-27",
+          "sha256": "0d29436b661c387a682f523fa114929446ed388074a09605ce889a044b15c1a1",
+          "target": "domains/domain-01/aggregate.mjs",
+          "stage": 1,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-28",
+          "sha256": "acf60ccb6a305b82128c342fe8c50377396d72512fa76e1ec39b018f4dee597a",
+          "target": "domains/domain-01/persist.mjs",
+          "stage": 1,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-29",
+          "sha256": "8e6d5a958eb15cadf6af2f321f4e2e8425c3bc8878c0adb26e71a93fcf2277c7",
+          "target": "domains/domain-01/cache.mjs",
+          "stage": 1,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-36",
+          "sha256": "a880bf453aacfe6aaf21dff1e7c353ca3c9c33d1303a261a50b696a7e6778333",
+          "target": "domains/domain-01/ingest.mjs",
+          "stage": 2,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json",
+            "lib/decode.mjs"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-37",
+          "sha256": "cc66a10fe2bb80ee1344101ffc90a4a31f22e60728299e1596d65d59fa6b83d1",
+          "target": "domains/domain-01/window.mjs",
+          "stage": 2,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-38",
+          "sha256": "68a6a6bd08798c680fca64321f846b30181e3ed94225c28ef3300b9eb8c6c22b",
+          "target": "domains/domain-01/aggregate.mjs",
+          "stage": 2,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "write_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-39",
+          "sha256": "e4ac1fcf5371d9414ecbbc00dfad5053b0d837f048916ca8e4770cacc1510800",
+          "target": "domains/domain-01/persist.mjs",
+          "stage": 2,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        },
+        {
+          "id": "call-40",
+          "sha256": "fd9a115594bf3f7ebd8662b9427e56437b2c5ebaf07881a7e44fdbca99cbbac1",
+          "target": "domains/domain-01/cache.mjs",
+          "stage": 2,
+          "outcome": "committed",
+          "requestedModel": "gpt-5.6-luna",
+          "usageCompleteness": "complete",
+          "cleanupSucceeded": true,
+          "exitCode": 0,
+          "timedOut": false,
+          "currentPublicInputsVerified": [
+            "docs/event-contract.md",
+            "config/domain-registry.json",
+            "policies/policy-003.json"
+          ],
+          "tools": {
+            "calls": 3,
+            "byTool": {
+              "edit_file": 1,
+              "check_local": 1,
+              "__structured_output__": 1
+            },
+            "responded": 3,
+            "pending": [],
+            "errors": [],
+            "structuredOutputDelivered": true
+          }
+        }
+      ],
+      "budget": {
+        "maxCredits": 5,
+        "observedCredits": 0.9855710000000001,
+        "unknownUsageCalls": 0,
+        "activeReservations": 0,
+        "exceeded": false,
+        "settledCalls": 28
+      },
+      "vmCount": 59,
+      "allVmsCleaned": true,
+      "vms": [
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-006a4bb7-5f82-437a-afc1-d8d10fc0025c/receipt.json",
+          "sha256": "4ad56d19cc092e7b3e9bf412cd01d2c509a47ea78ee9a159be8ee4f4e2bbf4d4",
+          "name": "sheep-accept-006a4bb7-5f82-437a-afc1-d8d10fc0025c",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-1a75396b-9182-4baa-9fc0-5861b52605e5/receipt.json",
+          "sha256": "89469bb9fe7aba5f8bca20c7bb60c7d448ddc58ea605cad5eb9bc303dec63027",
+          "name": "sheep-accept-1a75396b-9182-4baa-9fc0-5861b52605e5",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-1c416db3-3a1a-454a-bb5a-037fcb27624a/receipt.json",
+          "sha256": "e67588ed525666507701fe04f18e3a850a6f35472a05e26ee2d1e709c5baf593",
+          "name": "sheep-accept-1c416db3-3a1a-454a-bb5a-037fcb27624a",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-25674984-2f0f-4bdc-8238-da1c618d52f6/receipt.json",
+          "sha256": "a333874be6e935393299e5ce57672f14586506f02eb75d07fb36f2a57774627f",
+          "name": "sheep-accept-25674984-2f0f-4bdc-8238-da1c618d52f6",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-3947ad6d-4f7e-4827-ada3-7f25873d6ebe/receipt.json",
+          "sha256": "35e521748376ea45b8ac757fd9c2c0f34d439f1e398bacf65ebdd880e4d8de35",
+          "name": "sheep-accept-3947ad6d-4f7e-4827-ada3-7f25873d6ebe",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-409032d3-1ea1-459f-8a73-e535058d4df2/receipt.json",
+          "sha256": "388142128318b422d2ff987bc4dad2138216a7a0f37c333f3b53b41c9b0b55bd",
+          "name": "sheep-accept-409032d3-1ea1-459f-8a73-e535058d4df2",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-52fb5e4f-0cee-4758-a3cc-5f8c062fecba/receipt.json",
+          "sha256": "3dec221a388ae59f39fe545787efc8ea3f9ad7f6717264b50fa56f4760ae9381",
+          "name": "sheep-accept-52fb5e4f-0cee-4758-a3cc-5f8c062fecba",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-5bb16d97-048e-4927-b821-cf4d5d9389b7/receipt.json",
+          "sha256": "0b2530ee3465086124272fdca3e2b2c360a6b8b20e698a6a976ada5f544ec886",
+          "name": "sheep-accept-5bb16d97-048e-4927-b821-cf4d5d9389b7",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-5e2d07a8-cad3-4c37-9b37-50db969478d8/receipt.json",
+          "sha256": "72879bb633b35c185593d2e1734dda5512b7f9f7c182f14ba8888dec074f6970",
+          "name": "sheep-accept-5e2d07a8-cad3-4c37-9b37-50db969478d8",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-5f596b77-71bd-4d2f-89ca-b52e5fc9a3b9/receipt.json",
+          "sha256": "ee950d46317a15ec4fcb6ffab23727287d71dab4dd30e70ee0b8a040e8cf9152",
+          "name": "sheep-accept-5f596b77-71bd-4d2f-89ca-b52e5fc9a3b9",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-62af8fce-273a-4931-a378-ef605d5ac48a/receipt.json",
+          "sha256": "6dd64aeee39d69234b535e4be6cb3bfa5bcf07f34bf1a660b74201dec19e5e08",
+          "name": "sheep-accept-62af8fce-273a-4931-a378-ef605d5ac48a",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-6453a843-8e78-48e7-b7e4-61f406cd642f/receipt.json",
+          "sha256": "b4095d0e68c9e4439b408538c5018743582df6c1a488083488ac23207003c37b",
+          "name": "sheep-accept-6453a843-8e78-48e7-b7e4-61f406cd642f",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-663b990f-2749-4ec1-a389-b4fe3cee467b/receipt.json",
+          "sha256": "cf39656646f2f9114eaaafe0f0d709081ed4f1729aeb7d4e42f5563c0c0af98d",
+          "name": "sheep-accept-663b990f-2749-4ec1-a389-b4fe3cee467b",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-6aa043c7-ad73-49d1-b5c3-2bc709dbf11e/receipt.json",
+          "sha256": "b789fd89b9b72dacac27e67a5a1f26a84ad3196738424b3c540efd406e89ee3c",
+          "name": "sheep-accept-6aa043c7-ad73-49d1-b5c3-2bc709dbf11e",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-72024546-c996-4977-b85b-78e0e068a105/receipt.json",
+          "sha256": "882a95923bb3d6b9a2a626f3fe56968aba5ce55a53755896202888012dd24ca0",
+          "name": "sheep-accept-72024546-c996-4977-b85b-78e0e068a105",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-767fca64-546d-4288-b54f-2cff94d16656/receipt.json",
+          "sha256": "5f777a2c5ee88beffcd67394d96f7bfc11ed8fa6448ad169b0afbc4bafd7b763",
+          "name": "sheep-accept-767fca64-546d-4288-b54f-2cff94d16656",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-7e1d740d-8189-4cc0-a11d-b1b96d5ef2c2/receipt.json",
+          "sha256": "2e80301cadda9a649160888669b0285509fa6ec760fbc234362bcfecc03fc0bf",
+          "name": "sheep-accept-7e1d740d-8189-4cc0-a11d-b1b96d5ef2c2",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-9b8919c9-986c-48d4-8d67-9c36f7a06db1/receipt.json",
+          "sha256": "058ecc78cc22a2e6d41915879e15597975346657bcff7af296223123d1706a85",
+          "name": "sheep-accept-9b8919c9-986c-48d4-8d67-9c36f7a06db1",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-9be1b548-3654-490d-ac70-edfaa020e8f1/receipt.json",
+          "sha256": "499968291521c353037ac388f2eda842556199d0ac8802be32b1db316245e59c",
+          "name": "sheep-accept-9be1b548-3654-490d-ac70-edfaa020e8f1",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-be49892e-287c-4a2e-bd78-a9f7f1ffbecc/receipt.json",
+          "sha256": "66e73d07aca8a68408b38a125ed1476597bcaf550548ffe7f79512a3507db366",
+          "name": "sheep-accept-be49892e-287c-4a2e-bd78-a9f7f1ffbecc",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-c2ab9377-cd58-453b-846c-6aa55a0db0a2/receipt.json",
+          "sha256": "2f4852fc33ad36dbe53de23666a9ac2d2a1712bb2d06c5d6c694f7d91469014d",
+          "name": "sheep-accept-c2ab9377-cd58-453b-846c-6aa55a0db0a2",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-c603b414-5d78-4449-8973-33988388c0d1/receipt.json",
+          "sha256": "2ebc8712508e24d9bf20caa9147c270cb71f597bd1b02cbb4f2450f107787d03",
+          "name": "sheep-accept-c603b414-5d78-4449-8973-33988388c0d1",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-ca2130c0-7ce7-4a2d-bb15-c55e7992600c/receipt.json",
+          "sha256": "5484de5c4f7ecfec4a19bde4c5c93b85546769096a3eec74906d15594a8f48d0",
+          "name": "sheep-accept-ca2130c0-7ce7-4a2d-bb15-c55e7992600c",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-ca7798c6-49b9-4699-be94-2412e0a22ecd/receipt.json",
+          "sha256": "03f2a134e70e89ce6f48f5394d134709e326079404fabbf156436e48331c5270",
+          "name": "sheep-accept-ca7798c6-49b9-4699-be94-2412e0a22ecd",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-cf82445a-012c-46cb-b633-316d2c2fbffa/receipt.json",
+          "sha256": "fc19e5aab4d7d84214676c5d0300aca3d36bd1f5d97e6b6fd34eea8d7ed1924b",
+          "name": "sheep-accept-cf82445a-012c-46cb-b633-316d2c2fbffa",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-d3fe8f7f-899a-45a1-a4b4-e64cee7dc81c/receipt.json",
+          "sha256": "63e37db8377eea6c2b343d6b21f2d8ac963d7d2c782989f4e677ca7863b0553a",
+          "name": "sheep-accept-d3fe8f7f-899a-45a1-a4b4-e64cee7dc81c",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-d4b4444a-3cf3-4f13-973a-a5a93036f915/receipt.json",
+          "sha256": "3e34c11d9b137fb35c522dab7495fe96b440a759e4e2f7c200c152b56ec6115f",
+          "name": "sheep-accept-d4b4444a-3cf3-4f13-973a-a5a93036f915",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-e9e5ac71-586d-4feb-87bd-b2c63950d1f1/receipt.json",
+          "sha256": "a8bb5c5ef21cb842afde229805e067f98959e37728043c2687977080889da949",
+          "name": "sheep-accept-e9e5ac71-586d-4feb-87bd-b2c63950d1f1",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-edaa4bb7-6dda-46fb-9208-33b0d5275b9b/receipt.json",
+          "sha256": "22c52f2097bb3272eb12f02e2d7435239911bff19fce50623c2e8cc6048696b9",
+          "name": "sheep-accept-edaa4bb7-6dda-46fb-9208-33b0d5275b9b",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-f78f0a86-f4ae-4cf8-a241-c080f3de78fe/receipt.json",
+          "sha256": "18a0f9c01a8c2aa3c9df13a68a094a104fba78a4bccd491e2371cf3314a2deef",
+          "name": "sheep-accept-f78f0a86-f4ae-4cf8-a241-c080f3de78fe",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/acceptance/sheep-accept-f7ca9e0e-e09e-4fe7-a7aa-b967af1f3b0c/receipt.json",
+          "sha256": "3e04e05f1a4e71be55b388c8415ca5c9e9baab77730086428902b4551c9f47a6",
+          "name": "sheep-accept-f7ca9e0e-e09e-4fe7-a7aa-b967af1f3b0c",
+          "kind": "acceptance",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-1ArFjw/receipt.json",
+          "sha256": "a1300a2a595881c7f4ccc064e8fc37bf7292f6b24decc797ef94a9bb30d7ceec",
+          "name": "sheep-4bc6e161-6ac5-4029-931f-fcccfd5ee82f",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-1MBeyx/receipt.json",
+          "sha256": "548daf4bf06f16eeae85310117a8a65379ae766b3816d7f1b3019adddde87408",
+          "name": "sheep-bcd5e870-c716-432b-9ddf-56e429a5ebc2",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-28LiEy/receipt.json",
+          "sha256": "5be86bef33ab01efa51a66b0ea331f70567e62d32735572d9b738b25dee8a610",
+          "name": "sheep-8c03b12f-7557-463d-886b-2c0369c5ee53",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-4EpaPj/receipt.json",
+          "sha256": "b4d3403cab138c5974a3d9b2b862e36204275c0d47f138170b616566ed0445a1",
+          "name": "sheep-db2a3999-cc52-492e-8c1b-a43241dd0e82",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-4jyeNk/receipt.json",
+          "sha256": "1b00606355b09fbb1e90d468bfe2f2709f18a9397074cfe53213d7c270565d0c",
+          "name": "sheep-367965ac-5156-4232-bf45-a7955829de42",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-4lCS5W/receipt.json",
+          "sha256": "140cf2ce2929e1b13291ebe147cde42a36a24dbb35a4f42d4c7d5d417091bef2",
+          "name": "sheep-fe32d9d0-e54c-4c95-9b05-e3e562c5a7fc",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-67GTXs/receipt.json",
+          "sha256": "3ce5fbc96395b1901b7dc87ad3686a81dea98acadc09e3a9b48a85ac02d8c167",
+          "name": "sheep-ec055fe8-1260-417b-b5a6-218984535c84",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-7CAKT6/receipt.json",
+          "sha256": "54b50ce27b2dda4e5dcad6271aa7106c7ec903fac7c71c7c4949031c0cee1785",
+          "name": "sheep-e23473b5-8ed0-47a0-b25f-fc244c05a00a",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-7P59yu/receipt.json",
+          "sha256": "e0726bf19b437cb540e2e214f20688daf75c0c698600d60d67c0787ab0c2c5f2",
+          "name": "sheep-46e1a13f-a6df-4774-8c9b-8251e55984c9",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-8ha8fn/receipt.json",
+          "sha256": "54cb586ef2ca7a52157cfcca83cbaa30a1ca7dd386a6de6b131efaa516d22a5d",
+          "name": "sheep-a181bcfb-ce73-4a64-bba9-c1db1965b720",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-DRwE9U/receipt.json",
+          "sha256": "46321e1a7dea4c98b2382d4aa3208a3249e331136ba27614107069806ad95e50",
+          "name": "sheep-fdccfea7-6675-4451-9030-f4eed6196ebe",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-Dn1lZK/receipt.json",
+          "sha256": "00dc414c649566168c0d980b7a1cadc516b57e87c17667cf6d4106962fbbd2be",
+          "name": "sheep-6bbdf23c-c989-4d53-9c88-cdf944c81307",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-FA1Vw0/receipt.json",
+          "sha256": "859204aa21b1cdb9a7d5046e9bf5b68346f203c5df60e4c2c23968b9735d6a65",
+          "name": "sheep-3ce00b17-98c4-4ea1-92b6-46e99e30a5ad",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-FT7WUl/receipt.json",
+          "sha256": "1c14fab278d09ccf82fa83a9f0f400a3a9aebd4a16ac1c3bb1f99d3dbea0b5d7",
+          "name": "sheep-2ce2a09e-ca58-4ef3-af34-7cfb1f9bc0e2",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-IkMYko/receipt.json",
+          "sha256": "9b93abeb6634e59ad5aae7b66b54156255a450ee3aaf522b7ba324add348f5c6",
+          "name": "sheep-e8bb8dc7-beab-4e22-8fb2-39ce29109491",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-IstqTv/receipt.json",
+          "sha256": "31711ae9d952bb60515ef3d8bfcd9c0ae3a7012e4631918f31c26a8992563b56",
+          "name": "sheep-bf18027e-d6bb-4698-9749-284eb575f3fb",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-MKXVIk/receipt.json",
+          "sha256": "2d31dd08c945a0c0b417298bdd64baff1617eb892af986662be9bdc92ec31b58",
+          "name": "sheep-af7eec98-e07f-484d-af2e-c67348101e17",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-TVA7kp/receipt.json",
+          "sha256": "e28f88b37fbe49d1f698db228dd5ff45e6b9c66a62ec295877cfafd794c5e040",
+          "name": "sheep-ab9e9f2a-d642-42c1-907e-cc47a2f2b970",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-U1224j/receipt.json",
+          "sha256": "c880bc095286f86025221f1e374b9bbd927eda3ddfb6e26ce17100fa6bcb163f",
+          "name": "sheep-f92b3aa1-33c6-4386-8518-eebefdb3f3e3",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-UGOsnt/receipt.json",
+          "sha256": "29a605a7895cfd2ae469940812b618c6a403cab2c5cd77e88dff8a426e18b8c5",
+          "name": "sheep-741c89cb-e91b-4fc8-8909-15217e8799f8",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-Vdn4Kh/receipt.json",
+          "sha256": "d281906dc5090914cad2cd97e3dbbc16be6fa5a93823a0e0cc0a5d923a86c02b",
+          "name": "sheep-1b64ed8d-c585-4cef-8808-c1d0f6c2f4b8",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-WfNQ2U/receipt.json",
+          "sha256": "c125b5eec3794f2bf9a233f6df4de72265250d9736e465d40dd1bfb3445ac053",
+          "name": "sheep-f996d254-7c57-4b8a-ae82-60cf6b2391ff",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-ZF6fHV/receipt.json",
+          "sha256": "b755bf22adebd3501a42357dc14f3388c92f94175b45d7f568484e2fa1eef321",
+          "name": "sheep-2c9a7165-e1c8-4ed4-ba90-f8784455ed38",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-fcBzdi/receipt.json",
+          "sha256": "f0adaf35fddc3eb86ef6b6449d8f0a2c78d712c935620e3f6443599d3ba6e5e4",
+          "name": "sheep-8844aab2-c370-4b2c-a6b8-8a1a6ecc76a9",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-jQXeGd/receipt.json",
+          "sha256": "e5bb0d9be2470c5ef7b25c54bec81c499e1d5d7f6fae556267e0a090e1a0369c",
+          "name": "sheep-8339eb3f-0bda-424e-8dda-072e5014852a",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-v3JWpc/receipt.json",
+          "sha256": "aa00a8c98ce5430d3376a89c8a7ce8e35ac0740907da35e700c9506cfab9d7cf",
+          "name": "sheep-06a4931d-ac30-449c-949e-e60e1a210306",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-vkPQd4/receipt.json",
+          "sha256": "e1cffe114bc868ee2be3e1e7873d12042bf622cc691f063840442f8d6319955e",
+          "name": "sheep-a69009e0-70c9-4f01-9793-e93fbff9bbc9",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        },
+        {
+          "path": ".sheep/docker-goal-staged-finish-20260910/transcripts/sheep-docker-call-x3gzzK/receipt.json",
+          "sha256": "3246df9d9a5dff4e8e1c7e1ff927c223848ff6c86ce37d6974d2bd4455ac7dbc",
+          "name": "sheep-f781fc59-fdbd-4db9-8c5f-f7c95b1aca39",
+          "kind": "worker",
+          "cleanupSucceeded": true,
+          "failed": false
+        }
+      ]
+    }
+  ],
+  "adopted": [
+    {
+      "path": "scripts/lib/docker-tool-summary.mjs",
+      "sha256": "6559c14a6301a43187db6ba225726c38add548e2f96fe54fb84985b93d2a87af",
+      "parentBodyEdits": 0
+    },
+    {
+      "path": "scripts/lib/mechanism-progress.mjs",
+      "sha256": "6a5c9673aa4043b3ea679dbc59dfd409fbae5450f26c55cc2e0fed79470cc03a",
+      "parentBodyEdits": 0
+    }
+  ],
+  "sources": [
+    {
+      "path": "src/docker-agent-worker.ts",
+      "sha256": "fa3d049548da99cebfdb687f09d080256b6ef35c86729d0fdcf82471ba3e2617"
+    },
+    {
+      "path": "src/mechanism-run.ts",
+      "sha256": "284f9b0c21ed8f6f0e4c6d077be969ad4caab2deeafdbb74aebeb7bf2df79ed9"
+    },
+    {
+      "path": "src/swarm.ts",
+      "sha256": "6a874c8fd75c7b639e02f075a5506da4f22bc0568d548b708c51aa9e112dae76"
+    },
+    {
+      "path": "experiments/docker-diagnostics-task.ts",
+      "sha256": "c9fe1dfbd92b33a73e44aa526750c90d0d294635ef539a536f387a35fe9c0562"
+    },
+    {
+      "path": "src/docker-fixture-observer.ts",
+      "sha256": "29d410ac57a4452f34de55398dc308803fa67a671fb5b0f4c44f68cc9ee14266"
+    },
+    {
+      "path": "src/mechanism-fixture.ts",
+      "sha256": "c8bb8c3078644cdd78da565f4a57af5bb1d53bb6935a091acc7ee3229979ad3a"
+    },
+    {
+      "path": "src/credit-budget.ts",
+      "sha256": "16ab64ee57e347b45ac069b2314c2d2630936a52bff468d26b916d42b0cb789e"
+    },
+    {
+      "path": "src/cost-estimate.ts",
+      "sha256": "373077fbf77b1372e3a5b66bd229eaf1a148f097d8f57a3b3845b1e756d84bb0"
+    },
+    {
+      "path": "pricing/openai-2026-09-10.json",
+      "sha256": "e25991caebda1b840569e20a8774b11f9f14e95f3b365fe304dade7bf1ba1312"
+    },
+    {
+      "path": "docs/tasks/docker-goal-completion.md",
+      "sha256": "1a0c15bd2e1d70bcf38fbeef2820b07ad20ff7d1fc0fece4b95562cd2731dc5d"
+    },
+    {
+      "path": "scripts/probe-docker-completion.mjs",
+      "sha256": "488ec7e149cb791334842463e0fba2559da742bac19acb09e4d502761c00b391"
+    },
+    {
+      "path": "scripts/swarm-docker-diagnostics.mjs",
+      "sha256": "ace26a67eea53bdee7858ae15261a6af7c51671efeee236ae7b06502c4a2c90f"
+    },
+    {
+      "path": "scripts/summarize-docker-mechanism.mjs",
+      "sha256": "76202577990b2c2a34ce02e43630bae2f34a184e0ac1ffde36cadd0be9abd869"
+    },
+    {
+      "path": "tests/docker-mechanism.test.ts",
+      "sha256": "c81abb2e1fe69919f82e4245db0b63469b44a2b3239296cd52c5c36c766f80a0"
+    },
+    {
+      "path": "tests/docker-diagnostics.test.ts",
+      "sha256": "f5f8b9cc392fb8f6e2ce6ca977bb0b66d337fc35489acd610b9ef5fe7d9d7221"
+    },
+    {
+      "path": "tests/swarm-task.test.ts",
+      "sha256": "761a7969132553c3699fe3134b1f443505ce01f9f2554e54c71c133837fd055b"
+    }
+  ],
+  "finalSandboxList": {
+    "path": ".sheep/docker-goal-sandboxes-final.json",
+    "sha256": "bd19cb4b67ecd854b08d47425ec5a5fcfacff9e2357fa35521035c7c21e2f97c",
+    "value": {
+      "sandboxes": []
+    }
+  },
+  "localGate": {
+    "path": ".sheep/docker-goal-final-check.log",
+    "sha256": "a0599404515279e1aa5cfef1de64a32091fe100fac1e6507fa04690cd0c09b94",
+    "tests": 281,
+    "passed": 281,
+    "referenceSnapshots": 2
+  },
+  "totals": {
+    "modelCalls": 85,
+    "knownCreditsLower": 2.6880590000000004,
+    "unknownUsageCalls": 1,
+    "vms": 141,
+    "uniqueVms": 141,
+    "allVmsCleaned": true
+  },
+  "limitations": [
+    "Standard token-rate credit equivalents, not actual billing. Missing usage stays unknown.",
+    "Fresh synthetic tasks. Overlapping runs are not timing comparisons.",
+    "Raw receipts remain local; hashes identify them."
+  ]
+}

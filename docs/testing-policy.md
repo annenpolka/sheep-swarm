@@ -114,3 +114,5 @@ M3は既知依存の合成taskで、主比較15runと別pilot1run。M4はC=1の�
 CLIの途中errorの後にturn.completedとexit 0が来る回復経路を保持し、出力schemaも検査する。元runは再集計で書き換えず、使用量の復元は生レシートとSHA256を根拠にした別集計へ記録する。
 
 `mechanism`のDocker検査は、3課題・3段階のhost oracleとの一致、負の時刻等の変異、必須import、非同期JSON読取、供給外ファイル拒否を含む。可視bundleの旧版/基準解、未読・旧版policyのケース非公開、選択したreadの先取り禁止、全methodの読取精算・read set・履歴、実差分の権限、最終失敗後の呼出し不在を検査する。上位のtool-less/guidance権限、使用量不明・cleanup失敗・検証基盤障害の受付停止も通常gateに含む。`sandbox:mechanism-probe`はモデルなしで8つの実VMを作成・検査・削除する。実Lunaと通常gateの証拠は[結果](results/docker-agent-mechanism.md)で分ける。
+
+既存swarmの実装課題では、固定した未実装stubの失敗、担当外変更の拒否、返却された2 helperの可視・追加ケース（入力不変、途中/重複tool、未知応答、prototypeに衝突する名前、不完全なstage/budget証拠）を検査する。集計CLIは欠落レシートを無視せず、元runのunknown usageから完了を推定しない。helper本体の作者と、親が書いたfactory・oracle・CLI接続を分けて記録する。

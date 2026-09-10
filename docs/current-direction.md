@@ -113,6 +113,8 @@
 
 次の継続では`compare`の現在の4方式へ同じtoolとoracleを接続し、単独対照をLunaにした。小規模実走と反例検査を受入証拠とし、反復・規模・機構対照の実験とは分ける。SIGKILL後は所有記録を根拠に復帰時だけ資源を回収し、モデルcallや成果物の確定を再開扱いにしない。
 
+完了goalではDocker条件のsemantic 6 moduleとstaged 3段階が実Lunaで完走した。既存runSwarmへ信頼したfixture factoryを渡す接続口を追加し、診断関数2件もLunaが実装・自己修正した。親は固定oracleと接続口を持ち、生成本体は別VMの受入と差分レビュー後にそのまま採用した。[実走と採用記録](results/docker-agent-completion.md)。この小さな実装試行を一般repo対応やswarmの費用優位へ拡張して解釈しない。
+
 ## 見直す条件
 
 - 下位が担当範囲を絞っても作業を完遂できない: 分割、道具、context、モデルの組を見直す。

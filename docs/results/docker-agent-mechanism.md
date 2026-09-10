@@ -1,5 +1,7 @@
 # 機構実験のDocker Agent接続
 
+追記: 後続の完了goalでsemantic全工程とstaged 3段階の実Luna検証を終えた。[完了記録](docker-agent-completion.md)を参照。以下は修正前に停止した時点の記録として保持する。
+
 2026-09-10。`mechanism`にsandbox付きの局所tool・課金付き追加読取・段階別の独立VM採点を接続した。通常275テストと実VMのoracle検査8件は成功。実Lunaは終了tool不履行とusage欠落で停止したため、機構実験の全工程成功は未確認である。
 
 ## 実装した境界

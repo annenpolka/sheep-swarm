@@ -77,6 +77,11 @@ npm run mechanism -- --runtime docker-agent --worker-tools local \
   --max-calls 24 --max-meta-calls 0 --max-credits 3 --luna-reservation 0.5 \
   --max-tokens-per-call 60000 --timeout-ms 240000 \
   --output .sheep/my-docker-mechanism
+npm run mechanism -- --runtime docker-agent --worker-tools local \
+  --family staged --method sheep --groups 1 --workers 4 --concurrency 2 \
+  --max-calls 48 --max-meta-calls 0 --max-credits 5 --luna-reservation 0.5 \
+  --max-tokens-per-call 60000 --timeout-ms 240000 \
+  --output .sheep/my-docker-staged
 ```
 
 `static`・`semantic`・`staged`、群れ・単独Luna・記憶なし・上位なしに対応する。上位介入はtool-lessで共有guidanceだけを編集する。`single-astra`の新規Docker実行は拒否する。単独Lunaは全体context、局所workerは版付きcheckoutを受け取る。既定runtimeは従来のCodex、道具はnone。既存の`mechanism:experiment`の凍結系列や追加予算をDockerへ自動で移さず、今回のDocker runは個別CLIで記録する。
@@ -85,7 +90,26 @@ npm run mechanism -- --runtime docker-agent --worker-tools local \
 
 可視検査VMの入力は同じcheckoutのIDへ限定するため、別domainの未読JSONをruntime importから参照できない。段階を進めると、保持した依存edgeから新しい版をcheckoutし直す。最終検査は全候補を別VMで実行し、成功したstageだけを次へ進める。最終失敗の具体値は結果ファイルだけに保存する。可視テスト成功の自己申告、最終JSONのwrites、選択だけのreadは確定証拠にしない。
 
-`max-credits`は固定価格表によるcredit相当の受付上限、`luna-reservation`はcall予約。追加読取、toolループ内の各推論、再試行、上位を精算する。`max-tokens-per-call`はDocker Agent側のターン間token受付上限で、providerの強制上限ではない。部分usageやcleanup不明、検証基盤障害では後続の受付を止める。実Lunaの機構実験は終了tool不履行とusage欠落で停止しており、全工程成功はまだ確認できていない。[実測と残る検証](results/docker-agent-mechanism.md)を参照。
+`max-credits`は固定価格表によるcredit相当の受付上限、`luna-reservation`はcall予約。追加読取、toolループ内の各推論、再試行、上位を精算する。`max-tokens-per-call`はDocker Agent側のターン間token受付上限で、providerの強制上限ではない。部分usageやcleanup不明、検証基盤障害では後続の受付を止める。実Lunaのsemanticは18call、stagedは28callで完走し、完全usageと全stageの独立採点を確認した。[完了検証](results/docker-agent-completion.md)と[以前の停止記録](results/docker-agent-mechanism.md)を分けている。
+
+local tool時はシステム指示も`__structured_output__`による終了へ統一する。配信されたreadはrunnerが版とともに記録するため、現在の`context.contents`にあるファイルを再要求しない。`requiredReads`と`remainingReadCalls`は現在の状態、過去のエラーやmemoryは履歴として扱う。この説明の追加で固定oracleや回数上限は緩めていない。
+
+## 既存swarmに実装課題を渡す
+
+`runSwarm`の第4引数に、hostが定義する`SwarmTask`（固定IDと`CodeFixture` factory）を渡せる。既存のWorkerPool、版付きcheckout、lease、受入、commitを再利用する。factoryは信頼したhostコードであり、modelのJSONや自由なCLI入力からoracleを差し替える機能ではない。モデルなしの通常gateはobserverを注入して検査する。
+
+```sh
+# 実Lunaを呼ぶ。2 helper、N4/C2、最大8call、上位0、3 credits相当の受付
+npm run swarm:diagnostics
+# 実Lunaを1callだけ呼び、ingest編集・終了tool・独立受入を確認
+npm run sandbox:completion-probe
+# reportの終了形式を検査する場合
+npm run sandbox:completion-probe -- domains/domain-01/report.mjs
+# 保存済みの結果を読むだけ。モデルは呼ばない
+npm run summarize:docker-mechanism -- .sheep/YOUR_RUN/result.json
+```
+
+実装課題は[固定仕様](tasks/docker-goal-completion.md)と`experiments/docker-diagnostics-task.ts`。親がoracleを保持し、担当外や可視テストへの変更を拒否する。戻った本体は全体受入と差分レビューを経てから明示的に取り込む。一般repo全体をmountしたり、未検査のmodel差分を自動適用したりはしない。`swarm:diagnostics`の実装成果は`artifacts.json`、モデルレシートは`call-N.json`、credit相当は`credit-budget.json`へ保存する。
 
 ## 候補をどう採用するか
 

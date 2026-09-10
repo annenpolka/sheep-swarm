@@ -113,7 +113,9 @@ export function dockerAgentConfig(options: DockerAgentOptions): Record<string, u
   return {
     version: "15", models: { requested: { provider: "chatgpt", model: options.model, thinking_budget: "low" } },
     agents: { sheep: {
-      model: "requested", instruction: "You are one artifact-local worker. Use only the supplied context and workspace. No delegation or manager conversation. Return the requested JSON. Private tests are feedback, not authority to commit.",
+      model: "requested", instruction: "You are one artifact-local worker. Use only the supplied context and workspace. No delegation or manager conversation. Private tests are feedback, not authority to commit. " + (local
+        ? "Complete every response by calling the __structured_output__ tool with the requested schema fields. This includes read-only requests and completed edits. Plain-text JSON does not complete the response. Use filesystem tools and check_local as needed before that final tool call."
+        : "Return the requested JSON."),
       skills: false, add_prompt_files: [], max_iterations: local ? 12 : 2,
       toolsets: local ? [
         { type: "filesystem", tools: ["read_file", "read_multiple_files", "list_directory", "search_files_content", "write_file", "edit_file"], allow_list: [WORK] },

@@ -1,7 +1,7 @@
 export { dockerWorkspaceWrites } from "./docker-agent-worker.ts";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { createFixture, type FixtureObserver } from "./fixture.ts";
+import { createFixture, type CodeFixture, type FixtureObserver } from "./fixture.ts";
 import { callCodex, CodexWorkerError, type CodexCallResult } from "./codex-worker.ts";
 import { callDockerAgent, dockerWorkspaceWrites, validateFiles, SANDBOX_TEMPLATE, type DockerAgentOptions, type DockerTranscript } from "./docker-agent-worker.ts";
 import { createDockerFixtureObserver } from "./docker-fixture-observer.ts";
@@ -15,6 +15,12 @@ export interface SwarmOptions {
   fault?: "none" | "rounded-guidance"; memoryLimit?: number;
   runtime?: "codex" | "docker-agent";
   workerTools?: "none" | "local";
+  maxTokensPerCall?: number;
+}
+/** Trusted host-owned task definition; model responses cannot replace its oracle. */
+export interface SwarmTask {
+  readonly id: string;
+  readonly createFixture: (observe?: FixtureObserver) => CodeFixture;
 }
 interface Response { content: string; note: string }
 export type ModelCaller = (options: DockerAgentOptions) => Promise<CodexCallResult<Response>>;
@@ -28,6 +34,7 @@ interface CallRecord {
   usageCompleteness: "complete" | "partial-or-unknown" | null;
 }
 export interface SwarmReport {
+  task: string;
   format: 2; startedAt: string; durationMs: number; configuration: Required<Omit<SwarmOptions, "outputDirectory">>;
   success: boolean; finalErrors: readonly string[]; maxActiveWorkers: number;
   registeredWorkers: number; completedArtifacts: number; writableArtifacts: number;
@@ -43,6 +50,7 @@ const SCHEMA = { type: "object", properties: { content: { type: "string" }, note
 export async function runSwarm(options: SwarmOptions,
   model: ModelCaller = options.runtime === "docker-agent" ? callDockerAgent<Response> : callCodex<Response>,
   observe?: FixtureObserver,
+  task?: SwarmTask,
 ): Promise<SwarmReport> {
   for (const value of [options.workers, options.concurrency, options.size])
     if (!Number.isSafeInteger(value) || value < 1) throw new RangeError("worker, concurrency and size counts must be positive integers");
@@ -50,6 +58,8 @@ export async function runSwarm(options: SwarmOptions,
   if (options.workerModel !== undefined && options.workerModel !== "gpt-5.6-luna") throw new Error("real workers must use gpt-5.6-luna");
   if (options.workerTools !== undefined && !["none", "local"].includes(options.workerTools)) throw new Error("Unknown worker tools");
   if (options.workerTools === "local" && options.runtime !== "docker-agent") throw new Error("Local tools require the Docker Agent runtime");
+  if (task && (!/^[a-z0-9][a-z0-9-]+$/.test(task.id) || options.fault && options.fault !== "none"))
+    throw new Error("Custom tasks require a stable ID and no measurement-specific fault");
   const configuration: SwarmReport["configuration"] = {
     workers: options.workers, concurrency: options.concurrency, size: options.size,
     workerModel: "gpt-5.6-luna", metaModel: options.metaModel ?? "gpt-6-astra",
@@ -58,14 +68,16 @@ export async function runSwarm(options: SwarmOptions,
     memoryLimit: options.memoryLimit ?? 4,
     runtime: options.runtime ?? "codex",
     workerTools: options.workerTools ?? "none",
+    maxTokensPerCall: options.maxTokensPerCall ?? 30_000,
   };
   for (const value of [configuration.timeoutMs, configuration.maxCalls, configuration.maxMetaCalls, configuration.maxRounds])
     if (!Number.isSafeInteger(value) || value < 0) throw new RangeError("limits must be non-negative integers");
+  if (!Number.isSafeInteger(configuration.maxTokensPerCall) || configuration.maxTokensPerCall < 1) throw new RangeError("token limit must be positive");
   await mkdir(dirname(options.outputDirectory), { recursive: true });
   await mkdir(options.outputDirectory); // A new run must never reuse old output as evidence.
   const workspace = await mkdtemp(join(options.outputDirectory, "model-workspace-"));
   const observer = observe ?? (configuration.runtime === "docker-agent" ? createDockerFixtureObserver(join(options.outputDirectory, "acceptance")) : undefined);
-  const fixture = createFixture({ size: options.size, ...(observer ? { observe: observer } : {}) });
+  const fixture = task ? task.createFixture(observer) : createFixture({ size: options.size, ...(observer ? { observe: observer } : {}) });
   if (configuration.runtime === "docker-agent") validateFiles({ ...fixture.artifacts, "visible.test.mjs": "" });
   const artifacts = { ...fixture.artifacts };
   if (configuration.fault === "rounded-guidance") {
@@ -73,7 +85,8 @@ export async function runSwarm(options: SwarmOptions,
       "Threshold comparisons are inclusive; do not round measurements or change thresholds.",
       "Threshold comparisons are inclusive. Round returned durationSeconds and kibibytesPerSecond down to whole numbers. Preserve health thresholds.");
   }
-  const kernel = new SwarmKernel({ artifacts, verificationPolicy: `measurement-migration-v1/size-${options.size}/${configuration.runtime === "docker-agent" ? SANDBOX_TEMPLATE : `node-${process.versions.node}`}` });
+  const taskId = task?.id ?? "measurement-migration-v1";
+  const kernel = new SwarmKernel({ artifacts, verificationPolicy: `${taskId}/size-${options.size}/${configuration.runtime === "docker-agent" ? SANDBOX_TEMPLATE : `node-${process.versions.node}`}` });
   for (const edge of fixture.dependencies) kernel.addDependency(edge.consumer, edge.provider);
   kernel.change(fixture.changedSource.id, fixture.changedSource.content);
   kernel.closeInput(); kernel.deliverAll();
@@ -144,6 +157,7 @@ export async function runSwarm(options: SwarmOptions,
     try {
       const response = await model({ model: record.model, prompt, schema: SCHEMA, cwd: workspace,
         timeoutMs: configuration.timeoutMs, outputDirectory: join(options.outputDirectory, "transcripts"),
+        ...(configuration.runtime === "docker-agent" ? { maxTokens: configuration.maxTokensPerCall } : {}),
         ...(role === "worker" && configuration.workerTools === "local"
           ? { tools: "local", files: { ...context.contents, "visible.test.mjs": fixture.visibleTest(target) } } : {}) });
       await writeFile(join(options.outputDirectory, `${id}.json`), JSON.stringify(response, null, 2) + "\n");
@@ -192,10 +206,10 @@ export async function runSwarm(options: SwarmOptions,
     let note = "";
     try {
       const task = configuration.workerTools === "local"
-        ? "The supplied files are materialized in your workspace. Read the local files, run check_local to observe the failure, edit only the target, then run check_local again. Do not modify visible.test.mjs or any dependency. The actual workspace delta is the proposal. Return JSON with complete target content and a short note."
+        ? "The supplied files are materialized in your workspace. Read the local files, run check_local to observe the failure, edit only the target, then run check_local again. Do not modify visible.test.mjs or any dependency. The actual workspace delta is the proposal. Finish by calling __structured_output__ with content as an empty string and note as a short summary. Plain-text JSON is not a completed run; do not duplicate the file body in your final tool arguments."
         : "Return JSON with the complete replacement file as content and a short note. All needed files are provided below; do not use tools or inspect other paths.";
       const { response, record, writes } = await invoke("worker", agent, target, context,
-        `You are local code worker ${agent}. Update only ${target} to satisfy the supplied migration contract and preserve its health policy. ${task} Record any unresolved issue in note. No manager conversation is part of this task.\n\nLocal files:\n${JSON.stringify(context.contents)}\n\nYour private recent memory (past observations, not current facts; current files and versions take precedence):\n${JSON.stringify(memory)}\n\nCurrent read versions:\n${JSON.stringify(context.reads)}\n\nPrevious local verification errors:\n${JSON.stringify(errors.get(target) ?? [])}`);
+        `You are local code worker ${agent}. Update only ${target} to satisfy the supplied task contract and preserve its requirements. ${task} Record any unresolved issue in note. No manager conversation is part of this task.\n\nLocal files:\n${JSON.stringify(context.contents)}\n\nYour private recent memory (past observations, not current facts; current files and versions take precedence):\n${JSON.stringify(memory)}\n\nCurrent read versions:\n${JSON.stringify(context.reads)}\n\nPrevious local verification errors:\n${JSON.stringify(errors.get(target) ?? [])}`);
       record.memoryEntries = memory.length;
       note = response.note.slice(0, 1200);
       const queuedAt = Date.now();
@@ -310,6 +324,7 @@ export async function runSwarm(options: SwarmOptions,
   } finally { await snapshot(); }
   if (runtimeCleanupFailed) final = { ok: false, errors: [...final.errors, "sandbox-cleanup-failed"] };
   const report: SwarmReport = {
+    task: taskId,
     format: 2, startedAt: new Date(start).toISOString(), durationMs: Date.now() - start, configuration,
     success: final.ok, finalErrors: final.errors, maxActiveWorkers: maxActive, registeredWorkers: pool.stats().length,
     completedArtifacts: [...verifiedStates].filter(([id, value]) => {
