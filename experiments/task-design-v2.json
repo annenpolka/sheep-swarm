@@ -47,13 +47,21 @@
   },
   "controls": [
     "single-luna",
-    "single-astra",
     "independent-luna-candidates-with-visible-selector",
     "same-kernel-without-upper",
     "same-kernel-without-private-memory",
     "equal-total-memory-token-capacity",
     "fair-random-assignment",
     "periodic-upper-management"
+  ],
+  "excludedControls": [
+    {
+      "control": "single-astra",
+      "appliesTo": "future-runs",
+      "authority": "user-request",
+      "reason": "Standalone Astra cost is sufficiently understood; future standalone comparisons use Luna. Selective Astra intervention remains enabled.",
+      "historicalResultsRetained": true
+    }
   ],
   "changeTiming": {
     "primary": "common-stage-acceptance-barrier",

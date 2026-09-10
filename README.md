@@ -72,6 +72,8 @@ npm run mechanism -- --family staged --method sheep --groups 1 --workers 4 --con
 
 `compare` の方式は `single-upper`、`manager-local`、`sheep-fixed`、`sheep-full`。token予約は呼出しの受付制御であり、providerの強制上限ではない。超過・使用量不明は予算付き比較の成功にしない。Sheep-fullが発見するのは実ファイルの静的importと明示された仕様依存であり、任意の意味依存ではない。
 
+今後の単独比較はLunaに統一し、費用の目安を得たAstra単独は新規試行から省く。Astraは群れへの必要時介入で継続する。`mechanism:experiment` はpilot 4条件・main 25条件、旧 `scripts/compare-experiment.mjs` の既定も単独上位を除外する。旧単独方式の実装は過去の再現用に残す。
+
 `mechanism` の方式は `sheep`、`single-luna`、`single-astra`、`no-memory`、`no-upper`。既定30 credits相当の中で、下位・上位・追加読取・再試行を精算する。使用量不明は0とせず停止する。今回の追加N16/32比較は23.729217／100 credits相当、今回の機構実験全体の既知下限は58.395228相当＋使用量不明1呼出し。N16/32の試行費用では上位介入が約半分を占め、Nを増やす明確な利点はまだ見えていない。各1回・合成課題の観測として[結果](docs/results/mechanism-findings.md)を参照する。
 
 価格とクレジットは2026-09-10の公式レートを保存し、キャッシュを含む994呼出しから再計算した。通常taskのSheep-fixedは平均0.540282 credits相当、単体Astraは7.283 credits相当。実際の請求額・Proの利用枠消費とは区別する。実行前の概算は `npm run estimate:cost -- --rates pricing/openai-2026-09-10.json --scenario pricing/planned-run.example.json --output .sheep/planned-cost.json` で試せる。

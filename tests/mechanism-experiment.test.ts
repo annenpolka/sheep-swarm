@@ -22,8 +22,8 @@ async function priorRun(path: string, data: unknown = receipt()) {
   if (data !== null) await writeFile(join(path, "call-1.json"), JSON.stringify(data));
   return result;
 }
-function invoke(path: string, output: string, priors: string[] = []) {
-  return spawnSync(process.execPath, [join(path, "scripts/mechanism-experiment.mjs"), "--mode", "pilot", "--output", output,
+function invoke(path: string, output: string, priors: string[] = [], mode = "pilot") {
+  return spawnSync(process.execPath, [join(path, "scripts/mechanism-experiment.mjs"), "--mode", mode, "--output", output,
     ...priors.flatMap(prior => ["--prior", prior])], { encoding: "utf8", timeout: 15_000 });
 }
 
@@ -58,29 +58,33 @@ await writeFile(join(output, "result.json"), JSON.stringify({ success: !overrun,
   return path;
 }
 
-test("dispatcher includes five development controls, retains prior costs, and freezes exact source bytes", async () => {
+test("new matrices omit standalone Astra, retain prior costs, and freeze exact source bytes", async () => {
   const path = await fixture();
   try {
-    const prior = join(path, "prior"), output = join(path, "out");
+    const prior = join(path, "prior");
     await priorRun(prior);
-    const child = invoke(path, output, [prior]);
-    assert.equal(child.status, 0, child.stderr);
-    const report = JSON.parse(await readFile(join(output, "experiment.json"), "utf8"));
-    assert.equal(report.status, "completed");
-    assert.equal(report.planned.length, 5);
-    assert.equal(report.runs.length, 5);
-    assert.equal(report.activeJob, null);
-    assert.equal(report.observed.calls, 6);
-    assert.ok(Math.abs(report.observed.credits - 9.675) < 1e-10);
-    assert.deepEqual(report.observed.unknown, []);
-    assert.equal(report.planned.filter((job: { method: string }) => job.method.startsWith("single-")).length, 2);
-    const manifest = JSON.parse(await readFile(join(output, "source-manifest.json"), "utf8"));
-    for (const file of manifest) {
-      const contents = await readFile(join(output, "frozen-source", file.path), "utf8");
-      assert.equal(sha(contents), file.sha256);
+    for (const [mode, count, singleCount] of [["pilot", 4, 1], ["main", 25, 3]] as const) {
+      const output = join(path, `out-${mode}`);
+      const child = invoke(path, output, [prior], mode);
+      assert.equal(child.status, 0, child.stderr);
+      const report = JSON.parse(await readFile(join(output, "experiment.json"), "utf8"));
+      assert.equal(report.status, "completed");
+      assert.equal(report.planned.length, count);
+      assert.equal(report.runs.length, count);
+      assert.equal(report.activeJob, null);
+      assert.equal(report.observed.calls, count + 1);
+      assert.ok(Math.abs(report.observed.credits - .185 * (count + 1)) < 1e-10);
+      assert.deepEqual(report.observed.unknown, []);
+      assert.equal(report.planned.some((job: { method: string }) => job.method === "single-astra"), false);
+      assert.equal(report.planned.filter((job: { method: string }) => job.method === "single-luna").length, singleCount);
+      const manifest = JSON.parse(await readFile(join(output, "source-manifest.json"), "utf8"));
+      for (const file of manifest) {
+        const contents = await readFile(join(output, "frozen-source", file.path), "utf8");
+        assert.equal(sha(contents), file.sha256);
+      }
+      assert.notEqual(invoke(path, output, [prior], mode).status, 0);
+      assert.deepEqual(JSON.parse(await readFile(join(output, "experiment.json"), "utf8")), report);
     }
-    assert.notEqual(invoke(path, output, [prior]).status, 0);
-    assert.deepEqual(JSON.parse(await readFile(join(output, "experiment.json"), "utf8")), report);
   } finally { await rm(path, { recursive: true, force: true }); }
 });
 
@@ -122,7 +126,7 @@ test("last-run overrun stops the study instead of being mislabeled completed", a
       { encoding: "utf8", timeout: 15_000, env: { ...process.env, SHEEP_TEST_FINAL_OVERRUN: "yes" } });
     assert.equal(child.status, 1, child.stderr);
     const report = JSON.parse(await readFile(join(output, "experiment.json"), "utf8"));
-    assert.equal(report.runs.length, 5);
+    assert.equal(report.runs.length, 4);
     assert.equal(report.status, "stopped");
     assert.equal(report.stopReason, "per-run-overrun");
     assert.equal(report.activeJob, null);

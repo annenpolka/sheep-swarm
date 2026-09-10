@@ -182,11 +182,11 @@ if (followup) {
   for (const workers of [16, 32]) add("semantic", "sheep", workers, 1);
 } else if (values.mode === "pilot") {
   for (const family of ["static", "semantic", "staged"]) add(family, "sheep", 4, 1, 1);
-  for (const method of ["single-luna", "single-astra"]) add("staged", method, 1, 1, 1);
+  add("staged", "single-luna", 1, 1, 1);
 } else {
   for (const family of ["static", "semantic", "staged"]) {
     for (const workers of [8, 16, 32]) for (const repeat of [1, 2]) add(family, "sheep", workers, repeat);
-    for (const method of ["single-luna", "single-astra"]) add(family, method, 1, 1);
+    add(family, "single-luna", 1, 1);
   }
   for (const method of ["no-memory", "no-upper"]) for (const repeat of [1, 2]) add("staged", method, 16, repeat);
 }

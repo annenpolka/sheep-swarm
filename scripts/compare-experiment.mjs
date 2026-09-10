@@ -7,7 +7,7 @@ import { resolve, join } from "node:path";
 const { values } = parseArgs({ options: { source: { type: "string" }, output: { type: "string" }, methods: { type: "string" } } });
 if (!values.source || !values.output) throw new Error("--source and --output are required");
 const source = resolve(values.source), output = resolve(values.output);
-const methods = values.methods?.split(",") ?? ["single-upper", "manager-local", "sheep-fixed", "sheep-full"];
+const methods = values.methods?.split(",") ?? ["manager-local", "sheep-fixed", "sheep-full"];
 if (!methods.length || methods.some(method => !["single-upper", "manager-local", "sheep-fixed", "sheep-full"].includes(method))) throw new Error("unknown method filter");
 const manifest = JSON.parse(await readFile(join(source, "source-manifest.json"), "utf8"));
 const digest = value => createHash("sha256").update(value).digest("hex");
