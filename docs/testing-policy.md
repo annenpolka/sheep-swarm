@@ -89,6 +89,14 @@ M1では以下のうちcrash/restartを除くin-memoryの性質を確認する�
 
 dispatcherは結果・レシート・保存ソースのhashを確認し、中断や欠落を費用0へ変えない。承認された追加100相当の系列では、元の不明1件を別の履歴に保持し、新たな不明分が出たら再び停止する。元のsrc/価格表の同一性と、追加系列の過去費用の取りこぼしも検査する。実モデルの[結果と未実行条件](results/mechanism-findings.md)はテスト成功と分けて記録する。
 
+## Docker Agent Sandboxのgate
+
+通常`npm run check`にはNDJSON、per-message usage/cache、設定IDと実model証拠の区別、schema・path・出力量・timeout/取消を追加した。DockerやLLMを通常gateの必須依存にはしない。
+
+`npm run sandbox:probe`は実microVMでhostファイル・SSH・外向き通信拒否、timeout後の削除、次のVMへの状態非継承を検査する。別VMの固定oracleで旧実装失敗・基準実装成功・always-empty/null-only変異拒否を検査する。`npm run sandbox:pilot`は実Lunaの局所tool作業と、別VM受入を経たkernel確定。tool-lessの`swarm --runtime docker-agent`は登録4体・C=2で確認した。
+
+モデルの回答と実workspace差分、可視テストと外側oracle、レシートの設定modelとproviderの実model証拠を分ける。Lunaはruntimeの価格catalog上unpricedであり、cost=0を無料と読まない。timeoutの途中usageは既知下限で、未完了推論を含む総費用として集計しない。[実測](results/docker-agent-sandbox.md)に初回失敗と修正後の検証を残す。
+
 ## 現在の実行証拠の範囲
 
 M3は既知依存の合成taskで、主比較15runと別pilot1run。M4はC=1の専用実行系。M5は温度・圧力の別合成task、下位Luna/上位Astra、共通500,000token上限、30,000tokenの受付予約で比較する。単一上位にも増分の局所確定を許し、最終全体受入を共通にする。

@@ -1,0 +1,85 @@
+{
+  "version": "15",
+  "models": {
+    "requested": {
+      "provider": "chatgpt",
+      "model": "gpt-5.6-luna",
+      "thinking_budget": "low"
+    }
+  },
+  "agents": {
+    "sheep": {
+      "model": "requested",
+      "instruction": "You are one artifact-local worker. Use only the supplied context and workspace. No delegation or manager conversation. Return the requested JSON. Private tests are feedback, not authority to commit.",
+      "skills": false,
+      "add_prompt_files": [],
+      "max_iterations": 12,
+      "toolsets": [
+        {
+          "type": "filesystem",
+          "tools": [
+            "read_file",
+            "read_multiple_files",
+            "list_directory",
+            "search_files_content",
+            "write_file",
+            "edit_file"
+          ],
+          "allow_list": [
+            "/home/agent/workspace"
+          ]
+        },
+        {
+          "type": "script",
+          "shell": {
+            "check_local": {
+              "description": "Run the provided local feedback tests",
+              "cmd": "node --test visible.test.mjs",
+              "working_dir": "/home/agent/workspace"
+            }
+          }
+        }
+      ],
+      "structured_output": {
+        "name": "sheep_result",
+        "strict": true,
+        "mode": "tool",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "content",
+            "note"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  },
+  "budget": {
+    "max_tokens": 30000,
+    "max_time": "240000ms"
+  },
+  "permissions": {
+    "allow": [
+      "read_file",
+      "read_multiple_files",
+      "list_directory",
+      "search_files_content",
+      "write_file",
+      "edit_file",
+      "check_local",
+      "__structured_output__"
+    ]
+  },
+  "runtime": {
+    "safety": "restricted"
+  }
+}

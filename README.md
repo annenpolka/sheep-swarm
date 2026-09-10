@@ -22,6 +22,7 @@
 | 継続する設計判断 | [.stratal/brief.md](.stratal/brief.md) |
 | kernelと独立受入テスト | [src/kernel.ts](src/kernel.ts)、[tests/kernel.test.ts](tests/kernel.test.ts) |
 | 実コードfixtureとCodex adapter | [src/fixture.ts](src/fixture.ts)、[src/codex-worker.ts](src/codex-worker.ts) |
+| Docker Agentとmountless microVMの導入 | [導入手順](docs/docker-agent-sandbox.md)、[実測](docs/results/docker-agent-sandbox.md)、[adapter](src/docker-agent-worker.ts) |
 | 実装の進捗と実行証拠 | [docs/execplan.md](docs/execplan.md)、[4体の実測](docs/results/luna-four-worker-pilot.md) |
 | 8・16・32体の反復と誤指示条件 | [規模比較の結果](docs/results/scaling-findings.md) |
 | SQLiteと実process中断・再開 | [src/durable-run.ts](src/durable-run.ts)、[実Luna再開の結果](docs/results/durable-restart.md) |
@@ -57,6 +58,8 @@ npm run demo
 TypeScriptの実行にはNode.jsのtype strippingを使い、型検査は別に `tsc` で行う。[Node.jsの公式説明](https://nodejs.org/api/typescript.html)
 
 追加のruntime npm packageは使わない。実LLM呼出しには認証済みのCodex CLIを使う。下位は利用者指定の `gpt-5.6-luna`、上位の既定値は `gpt-6-astra`。
+
+`swarm --runtime docker-agent`ではDocker Agent v1.137.0＋sbx v0.42.1へ切り替えられる。各呼出しをhost repo未マウントの新規VMで実行し、承認済み認証をhost proxyから注入する。`npm run sandbox:probe`は実VMの隔離検査、`npm run sandbox:pilot`はLunaの局所編集・別VMでの受入・kernel確定を実行する。下位4体・C=2の既存fixtureも5呼出しで成功した。詳細と未対応範囲は[導入手順](docs/docker-agent-sandbox.md)を参照。
 
 ```sh
 npm run swarm -- --workers 4 --concurrency 4 --size 4

@@ -2,6 +2,7 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { createFixture } from "./fixture.ts";
 import { callCodex, CodexWorkerError, type CodexCallOptions, type CodexCallResult } from "./codex-worker.ts";
+import { callDockerAgent } from "./docker-agent-worker.ts";
 import { SwarmKernel, KernelError, type Checkout, type Verdict } from "./kernel.ts";
 import { WorkerPool, type WorkerMemory, type WorkerStats } from "./worker-pool.ts";
 
@@ -10,6 +11,7 @@ export interface SwarmOptions {
   workerModel?: "gpt-5.6-luna"; metaModel?: string; timeoutMs?: number;
   maxCalls?: number; maxMetaCalls?: number; maxRounds?: number;
   fault?: "none" | "rounded-guidance"; memoryLimit?: number;
+  runtime?: "codex" | "docker-agent";
 }
 interface Response { content: string; note: string }
 export type ModelCaller = (options: CodexCallOptions) => Promise<CodexCallResult<Response>>;
@@ -34,7 +36,7 @@ const SCHEMA = { type: "object", properties: { content: { type: "string" }, note
   required: ["content", "note"], additionalProperties: false };
 
 /** A bounded experimental scheduler. Semantic work belongs to the requested models. */
-export async function runSwarm(options: SwarmOptions, model: ModelCaller = callCodex<Response>): Promise<SwarmReport> {
+export async function runSwarm(options: SwarmOptions, model: ModelCaller = options.runtime === "docker-agent" ? callDockerAgent<Response> : callCodex<Response>): Promise<SwarmReport> {
   for (const value of [options.workers, options.concurrency, options.size])
     if (!Number.isSafeInteger(value) || value < 1) throw new RangeError("worker, concurrency and size counts must be positive integers");
   if (options.concurrency > options.workers) throw new RangeError("concurrency must not exceed registered workers");
@@ -45,6 +47,7 @@ export async function runSwarm(options: SwarmOptions, model: ModelCaller = callC
     timeoutMs: options.timeoutMs ?? 120_000, maxCalls: options.maxCalls ?? Math.ceil(options.size * 5),
     maxMetaCalls: options.maxMetaCalls ?? 2, maxRounds: options.maxRounds ?? 12, fault: options.fault ?? "none",
     memoryLimit: options.memoryLimit ?? 4,
+    runtime: options.runtime ?? "codex",
   };
   for (const value of [configuration.timeoutMs, configuration.maxCalls, configuration.maxMetaCalls, configuration.maxRounds])
     if (!Number.isSafeInteger(value) || value < 0) throw new RangeError("limits must be non-negative integers");

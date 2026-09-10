@@ -88,6 +88,8 @@ runtime schema、capability設定、外部副作用broker、複数snapshotのmer
 
 ## 実装で確定した境界
 
+Docker Agent導入後もworkerの作業VMはkernelの権威を持たない。mountless VMへcheckoutから明示した内容だけを投入し、次のcallにsessionや私有filesystemを暗黙継承しない。局所toolは実ファイルを編集し、その全差分を候補として回収する。最終回答のreplacement文字列や可視テストの自己申告は確定証拠にしない。pilotの外側oracleも別の通信拒否VMで実行する。既存swarmへの接続はtool-less caller差替えまでで、一般repoのtool付与は別途設計する。[導入境界](docker-agent-sandbox.md)
+
 実行APIはsrc/kernel.tsのSwarmKernel。checkoutが読取版と根拠epochを保持し、prepare→trusted verifierによるvalidate→commitで候補snapshotと権限を検査する。内容不変の訂正にも根拠epochを使う。依存登録は観測した内容版と根拠epochの両方から追いつく。完了検査のawait中に始まって終わった作業も、遷移世代の変化として拒否する。
 
 上位は現在の仕様・APIと不変な失敗call/validation履歴を読む。修復中consumerの将来の内容に対する永続的な依存へ、過去の失敗観測を変換しない。仕様の訂正自体のread set検査は維持する。受入条件や実行環境の識別子はhostが保持し、上位の仕様変更では書き換えられない。

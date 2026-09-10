@@ -122,6 +122,17 @@ Revisit when:
 - 評価対象の目的が変わる、または実測で指標が目的を捉えていないと分かったとき。
 Status: tentative
 
+### Docker Agentを局所作業runtimeとして導入する
+Authority: Human stated
+Evidence: Stated; 2026-09-10の利用者依頼「この議論をもとに調査・精緻化し、docker-agentをsandbox付きで導入して」。host proxyからChatGPT endpointへ既存Codex認証を使うことも明示承認された。
+Working default:
+- Docker Agent v1.137.0、sbx v0.42.1、digest付きtemplate。mountlessの新規VMに明示したファイルだけを渡す。
+- kernelのauthorityと局所記憶を維持し、上位への相談・Docker Agentのsub_agentsへ置換しない。
+- SSH転送を無効化し、MCP toolを渡さず、ネットワークはChatGPT宛てのみ。実トークンはhost proxyで扱う。
+- 実際のworkspace変更を回収してlease/read set/外側受入で確定する。modelの自己申告との差は保存する。
+Validation: [導入手順](../docs/docker-agent-sandbox.md)と[実測](../docs/results/docker-agent-sandbox.md)。一般repo、pool再利用、並列durability、費用優位は未確認。
+Status: active
+
 ## Open Questions And Discomfort
 
 - 未知の意味依存を何から発見するか。発見費用が局所化の利益を上回らないか。

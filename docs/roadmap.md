@@ -73,6 +73,14 @@ DB選定とschemaは、この段階でruntimeの要件とローカルの互換�
 
 各NでC=8を固定した所要時間は約271/295/274秒。16/32体は上位が各1回介入し、その費用が約半分を占めた。人数だけの優位、介入の因果効果、一般的な意味依存発見は示していない。3段階のN比較、実モデルの記憶・上位なし対照、総記憶量を揃えた対照、timeout時の使用量保存は次の課題である。[実行ガイド](mechanism-experiment.md)と[実行計画](execplan-mechanism.md)に範囲を記録する。
 
+## Docker Agent Sandbox導入 — 実機pilot完了
+
+2026-09-10の利用者依頼により、Docker Agent v1.137.0＋sbx v0.42.1を導入した。`swarm --runtime docker-agent`は従来のkernelを維持してcallerを切り替える。mountless、新規VM/session、局所ファイルの明示投入、host側proxy認証、制限tool、timeout/取消後のVM削除とレシート保存を実装した。
+
+完了条件: CLIのhash/版を照合、実host/SSH/network隔離、timeout後削除と状態非継承、Lunaの編集・可視テスト失敗→成功、別VMの固定oracleとkernel確定、登録4体・C=2の5 artifact全体受入を確認した。失敗・打切りrunも別に残す。[結果](results/docker-agent-sandbox.md)を参照。
+
+次の範囲: toolを既存の各比較条件へ同じ権限で追加すること、SIGKILL後の残留VM回収、pool再利用と汚染検査、Node 24+のtemplate、Astra介入を含む実走。一般repo・32 VM並列・費用優位・並列durabilityは本導入の完了条件に含まない。
+
 ## 再検討する条件
 
 - 下位が局所作業を完遂できない: 分割、context、道具、モデルの組を見直す。

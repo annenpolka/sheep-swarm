@@ -19,7 +19,10 @@
     "compare": "node src/compare-cli.ts",
     "estimate:cost": "node scripts/estimate-costs.mjs",
     "mechanism": "node src/mechanism-cli.ts",
-    "mechanism:experiment": "node scripts/mechanism-experiment.mjs"
+    "mechanism:experiment": "node scripts/mechanism-experiment.mjs",
+    "sandbox:install": "node scripts/install-docker-agent.mjs",
+    "sandbox:probe": "node scripts/probe-docker-sandbox.mjs",
+    "sandbox:pilot": "node src/docker-agent-pilot.ts"
   },
   "devDependencies": {
     "@types/node": "24.13.3",
