@@ -107,6 +107,8 @@ export async function runSwarm(options: SwarmOptions,
   const calls: CallRecord[] = [];
   const attempts = new Map<string, number>();
   const errors = new Map<string, string[]>();
+  // Rejected content is a repair draft, never the accepted checkout or read set.
+  const rejectedDrafts = new Map<string, { content: string; reads: Checkout["reads"] }>();
   const claims = new Map<string, string>();
   const successful = new Set<string>();
   const verifiedStates = new Map<string, { version: number; evidenceEpoch: number }>();
@@ -119,7 +121,7 @@ export async function runSwarm(options: SwarmOptions,
   let verificationUnavailable = false;
   const verify: typeof fixture.verify = async (contents, scope) => {
     const result = await fixture.verify(contents, scope);
-    if (configuration.runtime === "docker-agent" && result.executionFailure) {
+    if ((task || configuration.runtime === "docker-agent") && result.executionFailure) {
       verificationUnavailable = true;
       throw new Error(result.errors.join("\n"));
     }
@@ -228,7 +230,7 @@ export async function runSwarm(options: SwarmOptions,
         ? "The supplied files are materialized in your workspace. Read the local files, run check_local to observe the failure, edit only the target, then run check_local again. Do not modify visible.test.mjs or any dependency. The actual workspace delta is the proposal. Finish by calling __structured_output__ with content as an empty string and note as a short summary. Plain-text JSON is not a completed run; do not duplicate the file body in your final tool arguments."
         : "Return JSON with the complete replacement file as content and a short note. All needed files are provided below; do not use tools or inspect other paths.";
       const { response, record, writes } = await invoke("worker", agent, target, context,
-        `You are local code worker ${agent}. Update only ${target} to satisfy the supplied task contract and preserve its requirements. ${task} Record any unresolved issue in note. No manager conversation is part of this task.\n\nLocal files:\n${JSON.stringify(context.contents)}\n\nYour private recent memory (past observations, not current facts; current files and versions take precedence):\n${JSON.stringify(memory)}\n\nCurrent read versions:\n${JSON.stringify(context.reads)}\n\nPrevious local verification errors:\n${JSON.stringify(errors.get(target) ?? [])}`);
+        `You are local code worker ${agent}. Update only ${target} to satisfy the supplied task contract and preserve its requirements. ${task} Record any unresolved issue in note. No manager conversation is part of this task.\n\nLocal files:\n${JSON.stringify(context.contents)}\n\nYour private recent memory (past observations, not current facts; current files and versions take precedence):\n${JSON.stringify(memory)}\n\nCurrent read versions:\n${JSON.stringify(context.reads)}\n\nPrevious rejected draft (not accepted; reconcile with current files and read versions):\n${JSON.stringify(rejectedDrafts.get(target) ?? null)}\n\nPrevious local verification errors:\n${JSON.stringify(errors.get(target) ?? [])}`);
       record.memoryEntries = memory.length;
       note = response.note.slice(0, 1200);
       const queuedAt = Date.now();
@@ -239,11 +241,13 @@ export async function runSwarm(options: SwarmOptions,
         candidateId = candidate.id;
         const verdict = await kernel.validate(candidate.id, (contents) => verify(contents, [target]));
         if (!verdict.ok) {
+          rejectedDrafts.set(target, { content: response.content, reads: context.reads });
           record.outcome = "rejected"; record.errors = [...verdict.errors]; recordFailure(target, record.errors); return;
         }
         const committed = kernel.commit(candidate.id);
         resolve(target, context.id, committed.validation);
         record.outcome = "committed"; kernel.deliverAll();
+        rejectedDrafts.delete(target);
       });
     } catch (error) {
       if (candidateId) {
@@ -342,6 +346,7 @@ export async function runSwarm(options: SwarmOptions,
     final = { ok: false, errors: [`execution-error: ${String(error)}`] };
   } finally { await snapshot(); }
   if (unknownModelUsage) final = { ok: false, errors: [...final.errors, "unknown-usage"] };
+  if (verificationUnavailable) final = { ok: false, errors: [...final.errors, "verification-unavailable"] };
   if (runtimeCleanupFailed) final = { ok: false, errors: [...final.errors, "sandbox-cleanup-failed"] };
   const report: SwarmReport = {
     task: taskId,
@@ -354,7 +359,8 @@ export async function runSwarm(options: SwarmOptions,
     }).length, writableArtifacts: fixture.writableIds.length,
     everCommittedArtifacts: successful.size, maxConcurrentModelCalls, individuals: pool.stats(),
     lowerCalls: calls.filter((item) => item.role === "worker").length, upperCalls, interventions, rounds, calls,
-    limitations: ["Synthetic known-dependency fixture; not evidence for general repository work or discovery.",
+    limitations: [task ? "Trusted custom task; acceptance and dependency scope are defined by its host-owned fixture."
+      : "Synthetic known-dependency fixture; not evidence for general repository work or discovery.",
       "Commit verification is serialized; model calls can overlap. No crash recovery before M4.",
       "Token counts are observed CLI usage. Currency cost is not inferred.",
       "Requested model is recorded separately from any model identity emitted by the CLI.",

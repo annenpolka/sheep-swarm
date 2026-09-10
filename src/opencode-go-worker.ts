@@ -13,6 +13,8 @@ export interface OpenCodeGoOptions extends CodexCallOptions {
   readonly baseUrl?: string;
   readonly maxTokens?: number;
   readonly fetch?: typeof globalThis.fetch;
+  /** Explicit DeepSeek thinking control; omission keeps the provider default. */
+  readonly thinking?: "enabled" | "disabled";
 }
 export interface OpenCodeGoTranscript extends CodexTranscript {
   runtime: "opencode-go";
@@ -82,6 +84,9 @@ export async function callOpenCodeGo<T = unknown>(options: OpenCodeGoOptions): P
     throw new RangeError("maxTokens must be a positive integer");
   assertSupportedSchema(options.schema);
   assertOpenCodeGoModel(options.model);
+  if (options.thinking !== undefined &&
+    ((options.thinking !== "enabled" && options.thinking !== "disabled") || !options.model.startsWith("deepseek-")))
+    throw new RangeError("thinking must be enabled or disabled and requires an OpenCode Go DeepSeek model");
   const format = CATALOG[options.model]!;
   const base = resolveBase(options.baseUrl);
   const apiKey = options.apiKey ?? process.env.OPENCODE_GO_API_KEY;
@@ -121,7 +126,8 @@ export async function callOpenCodeGo<T = unknown>(options: OpenCodeGoOptions): P
     if (format === "chat-completions") {
       payload = { model: options.model, messages: [
         { role: "system", content: instruction }, { role: "user", content: options.prompt },
-      ], response_format: { type: "json_object" }, stream: false, max_tokens: options.maxTokens };
+      ], response_format: { type: "json_object" }, stream: false, max_tokens: options.maxTokens,
+      ...(options.thinking === undefined ? {} : { thinking: { type: options.thinking } }) };
     } else if (format === "responses") {
       payload = { model: options.model, input: [
         { role: "system", content: [{ type: "input_text", text: instruction }] },

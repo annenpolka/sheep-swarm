@@ -1,0 +1,12 @@
+{
+  "command": "npm \"run\" \"mechanism\" \"--\" \"--runtime\" \"opencode-go\" \"--worker-model\" \"gpt-5.6-luna\" \"--family\" \"semantic\" \"--method\" \"sheep\" \"--groups\" \"1\" \"--workers\" \"2\" \"--concurrency\" \"1\" \"--budget-mode\" \"credits\" \"--max-credits\" \"1\" \"--max-calls\" \"12\" \"--max-meta-calls\" \"0\" \"--max-tokens-per-call\" \"4096\" \"--timeout-ms\" \"90000\" \"--output\" \"/Users/annenpolka/ghq/github.com/annenpolka/sheep-swarm/.sheep/skill-eval/holdout-go-invalid/run\"",
+  "cwd": "/Users/annenpolka/ghq/github.com/annenpolka/sheep-swarm",
+  "loopbackUrl": "http://127.0.0.1:64126",
+  "credentials": "OPENCODE_GO_API_KEY=dummy-go-key",
+  "exitCode": 1,
+  "signal": null,
+  "requests": 0,
+  "stdout": "\n> sheep-swarm@0.0.0 mechanism\n> node src/mechanism-cli.ts --runtime opencode-go --worker-model gpt-5.6-luna --family semantic --method sheep --groups 1 --workers 2 --concurrency 1 --budget-mode credits --max-credits 1 --max-calls 12 --max-meta-calls 0 --max-tokens-per-call 4096 --timeout-ms 90000 --output /Users/annenpolka/ghq/github.com/annenpolka/sheep-swarm/.sheep/skill-eval/holdout-go-invalid/run\n\n",
+  "stderr": "file:///Users/annenpolka/ghq/github.com/annenpolka/sheep-swarm/src/mechanism-run.ts:124\n    if (budgetMode !== \"tokens\") throw new Error(\"the mechanism credit budget does not support API runtimes; use --budget-mode tokens\");\n                                       ^\n\nError: the mechanism credit budget does not support API runtimes; use --budget-mode tokens\n    at runMechanism (file:///Users/annenpolka/ghq/github.com/annenpolka/sheep-swarm/src/mechanism-run.ts:124:40)\n    at file:///Users/annenpolka/ghq/github.com/annenpolka/sheep-swarm/src/mechanism-cli.ts:26:22\n    at ModuleJob.run (node:internal/modules/esm/module_job:437:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:642:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\n\nNode.js v26.0.0\n",
+  "outputDirectory": "/Users/annenpolka/ghq/github.com/annenpolka/sheep-swarm/.sheep/skill-eval/holdout-go-invalid/run"
+}

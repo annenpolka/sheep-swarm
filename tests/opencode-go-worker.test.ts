@@ -45,6 +45,19 @@ test("responses Luna and Anthropic messages parse their native output shapes", a
   assert.equal(messageHeaders["x-api-key"], "secret"); assert.equal(messageHeaders["anthropic-version"], "2023-06-01");
 });
 
+test("DeepSeek thinking is explicit and invalid profiles never reach the provider", async () => {
+  const seen = fake({ model: "deepseek-flash", choices: [{ finish_reason: "stop", message: { role: "assistant", content: '{"ok":true}' } }], usage });
+  await callOpenCodeGo(opts("deepseek-flash", seen.fetch));
+  assert.equal(JSON.parse(String(seen.init?.body)).thinking, undefined);
+  for (const thinking of ["disabled", "enabled"]) {
+    await callOpenCodeGo(opts("deepseek-flash", seen.fetch, { thinking }));
+    assert.deepEqual(JSON.parse(String(seen.init?.body)).thinking, { type: thinking });
+  }
+  const noCall = (async () => { assert.fail("invalid thinking profile reached network"); }) as typeof globalThis.fetch;
+  await assert.rejects(callOpenCodeGo(opts("deepseek-flash", noCall, { thinking: "fast" })), /thinking/);
+  await assert.rejects(callOpenCodeGo(opts("grok-4.6", noCall, { thinking: "disabled" })), /thinking/);
+});
+
 test("HTTP failures keep status and redacted raw usage without retry", async () => {
   let calls = 0; const seen = fake({ model: "deepseek-flash", usage: { input_tokens: 1, output_tokens: 1, total_tokens: 2, note: "secret" } }, 429);
   const original = seen.fetch; seen.fetch = (async (...args: Parameters<typeof original>) => { calls++; return original(...args); }) as typeof globalThis.fetch;

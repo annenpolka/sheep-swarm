@@ -35,6 +35,29 @@ function targetOf(options: CodexCallOptions): string {
   return target;
 }
 
+test("retry receives the rejected draft without adopting it into the accepted checkout", async t => {
+  const fixture = createFixture({ size: 4, variant: "migrated" });
+  let rejectedTarget = "";
+  let sawRepair = false;
+  const draft = "// deliberately invalid repair draft";
+  const report = await runSwarm({ workers: 4, concurrency: 1, size: 4,
+    maxCalls: 12, maxMetaCalls: 0, outputDirectory: await outputFor(t) }, async options => {
+    const target = targetOf(options);
+    const files = JSON.parse(/Local files:\n([^\n]+)\n/.exec(options.prompt)![1]!) as Record<string, string>;
+    const prior = JSON.parse(/Previous rejected draft[^\n]*:\n([^\n]+)\n/.exec(options.prompt)![1]!) as null | { content: string; reads: unknown };
+    if (!rejectedTarget) { rejectedTarget = target; return answer(options, draft); }
+    if (target === rejectedTarget && !sawRepair) {
+      assert.equal(prior?.content, draft);
+      assert.ok(prior?.reads);
+      assert.notEqual(files[target], draft);
+      sawRepair = true;
+    } else assert.equal(prior, null, "drafts must stay scoped to their target");
+    return answer(options, fixture.artifacts[target]!);
+  });
+  assert.equal(sawRepair, true);
+  assert.equal(report.success, true, report.finalErrors.join("\n"));
+});
+
 test("four workers converge with the requested Luna identity and at most two concurrent calls", async t => {
   const fixture = createFixture({ size: 4, variant: "migrated" });
   const requested: CodexCallOptions[] = [];

@@ -120,3 +120,18 @@ mechanismのcredit予算seriesは[実行計画](execplan-mechanism.md)ごと凍�
 利用者の「luna swarmで実装を進めて」に従い、Lunaの作業エージェントでAPI adapter・runner接続・使用量集計を分担する。完了条件は3 API形式のschema検査、workerごとの安定session、durable再開互換、不明usageと429時の新規受付停止、既存runtimeの回帰検査。GoをCodex creditや直接DeepSeekの料金へ置換しない。[導入仕様](opencode-go.md)。上記条件を満たし、378テストとGo経由の実Luna 4条件・13callに成功した。[実装と検証記録](results/opencode-go.md)。
 
 2026-09-10追加: Astra独立レビューの6指摘と再確認で見つかった停止判定の不足を、Go DeepSeek V4.1 Flashの同一sessionで修正した。Astraが既出指摘の解消を確認し、親の404テスト・型検査・参照照合が成功した。[修正と独立検証](results/astra-go-review.md)。
+
+## ツール利用skill — 作成・実行評価済み
+
+CLIの選択、runtimeと予算、保存証拠の確認、durable再開、trusted task adapterの準備を[skill](../skills/sheep-swarm/SKILL.md)にまとめた。新規Luna評価役で5ラウンドを回し、Codexの外側実行権限、再開による証拠変更、runtime別のusage判定を調整した。最後の2ラウンドと未使用のGoローカル拒否シナリオは全要件を満たした。実Lunaの成功runは全3成果物を受入検査で再確認し、停止runは証拠不変を確認した。数値収束用のtool/duration metadataは取得できないため、厳密な数値収束とはしない。[評価と失敗履歴](evaluations/sheep-swarm-skill/report.md)。この5ラウンドはrepo用CLI追加前の版に対する評価であり、以下の新しい利用経路の評価とは分ける。
+
+
+## 任意Gitリポジトリの対象ファイル実行 — 実装・小規模実走済み
+
+`repo --repo PATH --task TASK.json`を追加した。task manifest、現在の作業bytesのsnapshot、固定host検査、既存swarmへの接続と共有token予算、候補保存、成功時のdrift検査付き`--apply`を実装した。workerは指定されたtarget/contextだけを読み、検査はsnapshot全体に対して行う。symlink・特殊ファイル・submodule・秘密用予約pathを拒否/除外し、元のdirty変更と無関係なuntrackedを保つ。失敗案の本文とread版を次のworkerへ渡す補修も既存swarmへ追加した。
+
+利用者指定の`opencode-go/deepseek-flash`で3モジュールを受入まで生成し、接続モジュールの生成案と境界条件は親が補修した。受入テストを弱めず、通常gateと実JavaScript/Python repoの候補保存・適用を確認した。[結果と作者の区分](results/repository-runner.md)。Go DeepSeekのthinkingはrepo CLIの明示指定だけに追加し、既存runtimeの既定値は維持する。
+
+並列runのresume、任意の依存探索、ファイル削除/rename、悪意あるcodeのOS隔離、大規模repoの実用性と費用比較は未対応・未実証。新repo経路はskillへ反映したが、既存5ラウンドのempirical評価を新版のblank-slate評価として流用しない。
+
+PR #4の独立レビューでは、実processと注入callerで4件の不具合を再現し、検査終了時のgroup回収・親Git探索の停止・検査基盤障害での受付停止・局所診断の引継ぎを修正した。元の実走証拠と429検査の記録は変更せず、[追加検証](results/repository-runner-astra-review.md)へ分離した。

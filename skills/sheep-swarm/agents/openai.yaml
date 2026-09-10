@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sheep Swarm"
+  short_description: "Run repository swarms and inspect fixed acceptance evidence"
+  default_prompt: "Use $sheep-swarm to run a bounded task and verify its saved artifacts, acceptance, and usage."

@@ -25,6 +25,8 @@
 | Docker Agentとmountless microVMの導入 | [導入手順](docs/docker-agent-sandbox.md)、[実測](docs/results/docker-agent-sandbox.md)、[adapter](src/docker-agent-worker.ts) |
 | 実験用の直接DeepSeek API adapter | [src/deepseek-worker.ts](src/deepseek-worker.ts)、[共通runtime選択](src/model-runtime.ts)、[runner試験](tests/deepseek-runners.test.ts) |
 | OpenCode Goの3 API形式と全runner接続 | [導入方法](docs/opencode-go.md)、[実Lunaによる検証](docs/results/opencode-go.md) |
+| 任意Gitリポジトリの対象ファイルを実行 | [利用手順](docs/repository-runner.md)、[実装・実走記録](docs/results/repository-runner.md)、[CLI](src/repo-cli.ts) |
+| Agent向けのツール利用skill | [sheep-swarm skill](skills/sheep-swarm/SKILL.md)、[実行評価](docs/evaluations/sheep-swarm-skill/report.md) |
 | 実装の進捗と実行証拠 | [docs/execplan.md](docs/execplan.md)、[4体の実測](docs/results/luna-four-worker-pilot.md) |
 | 8・16・32体の反復と誤指示条件 | [規模比較の結果](docs/results/scaling-findings.md) |
 | SQLiteと実process中断・再開 | [src/durable-run.ts](src/durable-run.ts)、[実Luna再開の結果](docs/results/durable-restart.md) |
@@ -61,6 +63,10 @@ npm run demo
 TypeScriptの実行にはNode.jsのtype strippingを使い、型検査は別に `tsc` で行う。[Node.jsの公式説明](https://nodejs.org/api/typescript.html)
 
 追加のruntime npm packageは使わない。既定の実LLM呼出しには認証済みのCodex CLIを使う。下位は利用者指定の `gpt-5.6-luna`、上位の既定値は `gpt-6-astra`。
+
+`npm run repo -- --repo /path/to/project --task /path/to/task.json`で、別のGit作業ツリーの対象ファイルを既存swarmへ渡せる。固定の検査コマンドをJSONで宣言し、候補を保存する。`--apply`は全体受入・使用量・元ファイルの変更確認に成功した場合だけ指定範囲へ書き戻す。Go DeepSeekの例と対応境界は[repo実行手順](docs/repository-runner.md)へ。専用factoryは不要だが、hostで信頼する検査コマンドと明示した依存が必要になる。JavaScript/Pythonの実走を確認した範囲であり、全build環境や費用優位を保証しない。
+
+独立レビューで、検査後のprocess group回収、親Gitの誤参照防止、検査基盤障害での呼出し停止、局所検査の診断引継ぎを補修した。[再現と検証](docs/results/repository-runner-astra-review.md)。
 
 `swarm --runtime deepseek`はDeepSeek APIへ直接接続する。CLIでは環境変数`DEEPSEEK_API_KEY`を設定し、`--worker-model`にprovider prefixのないAPI model idを明示する。OpenCodeの認証storeは自動で読み込まない。toolは使わず、局所promptとschemaを送信し、`finish_reason: stop`と要求schemaへの適合を検査する。要求modelとproviderが返したmodel名は別に保存する。接続仕様は[DeepSeek公式API](https://api-docs.deepseek.com/api/create-chat-completion/)を参照。
 

@@ -1,0 +1,8 @@
+{
+  "installedPath": "/Users/annenpolka/.codex/skills/sheep-swarm",
+  "files": {
+    "SKILL.md": "6c651c7176963483f4946428db1472449c190151cdc98895ebf4e84cf2afb9e9",
+    "references/task-adapter.md": "ce2adf1f13bf8074317f9ac093b680e59c9d005fc142f278a102bd266832122d",
+    "agents/openai.yaml": "93106aa0eaecbd89aabd1f4ac7cbd4ea71e692fa2939ada45d2415ad4e1e6b3b"
+  }
+}
