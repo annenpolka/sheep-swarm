@@ -85,13 +85,14 @@ trackedな通常ファイルの現在のbytesと、明示したcontext/protected
   "mode": "static+reads",
   "readable": ["registry.json", "policies/retail.json"],
   "maxReadCalls": 2,
+  "maxPathsPerRead": 1,
   "maxDeliveredBytes": 65536
 }
 ```
 
 `readable`は本文を配信してよい既存ファイルの明示集合。targetと共通contextも公開catalogに入り、workerには最初から全catalogの**名前**を見せる。本文は担当target・固有の指示・共通goal/guidance/context・必要な依存先だけを渡す。他targetの指示、未公開の固定検査は渡さない。protectedを追加公開するには、従来どおりcontextにも明示する必要がある。source snapshotのUTF-8・サイズ・path・symlink等の検査を通す。
 
-`.mjs`の静的import/reexportをNodeの構文parserで走査し、link/evaluateせず局所依存を求める。`node:`組込みはrepo依存に含めず、相対pathは拡張子付きの公開ファイルへ解決する。bare package、解決不能参照、対象に到達する循環は有限の拒否となる。初期targetの解決不能参照/循環はrun全体のpreflightを止める。動的import、他言語、意味依存の完全性は保証しない。関係のない公開ファイルもhost indexでは走査するため、走査量と配信量は別の指標になる。
+`.mjs`の静的import/reexportをNodeの構文parserで、`.ts`/`.mts`（`.d.ts`含む）のimport/reexportと型importを固定typescript 7.0.2の仮想projectで走査する。link/evaluateせず局所依存を求める。`node:`組込みはrepo依存に含めず、相対pathは拡張子付きの公開ファイルへ解決する。bare package、解決不能参照、対象に到達する循環は有限の拒否となる。初期targetの解決不能参照/循環はrun全体のpreflightを止める。TSの動的import呼出し/import-equalsは未解決として拒否する。TSX/CTS、package/tsconfig paths解決、他言語、意味依存の完全性は保証しない。関係のない公開ファイルもhost indexでは走査するため、走査量と配信量は別の指標になる。
 
 `static`はモデルの追加readを拒否し、`static+reads`は許可する。どちらも新しい静的importを含むwriteの依存先が未配信なら、そのwriteを確定せず追加配信へ戻す。`maxReadCalls`はtargetごとのread応答と、このhostによる追加配信要求の合計上限（既定2、最大32）。配信は次の通常worker callで行い、そのcallも下位回数・token予算へ計上する。`maxDeliveredBytes`はtargetごとに配信を確認できた追加context本文の**累積**bytes上限（既定65,536、最大2MiB）。再配信も数え、担当target・固有指示・goal/guidance・明示共通contextは除く。全promptの出力量上限ではない。
 
@@ -110,3 +111,13 @@ v2の出力には `dependency-evidence.json`（parser証拠と配信に基づく
 v1/v2とも `result.json.verifications` にcandidateDigest、checksDigest、environmentId、local/final、pass/reject/infrastructure-error、cleanupを保存する。候補のbytes/mode・固定command/timeout・実行環境識別が一致しないreceiptは受け入れない。cleanupはprocess-groupの終了処理を試みた記録であり、別sessionまで完全回収したという証明ではない。
 
 固定した疎通用repoは `node scripts/prepare-repo-discovery-pilot.mjs --output NEW_DIRECTORY` で作れる。親directoryは先に用意する。基準解は公開repoへコピーしない。[実装と実モデルの結果](results/repository-discovery.md)には失敗試行と親の修正も含める。
+
+`maxPathsPerRead`は1要求に列挙できるpath数（1..32、省略32）。モデルのreadとhostが新しいimportから作る追加要求の両方に適用し、超過時は部分配信せず未解決にする。1pathから辿る静的推移依存や、既に指定した初期contextの量はこの数で切り捨てない。総配信量や総tokensは別に測る。[段階読取と広域対照の手順・実測](results/read-selection-pilot.md)。
+
+### 必要なtargetだけを初期起動する
+
+v2で `"activation":{"changedPaths":["policy.ts"]}` を追加すると、公開scope内でhostが指定した起点から静的依存・明示dependsOn・共通contextを逆向きに辿り、初期goal変更で起動するtargetを選ぶ。省略時は全target、空配列は既知の変更起点なし。未対応言語targetは保守的に起動する。`activation.json`に初期選択を保存し、実際に呼ばれた数はresult.discovery.activatedTargetsで別に記録する。
+
+changedPathsはGit差分の自動検出ではなく作業者の宣言。書込範囲はfilesのままで、未起動のtargetも全体oracleへ含める。隠れた意味依存の見逃しや不正な元コードをidleだけで成功にしない。[実走と境界](results/repository-scale-activation.md)。
+
+TS targetの局所検査は `node --check` だけに頼らず、実行環境のmodule読み込みや型検査を明示する。新しいuntrackedのテスト/依存もcontextまたはprotected等へ指定し、snapshotへ含める。検査programが存在しない入力を無視する場合、processのexit 0だけでは意図したcaseを実行した証拠にならない。

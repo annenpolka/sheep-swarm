@@ -212,3 +212,23 @@ Validation:
 Revisit when:
 - 削除/rename、巨大repo、複雑な依存setup、resume、隔離した検査が必要になったとき。
 Status: active
+
+### 段階読取と広い初期配信の対照
+Authority: Human direction / agent scoped implementation
+Evidence: 2026-09-10の「マージして、添付した議論をもとに次の作業へ」。PR #5をマージし、[議論](../docs/discussion-review-progressive-read.md)を現行実装と照合した。
+Working default: ファイル数を最小化することを目的にしない。read scope、impact scope、write authorityを分け、全文に近い公開context対照と同じ品質で総負担を比べる。言語別解析はadapter、版と証拠の確定はkernel。confidenceだけで確定しない。
+Validation: opaqueな資料24件・2targetのGo N4/C2 pilotで、局所/広域とも固定受入成功。局所の総tokensが多い結果も保持する。[証拠](../docs/results/read-selection-pilot.md)。
+Next: TS adapter/self-host、未調整taskの反復、N/C比較、activation。今回の実装部品と小規模実走は継続指定のGo DeepSeekを使用。新規Astra単独対照は追加しない。
+Status: active
+
+### TS self-hostとstatic impactの継続結果
+Authority: Human stated / agent bounded implementation
+Evidence: 2026-09-10「残りも順次進めて。swarmで」。指定Go swarmで部品生成とTS自己実装を実行し、N/C・局所/広域の8条件と関連targetだけの起動を観測した。
+Working default: 言語別解析は既存compilerのAST、起点はhostのchangedPaths。品質oracleを起動対象に縮めない。通常TS検査はmoduleの実読み込みを含め、全caseがsnapshotにあることを確認する。方式の既知失敗は実験データとして残し、未知usageや予約超過と混ぜない。
+Validation: 480テスト、8条件の7成功/1未完了、実影響起動2call。最初の停止分も総予算へ繰り越した。[証拠](../docs/results/repository-scale-activation.md)。
+Revisit: 新family/反復、総記憶量の対照、Luna/Manager-localとの有用性、意味依存の取りこぼし。今回のGo小規模対照をLuna系列へ置換しない。
+Status: active
+
+### MoonBit repository support
+
+利用者の追加指定により、MoonBit packageの静的依存と補助ファイル配信を追加。各packageのv2 write対象は1つとし、公開catalog不足や外部/生成/条件付き等の未対応依存は拒否する。指定のGo swarmを継続使用。parser生成後は親が型・入力境界を補修し、実MoonBit修正は2callで固定compiler oracleに合格。通常gate488件。[結果](../docs/results/moonbit-repository.md)。

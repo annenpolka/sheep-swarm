@@ -134,3 +134,19 @@
 2026-09-10の添付議論を[精査](discussion-review-20260910.md)し、[次の実行計画](execplan-repository-discovery.md)を作成した。CLI整理は利用者の追加指示。共通入口と設定確認、host検証の契約、opt-in task v2の静的依存発見・追加読取・未解決記録を実装した。利用者指定のGo DeepSeek swarmを使い、3targetの小規模疎通は固定受入まで成功した。[初回失敗・親の補修・通常gate](results/repository-discovery.md)を残す。新しいN比較や有用性比較は未実行で、一般的な意味依存発見は引き続き保証しない。
 
 「読む依存を発見する」「必要なtargetを起動する」「書込を許可する」を分け、初回は読取の発見を扱う。全manifestの複製を含む個体contextと発見費用を測り、N=16を中心に8/16/32の観測へ戻す。C固定で速度差が出なかったことを中心仮説の反証とはせず、品質・局所性・復旧・調整費用で評価する。早期受付制御は別条件とし、Astra単独の新規比較は追加しない。
+
+## M7: 局所認知の負担を同品質で測る
+
+[添付議論の精査](discussion-review-progressive-read.md)を踏まえ、目標をファイル数最小化から、必要な知識を得て完成するまでの総負担へ置く。広い初期配信を正式な対照とし、read scope・impact scope・write authorityを分ける。配信記録は理解の証明ではなく、固定品質と別に検査する。
+
+最初の[Go pilot](results/read-selection-pilot.md)は両方式とも成功したが、局所6call/8,241tokens、広域2call/5,593tokensだった。1callのcontext縮小だけで局所方式の優位を判断しない。次はTS adapterとself-hostで実repoの構造を増やし、その後にN/C比較とactivationへ進む。上位の必要時介入と既存のLuna規模比較方針は継続する。
+
+## M8の完了と観測上の限界
+
+[TS自己実装・N/C対照・static impact](results/repository-scale-activation.md)を実装・実走した。16targetの8条件で7成功、N16/C4 localはread上限による未完了。成功品質の比較からこの失敗を除外するだけでなく、失敗率と消費として残す。登録32でもbroadでは16個体しか参加せず、Nと実際の稼働を同一視しない。
+
+activationはhostのchangedPathsと既知の静的/明示依存に限定する。初期起動の候補を絞ること、本文を実配信すること、書込権限を与えることは別の操作。見えていない意味依存は全体oracleで非成功となる場合を検査し、confidenceだけで完了範囲を広げない。
+
+## MoonBitの追加対応
+
+[限定adapter](moonbit-repositories.md)を追加した。package依存と同一packageのreadonly補助宣言を用い、各packageの書換対象1ファイルに限定する。公開catalog不足や未対応構成を黙認せず、確定条件は実compilerと固定oracleに置く。[Go実走](results/moonbit-repository.md)は2target/2call。N4は動作確認で、規模や費用の優位へ一般化しない。

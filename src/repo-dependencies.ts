@@ -2,6 +2,7 @@ import { Buffer } from 'node:buffer';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { safeRepoPath } from './repo-manifest.ts';
+import {discoverMoonBit, isMoonManifest} from './repo-moonbit.ts';
 
 export interface RepoDependencyScan {
   edges: { consumer: string; provider: string; specifier: string; sourceHash: string }[];
@@ -16,7 +17,7 @@ export interface RepoDependencyScan {
 const MAX_OUTPUT_BYTES = 4 * 1024 * 1024;
 const MAX_TIMEOUT_MS = 10000;
 
-const LIMITATIONS = ['dynamic-imports-not-covered', 'semantic-dependencies-not-covered', 'non-mjs-not-scanned'];
+const LIMITATIONS = ['dynamic-imports-not-covered', 'semantic-dependencies-not-covered', 'only-mjs-ts-mts-moonbit-scanned', 'moonbit-single-module-one-writable-per-package', 'moonbit-no-external-generated-or-conditional-dependencies', 'no-tsconfig-path-or-package-resolution'];
 
 const RESERVED_COMPONENTS = new Set(['.git', '.sheep', 'node_modules', '.sheep-internal']);
 const ENV_BASENAME = /^\.env(\..*)?$/;
@@ -37,16 +38,15 @@ interface RawChildEdge {
   readonly specifier: string;
 }
 
-// Child process parses module text with SourceTextModule.moduleRequests only.
-// It never links or evaluates the module, so fake imports in comments/strings
-// are handled correctly and side-effect code is never executed.
+// The child parses .mjs with SourceTextModule and .ts/.mts with a virtual TS
+// program. Neither path links or evaluates the supplied source text.
 const CHILD_SOURCE = [
   "'use strict';",
   "const vm = require('node:vm');",
   "let input = '';",
   "process.stdin.setEncoding('utf8');",
   "process.stdin.on('data', (chunk) => { input += chunk; });",
-  "process.stdin.on('end', () => {",
+  "process.stdin.on('end', async () => {",
   "  let payload;",
   "  try {",
   "    payload = JSON.parse(input);",
@@ -57,7 +57,13 @@ const CHILD_SOURCE = [
   "  const edges = [];",
   "  const issues = [];",
   "  const entries = Array.isArray(payload.entries) ? payload.entries : [];",
+  "  const tsEntries = entries.filter(e => !e.path.endsWith('.mjs'));",
+  "  if(tsEntries.length) {",
+  "    try { const {parseTypeScriptEntries} = await import(payload.tsParser); const parsed = parseTypeScriptEntries(tsEntries); edges.push(...parsed.edges); issues.push(...parsed.issues); }",
+  "    catch { process.stdout.write(JSON.stringify({ok:false,error:'TypeScript parser unavailable or failed'})); return; }",
+  "  }",
   "  for (const entry of entries) {",
+  "    if(!entry.path.endsWith('.mjs')) continue;",
   "    const consumer = entry.path;",
   "    let mod;",
   "    try {",
@@ -167,6 +173,7 @@ function runChild(entries: readonly RawRequestEntry[]): Promise<{ edges: RawChil
         ['--experimental-vm-modules', '--input-type=commonjs', '-e', CHILD_SOURCE],
         {
           shell: false,
+          detached: process.platform !== 'win32',
           stdio: ['pipe', 'pipe', 'pipe'],
           windowsHide: true,
         },
@@ -191,6 +198,10 @@ function runChild(entries: readonly RawRequestEntry[]): Promise<{ edges: RawChil
       if (settled) return;
       settled = true;
       if (timer !== undefined) clearTimeout(timer);
+      // Native TypeScript parser belongs to this child group, including on timeout.
+      if(process.platform !== 'win32' && child.pid) {
+        try {process.kill(-child.pid,'SIGKILL');} catch { /* already collected */ }
+      }
       try {
         child.stdin?.end();
       } catch {
@@ -280,7 +291,7 @@ function runChild(entries: readonly RawRequestEntry[]): Promise<{ edges: RawChil
     });
 
     try {
-      child.stdin?.write(JSON.stringify({ entries }));
+      child.stdin?.write(JSON.stringify({ entries,tsParser:new URL('../scripts/parse-typescript-dependencies.mjs',import.meta.url).href }));
       child.stdin?.end();
     } catch (error) {
       finish(error as Error);
@@ -349,6 +360,7 @@ function computeCycles(
 export async function discoverRepoDependencies(
   contents: Readonly<Record<string, string>>,
   readable: readonly string[],
+  writable: readonly string[] = [],
 ): Promise<RepoDependencyScan> {
   const started = Date.now();
 
@@ -368,7 +380,7 @@ export async function discoverRepoDependencies(
 
   const sortedReadable = [...readableSet].sort();
   for (const candidate of sortedReadable) {
-    if (!candidate.endsWith('.mjs')) continue;
+    if (!/\.(?:mjs|ts|mts)$/.test(candidate)) continue;
     if (!Object.prototype.hasOwnProperty.call(contents, candidate)) continue;
     const text = contents[candidate]!;
     parsedEntries.push({ path: candidate, text });
@@ -376,7 +388,12 @@ export async function discoverRepoDependencies(
     bytesRead += Buffer.byteLength(text, 'utf8');
   }
 
-  const raw = await runChild(parsedEntries);
+  const moonContents=Object.fromEntries(sortedReadable.filter(p=>Object.hasOwn(contents,p)).map(p=>[p,contents[p]!]));
+  const moon=discoverMoonBit(moonContents,writable);
+  for(const p of sortedReadable)if((p.endsWith('.mbt')||isMoonManifest(p))&&Object.hasOwn(contents,p)){
+    filesRead++;bytesRead+=Buffer.byteLength(contents[p]!, 'utf8');
+  }
+  const raw = parsedEntries.length ? await runChild(parsedEntries) : {edges:[],issues:[]};
 
   const edgeMap = new Map<
     string,
@@ -404,7 +421,8 @@ export async function discoverRepoDependencies(
     issueMap.set(key, { consumer, specifier, reason });
   };
 
-  for (const issue of raw.issues) {
+  for(const edge of moon.edges)addEdge(edge.consumer,edge.provider,edge.specifier);
+  for (const issue of [...raw.issues,...moon.issues]) {
     if (typeof issue !== 'object' || issue === null) continue;
     const consumer = (issue as RawChildIssue).consumer;
     if (typeof consumer !== 'string') continue;

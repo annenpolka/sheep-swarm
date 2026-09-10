@@ -125,3 +125,13 @@ OpenCode Goは別runtimeとして同じ局所成果物境界へ接続する。pr
 対象ファイルの完全なUTF-8内容だけをoverlayとして認め、現在のtracked bytesと選択済みuntrackedをfresh candidateへコピーする。宣言した局所検査と最終検査をhost subprocessで実行し、元候補のbytes・mode・path種別の変更も拒否する。最終判定はkernel完了と既知精算済みtoken予算の両方を必要とする。`--apply`は元HEAD・tracked path集合・snapshot bytes/mode・新規衝突を再確認し、全置換をstageしてから採用する。OS transaction・悪意ある並行filesystem・host隔離・crash resumeは保証しない。[詳細](repository-runner.md)。
 
 候補内のGit探索は親checkoutへ到達させず、POSIX検査のprocess groupは通常終了後も回収する。局所検査の失敗出力だけをboundedな修復情報へ戻し、固定した最終検査は修復ループへ戻さない。hostの起動・保存先I/O障害は`executionFailure`として、custom taskでも既存swarmの検査基盤停止経路へ接続する。既に呼出したモデルの精算は維持し、新たなworker/upper呼出しを止める。
+
+## TypeScriptとopt-inの影響起動
+
+TSの言語adapterは固定compilerのASTを別processの仮想filesystemで抽出する。解析対象の実行やpackageの自動解決を行わず、既存のpath検査・source hash・配信stampへ接続する。構文と型だけの参照はstatic証拠であり、モデルの理解や意味依存の完全性を示さない。
+
+task v2のactivation.changedPathsはhost入力。既知graphの逆向きclosureで初期goal依存を絞り、全targetの既知依存とmanifestのwrite権限は保持する。以後の変更通知と受入はkernelを通る。起動対象を絞った場合も全体oracleを実行し、未起動targetを採点対象から外さない。[検証](results/repository-scale-activation.md)。
+
+## MoonBit repository discovery
+
+`moonbit-manifest.ts`が新旧設定の宣言的subsetを純粋解析し、`repo-moonbit.ts`がmodule/source directoryとpackage importをpublic catalog内で解決する。`.mbt` consumerからmodule/package設定・import先sourceへのedgeを張り、書換targetだけが同一packageのreadonly companionsへedgeを持つ。複数writableを同一packageへ置く場合は拒否する。これによりpackageの相互可視性をkernelの循環writeへ変換しない。test/wbtest importも保守的に合併する。新形式を優先し、snapshot内の該当package全sourceとmetadataがpublic範囲にあることを事前確認する。Moonやbuild scriptは探索中に実行しない。外部依存・生成・条件付き等は未対応issue、意味・構文・型の受入はhost checkが担う。[詳細](moonbit-repositories.md)。

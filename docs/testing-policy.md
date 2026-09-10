@@ -139,3 +139,19 @@ Astraの独立レビューで固定した反例も通常gateに含める。混�
 `repo-discovery.test.ts`はv1互換・v2 manifestとtransportを分け、二段read、未公開本文の非配信、他target指示の非配信、call/bytes上限、旧read版と同bytesの旧evidenceEpochによるcatch-up、未解決claim、unknown usage、host検証後だけの解決を検査する。staticのみの意味read拒否と、新しいimportの未配信先がwriteと同時に先取りされないことも含む。上位へ渡すmodel-claimは未確認のまま扱う。
 
 `repo-discovery-fixture.test.ts`は固定したbaseline失敗・基準解成功・意味変異拒否を確認する。`next-components.test.ts`は独立に固定した生成部品の受入と追加境界検査で、parserの評価不在・公開allowlist・循環、receiptの候補/command/環境/phaseのすり替え・偽pass・入力変異を拒否する。通常gateはAPI・認証を使わない。実Go swarmの失敗と成功、親の補修、独立候補再検査は[結果](results/repository-discovery.md)へ分離する。
+
+## M7 read-selection pilot
+
+`read-selection-*.test.ts`はopaque資料のworld間不変、全資料へのregistry切替、固定oracleの旧版失敗・基準解成功・別world推測と入力境界変異の拒否を検査する。maxPathsPerReadの既定/範囲、超過時の非配信、host新規import要求、1pathからの推移closureを含む。call IDの辞書順に頼らず、同targetの配信/要求/最初のcommit順、欠落・重複・未知参照を検査する。
+
+実tmp Gitと注入callerで同じ課題の局所/広域を実行し、候補へ固定oracleを再実行する。改変delivery hashとunknown usageの監査拒否、元repo不変も確認する。通常gateはAPIを呼ばない。実Goの部品生成、親の補修、同品質pilotは[別証拠](results/read-selection-pilot.md)。構造上妥当なledger、手続き上の二段読取、意味的品質は独立の結果とし、文書配信をモデル理解の証明にはしない。
+
+## M8 TS / scaling / activation
+
+`remaining-*.test.ts`はASTでの通常/型import、reexport、型import式、非公開参照、構文不正、循環とソース非実行、疎な配列や入力変異、全opaque資料のregistry切替、TS moduleの実読み込みとJSON import attribute不備を検査する。changedPathsのscopeとv1拒否、関連targetだけの起動、受入後のprovider版の配信、元ファイル不変、0callの全体受入、見逃した意味依存による非成功を含む。
+
+実Goの部品生成、TS自己実装、規模比較、影響起動は[別証拠](results/repository-scale-activation.md)。各1回の比較を反復や一般的な有用性にしない。既知usageの意味的失敗はそのまま記録し、未知usage/予約超過/検証障害と分ける。自己実装でsnapshotに含まれなかった追加testは、存在を検査する独立snapshotで再検証した。原runのcase数を増やして書き換えない。
+
+## MoonBit adapter
+
+`tests/moonbit-*.test.ts`の8件はJSON/DSLのtokenization・拒否境界、source root・package edge・cycle、catalog不足と非公開file、activation・helper配信・受理済みprovider版を検査する。通常gateはMoon installationやAPIを使わない。実compiler検証は別の固定fixtureでbaseline失敗/reference成功/境界誤実装失敗を先に保存し、実Go候補を同一oracleと独立再実行で確認した。[実走証拠](results/moonbit-repository.md)。

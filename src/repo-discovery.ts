@@ -6,6 +6,8 @@ import type {RepoSnapshot} from './repo-types.ts';
 import type {SwarmTaskControl} from './swarm.ts';
 import {discoverRepoDependencies, type RepoDependencyScan} from './repo-dependencies.ts';
 import {REPO_WORKER_SCHEMA, parseWorkerResponse} from './worker-proposal.ts';
+import {selectImpactedTargets} from './repo-impact.ts';
+import {validateMoonBitCatalog} from './repo-moonbit.ts';
 
 export const REPO_GOAL='.sheep-internal/goal.md';
 export const REPO_GUIDANCE='.sheep-internal/guidance.md';
@@ -22,6 +24,7 @@ export class RepositoryDiscovery implements SwarmTaskControl {
   readonly artifacts:Record<string,string>={};
   readonly instructions=new Map<string,string>();
   readonly scans:RepoDependencyScan[]=[];
+  readonly activation:{mode:'all'|'changed';changedPaths:readonly string[];activeTargets:string[];unaffectedTargets:string[]};
   readonly #snapshot:RepoSnapshot;
   readonly #public:Set<string>;
   readonly #targets:Set<string>;
@@ -42,6 +45,13 @@ export class RepositoryDiscovery implements SwarmTaskControl {
     this.maxAttempts=3+options.maxReadCalls;
     this.#targets=new Set(snapshot.task.files.map(f=>f.path));
     this.#public=new Set([...this.#targets,...snapshot.task.context,...options.readable]);
+    const changed=snapshot.task.activation?.changedPaths;
+    const impactEdges=[...scan.edges,...snapshot.task.files.flatMap(f=>[...f.dependsOn,...snapshot.task.context].filter(p=>p!==f.path).map(provider=>({consumer:f.path,provider})))];
+    const selectedImpact=changed===undefined?{activeTargets:[...this.#targets],unaffectedTargets:[]}:
+      selectImpactedTargets({targets:[...this.#targets],changedPaths:changed,edges:impactEdges,
+        uncertainConsumers:[...this.#targets].filter(p=>! /\.(?:mjs|ts|mts|mbt)$/.test(p))});
+    this.activation={mode:changed===undefined?'all':'changed',changedPaths:changed??[],...selectedImpact};
+    const active=new Set(this.activation.activeTargets);
     for(const path of this.#public)this.artifacts[path]=snapshot.initialTargets[path]??snapshot.entries.get(path)!.bytes.toString('utf8');
     snapshot.task.files.forEach((file,i)=>{
       const instruction=`.sheep-internal/instructions/${i}.md`;
@@ -49,15 +59,18 @@ export class RepositoryDiscovery implements SwarmTaskControl {
       const selected=this.closure([file.path,...snapshot.task.context,...file.dependsOn]);selected.delete(file.path);
       this.#selected.set(file.path,selected);
       for(const provider of selected)this.edge(file.path,provider);
-      for(const provider of [REPO_GOAL,REPO_GUIDANCE,instruction])this.edge(file.path,provider);
+      // Only selected work receives the initial goal-change obligation. All declared
+      // targets retain their normal dependency edges and may wake on later commits.
+      for(const provider of [REPO_GUIDANCE,instruction,...(active.has(file.path)?[REPO_GOAL]:[])])this.edge(file.path,provider);
     });
   }
 
   static async create(snapshot:RepoSnapshot):Promise<RepositoryDiscovery> {
     if(!snapshot.task.discovery)throw new Error('repository discovery requires task v2');
     const paths=[...new Set([...snapshot.task.files.map(f=>f.path),...snapshot.task.context,...snapshot.task.discovery.readable])];
+    validateMoonBitCatalog([...snapshot.entries.keys()],paths);
     const contents=Object.fromEntries(paths.map(p=>[p,snapshot.initialTargets[p]??snapshot.entries.get(p)!.bytes.toString('utf8')]));
-    const scan=await discoverRepoDependencies(contents,paths);
+    const scan=await discoverRepoDependencies(contents,paths,snapshot.task.files.map(f=>f.path));
     return new RepositoryDiscovery(snapshot,scan);
   }
 
@@ -87,7 +100,7 @@ export class RepositoryDiscovery implements SwarmTaskControl {
 WRITE: {"kind":"write","content":"<complete replacement>","paths":[],"observed":[],"missing":[],"hypothesis":"","note":"<summary>"}
 READ: {"kind":"read","content":"","paths":["<requested public path>"],"observed":[],"missing":[],"hypothesis":"","note":"<reason>"}
 UNCERTAIN: {"kind":"uncertain","content":"","paths":[],"observed":["<observation>"],"missing":["<unresolved information>"],"hypothesis":"<optional unverified hypothesis, or empty string>","note":"<summary>"}
-A write MUST NOT put its target in paths. On write/read, observed and missing MUST be [] and hypothesis MUST be "". Put explanatory prose only in note. Current Local files are already delivered. Never claim a requested file was read before delivery. Public catalog (names only): ${JSON.stringify([...this.#public])}. No tools or upper consultation. ${this.#snapshot.task.discovery!.mode==='static'?'Additional model read requests are disabled in static mode.':''}`;
+A write MUST NOT put its target in paths. On write/read, observed and missing MUST be [] and hypothesis MUST be "". Put explanatory prose only in note. Current Local files are already delivered. A read request may name at most ${this.#snapshot.task.discovery!.maxPathsPerRead} paths; do not request the whole catalog when it exceeds that limit. Never claim a requested file was read before delivery. Public catalog (names only): ${JSON.stringify([...this.#public])}. No tools or upper consultation. ${this.#snapshot.task.discovery!.mode==='static'?'Additional model read requests are disabled in static mode.':''}`;
   }
   private additionalBytes(target:string,context:Checkout):number {
     return [...(this.#selected.get(target)??[])].filter(p=>!this.#snapshot.task.context.includes(p)).reduce((n,p)=>n+Buffer.byteLength(context.contents[p]!),0);
@@ -119,6 +132,10 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
     this.#requested.set(target,count);
     if(!staticRequest&&this.#snapshot.task.discovery!.mode!=='static+reads')reason='additional-read-disabled';
     if(count>this.#snapshot.task.discovery!.maxReadCalls)reason='read-call-limit';
+    if(paths.length>this.#snapshot.task.discovery!.maxPathsPerRead){
+      this.#requests.push({callId,target,paths,accepted:false,reason:'read-path-limit'});
+      return this.defer(target,context,callId,'read-path-limit: too many paths in one request',true);
+    }
     let selected=new Set(this.#selected.get(target));
     try {
       for(const path of this.closure(paths,scan))if(path!==target)selected.add(path);
@@ -139,7 +156,7 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
     }
     if(action.kind==='read')return this.request(target,context,callId,action.paths);
     const contents=Object.fromEntries([...this.#public].map(p=>[p,p===target?action.content:(context.contents[p]??kernel.artifact(p).content)]));
-    const scan=await discoverRepoDependencies(contents,[...this.#public]);this.scans.push(scan);
+    const scan=await discoverRepoDependencies(contents,[...this.#public],[...this.#targets]);this.scans.push(scan);
     let required:Set<string>;
     try{required=this.closure([target],scan);}catch(error){return this.defer(target,context,callId,String(error),false);}
     required.delete(target);
@@ -165,7 +182,7 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
   }
   metrics(calls:readonly {role:string;target:string;contextBytes:number}[]) {
     const workers=calls.filter(c=>c.role==='worker');const sizes=workers.map(c=>c.contextBytes).sort((a,b)=>a-b);
-    return {selectedTargets:this.#targets.size,activatedTargets:new Set(workers.map(c=>c.target)).size,
+    return {selectedTargets:this.#targets.size,activatedTargets:new Set(workers.map(c=>c.target)).size,initiallyActivatedTargets:this.activation.activeTargets.length,
       scanCount:this.scans.length,scannedFiles:this.scans.reduce((n,s)=>n+s.filesRead,0),scannedBytes:this.scans.reduce((n,s)=>n+s.bytesRead,0),scanDurationMs:this.scans.reduce((n,s)=>n+s.durationMs,0),
       contextBytes:{total:sizes.reduce((n,b)=>n+b,0),p95:sizes[Math.max(0,Math.ceil(sizes.length*0.95)-1)]??0,max:sizes.at(-1)??0},
       uniqueDeliveredDependencies:new Set(this.#deliveries.map(d=>d.path)).size,readRequests:this.#requests.length,
@@ -173,6 +190,7 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
       additionalDeliveredBytes:[...this.#deliveredBytes.values()].reduce((n,b)=>n+b,0)};
   }
   async save(directory:string):Promise<void> {
+    await writeFile(join(directory,'activation.json'),JSON.stringify({format:1,...this.activation,limitations:['static-and-declared-context-impact-only','changed-paths-are-host-declared','final-oracle-still-covers-all-targets']},null,2)+'\n');
     await writeFile(join(directory,'dependency-evidence.json'),JSON.stringify({format:1,edges:this.dependencies(),evidence:this.#evidence,scans:this.scans},null,2)+'\n');
     await writeFile(join(directory,'read-deliveries.json'),JSON.stringify({format:1,requests:this.#requests,deliveries:this.#deliveries,additionalBytesByTarget:Object.fromEntries(this.#deliveredBytes)},null,2)+'\n');
     await writeFile(join(directory,'uncertainties.json'),JSON.stringify({format:1,claims:this.#uncertainties},null,2)+'\n');

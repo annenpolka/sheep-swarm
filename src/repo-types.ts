@@ -21,11 +21,12 @@ export interface RepoDiscoveryOptions {
   readonly mode: 'static' | 'static+reads';
   readonly readable: readonly string[];
   readonly maxReadCalls: number;
+  readonly maxPathsPerRead: number;
   readonly maxDeliveredBytes: number;
 }
 export type RepoTask = RepoTaskBase & (
-  | {readonly version: 1; readonly discovery?: never}
-  | {readonly version: 2; readonly discovery: RepoDiscoveryOptions}
+  | {readonly version: 1; readonly discovery?: never; readonly activation?: never}
+  | {readonly version: 2; readonly discovery: RepoDiscoveryOptions; readonly activation?: {readonly changedPaths: readonly string[]}}
 );
 export interface RepoEntry { readonly bytes: Buffer; readonly mode: number }
 export interface RepoSnapshot {
