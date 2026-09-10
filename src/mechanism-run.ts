@@ -1,23 +1,27 @@
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { callCodex, CodexWorkerError, type CodexCallResult } from "./codex-worker.ts";
-import { callDockerAgent, dockerWorkspaceWrites, SANDBOX_TEMPLATE, type DockerAgentOptions, type DockerTranscript } from "./docker-agent-worker.ts";
+import { CodexWorkerError, type CodexCallResult } from "./codex-worker.ts";
+import { dockerWorkspaceWrites, SANDBOX_TEMPLATE, type DockerAgentOptions, type DockerTranscript } from "./docker-agent-worker.ts";
 import { createDockerFixtureObserver } from "./docker-fixture-observer.ts";
 import type { FixtureObserver } from "./fixture.ts";
 import { CreditBudget } from "./credit-budget.ts";
 import { parseRateCard, type RateCard } from "./cost-estimate.ts";
 import { createMechanismFixture } from "./mechanism-fixture.ts";
 import { KernelError, SwarmKernel, type Checkout, type Contents } from "./kernel.ts";
+import { callerForRuntime, resolveRoleRuntimes, type ModelRuntime } from "./model-runtime.ts";
+import { TokenBudget } from "./token-budget.ts";
 import { WorkerPool, type WorkerAssignment } from "./worker-pool.ts";
 
-export const MECHANISM_METHODS = ["sheep", "single-luna", "single-astra", "no-memory", "no-upper"] as const;
+export const MECHANISM_METHODS = ["sheep", "single-luna", "single-worker", "single-astra", "no-memory", "no-upper"] as const;
 export type MechanismMethod = typeof MECHANISM_METHODS[number];
 export type MechanismFamily = "static" | "semantic" | "staged";
 export interface MechanismResponse { writes: { id: string; content: string }[]; readRequests: string[]; note: string }
 export type MechanismCaller = (options: DockerAgentOptions) => Promise<CodexCallResult<MechanismResponse>>;
 export interface MechanismOptions {
-  runtime?: "codex" | "docker-agent"; workerTools?: "none" | "local"; maxTokensPerCall?: number;
+  runtime?: ModelRuntime; metaRuntime?: ModelRuntime; workerModel?: string; metaModel?: string;
+  workerTools?: "none" | "local"; maxTokensPerCall?: number;
+  budgetMode?: "credits" | "tokens"; maxTokens?: number; reserveTokensPerCall?: number;
   method?: MechanismMethod; family: MechanismFamily; groups?: number; workers?: number; concurrency?: number;
   outputDirectory: string; rateCard?: RateCard; maxCredits?: number; lunaReservation?: number; astraReservation?: number;
   maxCalls?: number; timeoutMs?: number; maxAttempts?: number; maxReadCalls?: number; maxMetaCalls?: number;
@@ -26,9 +30,9 @@ export interface MechanismCall {
   id: string; stage: number; agent: string; role: "worker" | "single" | "meta"; target: string | null; model: string;
   outcome: string; errors: string[]; durationMs: number; contextArtifacts: string[]; contextBytes: number;
   memoryEntries: number; readRequests: string[]; writtenIds: string[]; effectiveModelEvidence: string | null;
-  credits: number | null; reservationOverrun: boolean;
+  credits: number | null; tokens: number | null; reservationOverrun: boolean;
 }
-export type MechanismTermination = "completed" | "credit-admission-limit" | "call-limit" | "attempt-limit"
+export type MechanismTermination = "completed" | "credit-admission-limit" | "token-admission-limit" | "call-limit" | "attempt-limit"
   | "final-quality-failed" | "protocol-incomplete" | "budget-unknown" | "budget-exceeded"
   | "context-boundary" | "scheduler-stalled" | "execution-error";
 export interface MechanismStage {
@@ -93,31 +97,58 @@ export function mechanismToolEvents(receipt: unknown, local = false): string[] {
 }
 
 /** Public artifact mechanism pilot. The final oracle is a barrier, never model feedback. */
-export async function runMechanism(options: MechanismOptions, caller: MechanismCaller = options.runtime === "docker-agent" ? callDockerAgent<MechanismResponse> : callCodex<MechanismResponse>, observer?: FixtureObserver) {
+export async function runMechanism(options: MechanismOptions, injected?: MechanismCaller, observer?: FixtureObserver) {
   const method = options.method ?? "sheep";
   if (!MECHANISM_METHODS.includes(method)) throw new Error("unknown mechanism method");
   if (!["static", "semantic", "staged"].includes(options.family)) throw new Error("unknown mechanism family");
-  if (options.runtime !== undefined && !["codex", "docker-agent"].includes(options.runtime)) throw new Error("unknown runtime");
-  if (options.workerTools !== undefined && !["none", "local"].includes(options.workerTools)) throw new Error("unknown worker tools");
-  if (options.workerTools === "local" && options.runtime !== "docker-agent") throw new Error("Local tools require Docker Agent");
-  if (options.runtime === "docker-agent" && method === "single-astra") throw new Error("Use single-luna for new standalone trials");
-  const single = method === "single-luna" || method === "single-astra";
-  const configuration = { runtime: options.runtime ?? "codex", workerTools: options.workerTools ?? "none",
-    maxTokensPerCall: options.maxTokensPerCall ?? 60000, method, family: options.family, groups: options.groups ?? 8,
+  const resolved = resolveRoleRuntimes({
+    ...(options.runtime === undefined ? {} : { runtime: options.runtime }),
+    ...(options.metaRuntime === undefined ? {} : { metaRuntime: options.metaRuntime }),
+    ...(options.workerModel === undefined ? {} : { workerModel: options.workerModel }),
+    ...(options.metaModel === undefined ? {} : { metaModel: options.metaModel }),
+    ...(options.workerTools === undefined ? {} : { workerTools: options.workerTools }),
+    maxTokensPerCall: options.maxTokensPerCall ?? 60_000 });
+  const budgetMode = options.budgetMode ?? "credits";
+  if (budgetMode !== "credits" && budgetMode !== "tokens") throw new Error("unknown budget mode");
+  const tokenOptions = [options.maxTokens, options.reserveTokensPerCall];
+  const creditOptions = [options.maxCredits, options.lunaReservation, options.astraReservation, options.rateCard];
+  if (budgetMode === "tokens") {
+    if (creditOptions.some((value) => value !== undefined)) throw new Error("credit budget options cannot be combined with the token budget mode");
+    if (!Number.isSafeInteger(options.maxTokens) || options.maxTokens! < 0
+      || !Number.isSafeInteger(options.reserveTokensPerCall) || options.reserveTokensPerCall! < 1)
+      throw new RangeError("token budget requires a nonnegative maxTokens and a positive reserveTokensPerCall");
+  } else if (tokenOptions.some((value) => value !== undefined)) {
+    throw new Error("token budget options cannot be combined with the credit budget mode");
+  }
+  if (resolved.runtime === "deepseek" || resolved.metaRuntime === "deepseek" || resolved.runtime === "opencode-go" || resolved.metaRuntime === "opencode-go") {
+    if (budgetMode !== "tokens") throw new Error("the mechanism credit budget does not support API runtimes; use --budget-mode tokens");
+  }
+  if (resolved.runtime === "docker-agent" && method === "single-astra") throw new Error("Use single-luna for new standalone trials");
+  const single = method === "single-luna" || method === "single-worker" || method === "single-astra";
+  const workerCaller = injected ?? callerForRuntime<MechanismResponse>(resolved.runtime);
+  const metaCaller = injected ?? callerForRuntime<MechanismResponse>(resolved.metaRuntime);
+  const isUpper = (role: MechanismCall["role"]) => role === "meta" || (role === "single" && method === "single-astra");
+  const configuration = { runtime: resolved.runtime, metaRuntime: resolved.metaRuntime, workerTools: resolved.workerTools,
+    budgetMode, maxTokens: options.maxTokens ?? 0, reserveTokensPerCall: options.reserveTokensPerCall ?? 1,
+    maxTokensPerCall: resolved.maxTokensPerCall, method, family: options.family, groups: options.groups ?? 8,
     workers: single ? 1 : options.workers ?? 16, concurrency: single ? 1 : options.concurrency ?? 8,
     maxCredits: options.maxCredits ?? 30, lunaReservation: options.lunaReservation ?? 0.25,
     astraReservation: options.astraReservation ?? 15, maxCalls: options.maxCalls ?? 400,
     timeoutMs: options.timeoutMs ?? 90_000, maxAttempts: options.maxAttempts ?? 3, maxReadCalls: options.maxReadCalls ?? 2,
-    maxMetaCalls: options.maxMetaCalls ?? 3, workerModel: "gpt-5.6-luna", metaModel: "gpt-6-astra",
+    maxMetaCalls: options.maxMetaCalls ?? 3, workerModel: resolved.workerModel, metaModel: resolved.metaModel,
     memoryLimit: method === "no-memory" ? 0 : 4 };
   for (const key of ["groups", "workers", "concurrency", "maxCalls", "timeoutMs", "maxTokensPerCall", "maxAttempts"] as const)
     if (!Number.isSafeInteger(configuration[key]) || configuration[key] < 1) throw new RangeError(`${key} must be positive`);
   for (const key of ["maxReadCalls", "maxMetaCalls"] as const)
     if (!Number.isSafeInteger(configuration[key]) || configuration[key] < 0) throw new RangeError(`${key} must be nonnegative`);
   if (configuration.concurrency > configuration.workers) throw new RangeError("concurrency exceeds workers");
-  const rateCard = options.rateCard ?? parseRateCard(JSON.parse(await readFile(new URL("../pricing/openai-2026-09-10.json", import.meta.url), "utf8")));
-  const budget = new CreditBudget({ maxCredits: configuration.maxCredits, rateCard,
-    reservations: { "gpt-5.6-luna": configuration.lunaReservation, "gpt-6-astra": configuration.astraReservation } });
+  const rateCard = budgetMode === "credits"
+    ? options.rateCard ?? parseRateCard(JSON.parse(await readFile(new URL("../pricing/openai-2026-09-10.json", import.meta.url), "utf8")))
+    : null;
+  const budget = budgetMode === "tokens"
+    ? new TokenBudget({ maxTokens: options.maxTokens!, reserveTokensPerCall: options.reserveTokensPerCall! })
+    : new CreditBudget({ maxCredits: configuration.maxCredits, rateCard: rateCard!,
+        reservations: { "gpt-5.6-luna": configuration.lunaReservation, "gpt-6-astra": configuration.astraReservation } });
   const sandbox = configuration.runtime === "docker-agent";
   const fixture = createMechanismFixture({ family: configuration.family, groups: configuration.groups,
     ...(sandbox ? { observe: observer ?? createDockerFixtureObserver(join(options.outputDirectory, "acceptance")) } : {}) });
@@ -132,6 +163,7 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
   const singleMemory: { stage: number; note: string; outcome: string }[] = [];
   let serial = 0, active = 0, maxActiveModelCalls = 0, interventions = 0;
   const started = performance.now();
+  const sessionSeed = randomUUID();
   let contents: Contents = fixture.artifacts;
   let kernel: SwarmKernel | null = null;
   const fatalErrors: string[] = [];
@@ -194,13 +226,14 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
       };
       const invoke = async (role: MechanismCall["role"], agent: string, target: string | null, context: Checkout,
         memory: readonly unknown[], extra: Record<string, unknown> = {}) => {
-        const model = role === "meta" || method === "single-astra" ? "gpt-6-astra" : "gpt-5.6-luna";
+        const model = isUpper(role) ? configuration.metaModel : configuration.workerModel;
+        const roleRuntime = isUpper(role) ? configuration.metaRuntime : configuration.runtime;
         if (calls.length >= configuration.maxCalls || !budgetOkay()) return null;
         const id = `call-${++serial}`;
         if (!budget.reserve(model, id)) return null;
         const record: MechanismCall = { id, stage, agent, role, target, model, outcome: "running", errors: [], durationMs: 0,
           contextArtifacts: Object.keys(context.reads), contextBytes: Buffer.byteLength(JSON.stringify(context.contents)),
-          memoryEntries: memory.length, readRequests: [], writtenIds: [], effectiveModelEvidence: null, credits: null, reservationOverrun: false };
+          memoryEntries: memory.length, readRequests: [], writtenIds: [], effectiveModelEvidence: null, credits: null, tokens: null, reservationOverrun: false };
         calls.push(record); active++; maxActiveModelCalls = Math.max(maxActiveModelCalls, active); current.beginWork(id, agent);
         const localTools = configuration.workerTools === "local" && role !== "meta";
         const instruction = role === "meta"
@@ -225,13 +258,15 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
         let value: MechanismResponse | null = null;
         let transcriptIntegrityFailure: string | null = null;
         try {
-          const result = await caller({ model, prompt, schema, cwd: workspace, timeoutMs: configuration.timeoutMs,
+          const result = await (isUpper(role) ? metaCaller : workerCaller)({ model, prompt, schema, cwd: workspace, timeoutMs: configuration.timeoutMs,
             outputDirectory: join(options.outputDirectory, "transcripts"), signal: controller.signal,
-            ...(sandbox ? { maxTokens: configuration.maxTokensPerCall } : {}),
+            sessionId: `${sessionSeed}:${role}:${agent}`,
+            ...(sandbox || roleRuntime === "deepseek" || roleRuntime === "opencode-go" ? { maxTokens: configuration.maxTokensPerCall } : {}),
             ...(localTools ? { tools: "local", files: { ...context.contents, "visible.test.mjs": feedback!.source } } : {}) });
           receipt = result; record.effectiveModelEvidence = result.transcript.effectiveModelEvidence;
           if (result.requestedModel !== model || result.transcript.requestedModel !== model
-            || (record.effectiveModelEvidence !== null && record.effectiveModelEvidence !== model)) throw new Error("requested model identity mismatch");
+            || (roleRuntime !== "deepseek" && roleRuntime !== "opencode-go" && record.effectiveModelEvidence !== null && record.effectiveModelEvidence !== model))
+            throw new Error("requested model identity mismatch");
           value = response(result.result);
           if (localTools) value = response({ ...value, writes: Object.entries(dockerWorkspaceWrites(result.transcript)).map(([id, content]) => ({ id, content })) });
           record.outcome = "received";
@@ -246,8 +281,11 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
           const tools = [...mechanismToolEvents(receipt, localTools), ...(transcriptIntegrityFailure ? [`incomplete-transcript:${transcriptIntegrityFailure}`] : [])];
           if (tools.length) { boundaryViolations.push({ callId: id, events: tools }); controller.abort(); record.outcome = "boundary-violation"; value = null; }
           const transcript = (receipt as { transcript?: Partial<DockerTranscript> }).transcript;
-          if (sandbox && transcript?.cleanupSucceeded !== true) { fatalErrors.push("sandbox-cleanup-unverified"); controller.abort(); value = null; }
-          const settled = budget.settle(id, receipt); record.credits = settled.credits; record.reservationOverrun = settled.overrun;
+          // Cleanup follows the role actually invoked, not the worker's sandbox flag.
+          if (roleRuntime === "docker-agent" && transcript?.cleanupSucceeded !== true) { fatalErrors.push("sandbox-cleanup-unverified"); controller.abort(); value = null; }
+          const settled = budget.settle(id, receipt);
+          if ("credits" in settled) record.credits = settled.credits; else record.tokens = settled.tokens;
+          record.reservationOverrun = settled.overrun;
           await writeFile(join(options.outputDirectory, `${id}.json`), JSON.stringify(receipt, null, 2) + "\n");
           active--; current.endWork(id);
         }
@@ -364,7 +402,7 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
           const called = await invoke("single", "single", null, context, singleMemory, { readyTargets: eligible,
             remainingPatchAttempts: Object.fromEntries([...fixture.writableIds, fixture.guidanceId].map(id => [id, Math.max(0, configuration.maxAttempts - (attempts.get(id) ?? 0))])),
             previousVisibleErrors: Object.fromEntries(failures) });
-          if (!called) { terminationReason = "credit-admission-limit"; break; }
+          if (!called) { terminationReason = budgetMode === "tokens" ? "token-admission-limit" : "credit-admission-limit"; break; }
           const rememberSingle = () => {
             singleMemory.push({ stage, note: (called.value?.note ?? called.record.errors.join("\n")).slice(0, 1200), outcome: called.record.outcome });
             if (singleMemory.length > 4) singleMemory.shift();
@@ -385,8 +423,11 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
         } else {
           if (!eligible.length) { terminationReason = "attempt-limit"; break; }
           const availableBudget = budget.snapshot();
-          const affordable = Math.max(0, Math.floor((availableBudget.maxCredits - availableBudget.observedCredits - availableBudget.reservedCredits) / configuration.lunaReservation));
-          if (affordable < 1) { terminationReason = "credit-admission-limit"; break; }
+          const remaining = "maxCredits" in availableBudget
+            ? (availableBudget.maxCredits - availableBudget.observedCredits - availableBudget.reservedCredits) / configuration.lunaReservation
+            : (availableBudget.maxTokens - availableBudget.observedTokens - availableBudget.reservedTokens) / configuration.reserveTokensPerCall;
+          const affordable = Math.max(0, Math.floor(remaining));
+          if (affordable < 1) { terminationReason = budgetMode === "tokens" ? "token-admission-limit" : "credit-admission-limit"; break; }
           const jobs = eligible.slice(0, Math.min(configuration.concurrency, configuration.maxCalls - calls.length, affordable));
           const assignments = pool.assign(jobs.map(target => ({ target, neighbors: [...learned.values()].filter(edge => edge.consumer === target).map(edge => edge.provider) })));
           const previousCalls = calls.length;
@@ -414,8 +455,8 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
           : terminationReason ?? (!quality.ok ? "final-quality-failed" : !completion.ok ? "protocol-incomplete" : "scheduler-stalled");
       stages.push({ stage, terminationReason, success, qualityPass: quality.ok, protocolClean: clean,
         errors: [...new Set([...quality.errors, ...completion.errors, ...(!budgetOkay() ? ["budget-or-boundary-unverified"] : [])])],
-        calls: stageCalls.length, lowerCalls: stageCalls.filter(c => c.model === "gpt-5.6-luna").length,
-        upperCalls: stageCalls.filter(c => c.model === "gpt-6-astra").length,
+        calls: stageCalls.length, lowerCalls: stageCalls.filter(c => !isUpper(c.role)).length,
+        upperCalls: stageCalls.filter(c => isUpper(c.role)).length,
         readCalls: stageCalls.filter(c => c.outcome === "read-requested").length, interventions: interventions - firstIntervention,
         patchAttempts: Object.fromEntries(attempts), readAttempts: Object.fromEntries(reads), elapsedMs: performance.now() - stageStart });
       contents = current.contents();
@@ -430,7 +471,7 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
     terminationReason: fatalErrors.length ? "execution-error" as const : stages.at(-1)?.terminationReason ?? "scheduler-stalled" as const,
     qualityPass: stages.length === fixture.stageCount && stages.every(s => s.qualityPass),
     finalErrors: [...fatalErrors, ...stages.filter(s => !s.success).flatMap(s => s.errors)],
-    calls, lowerCalls: calls.filter(c => c.model === "gpt-5.6-luna").length, upperCalls: calls.filter(c => c.model === "gpt-6-astra").length,
+    calls, lowerCalls: calls.filter(c => !isUpper(c.role)).length, upperCalls: calls.filter(c => isUpper(c.role)).length,
     interventions, stages, budget: finalBudget, maxActiveModelCalls, workerStats: pool.stats(),
     discovery: { deliveredEdges: discovery, edges: [...learned.values()] }, boundaryViolations,
     singleMemory,

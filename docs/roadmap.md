@@ -89,6 +89,20 @@ DB選定とschemaは、この段階でruntimeの要件とローカルの互換�
 
 次の範囲: pool再利用と汚染検査、Node 24+のtemplate、Astra介入を含む実走、Docker条件での規模・対照実験。今回の復帰時回収は常駐watcherやrun再開ではない。一般repo・32 VM並列・費用優位・並列durabilityは本導入の完了条件に含まない。
 
+## DeepSeek直接API — 実験用opt-in adapter完了
+
+2026-09-10の利用者依頼により、DeepSeek APIへ直接接続する任意runtimeを追加した。実装は指定のOpenCodeモデルへ委譲し、実行時はNodeのfetchを使う。`src/deepseek-worker.ts`はbearer認証、JSON mode、`thinking`無効化、明示`max_tokens`、4MiB上限のbounded bodyで1回だけ呼び出し、`finish_reason: stop`・内容・schema適合を検査する。要求modelとproviderが返したmodel名は別に保存し、HTTP失敗・応答過大・timeout・取消は秘匿情報を伏せたtranscriptへ残す。
+
+完了条件: `swarm --runtime deepseek`が`--worker-model`の生API idを要求し、provider prefix・Astraのmeta・不明meta runtimeをCLI/`runSwarm`の入力段階で拒否する。`--meta-runtime`未指定時のmetaはCodexとし、`--max-tokens-per-call`をDeepSeek呼出しへ渡す。使用量欠落・不整合は0と数えず、発行済み同時callの回収後に新規受付と上位介入を止め、runを失敗にする。すべて注入`fetch`またはloopbackのテストで確認し、実network・実keyを通常gateへ持ち込まない。
+
+呼出し側で303テストを再検証し、実APIでも1 worker・size 2の全3成果物が3callで確定した。要求beta IDと応答名`deepseek-flash`は別々に保存した。[実行証拠と未確認範囲](results/deepseek-api.md)
+
+## DeepSeek runtimeのrunner横断 — compare・durable・mechanism token予算
+
+runtime選択とusage判定を`src/model-runtime.ts`へ集約し、`compare`と`durable`へ接続した。`compare`は`--runtime`/`--meta-runtime`/`--worker-model`/`--meta-model`/`--max-tokens-per-call`を受け、`single-worker`対照とrole単位の下位・上位call計数を行う。同じmodel idの下位・上位はroleで区別し、providerの応答aliasは証拠として保持しつつ`requestedModel`の不一致だけを拒否する。`durable`はruntime/model/maxTokensPerCallをsnapshotへ保存し、legacy format-1 snapshotは既定値へ正規化して再開し、不明usageはlockして完了扱いにせず、再開時の新規callとoverrideを拒否する。`scripts/compare-experiment.mjs`と`scripts/scale-experiment.mjs`は選択したprofileを転送・記録する。
+
+mechanismのcredit予算seriesは[実行計画](execplan-mechanism.md)ごと凍結したまま、`--budget-mode tokens --max-tokens --reserve-tokens`でDeepSeek/混合upperをcreditと分離したtoken予算で実行できる。`src/token-budget.ts`はcache splitを知らなくてもinput+outputの観測下限で受付を制御し、不明usageは恒久的に新規受付をlockする。credit modeでのDeepSeekは有料callの前に拒否する。`scripts/mechanism-token-experiment.mjs`は条件を逐次実行し、残予算を子runへ転送して子のtoken/回数を合算し、unknown usage・receipt欠落・model不一致・子run失敗/interruptでfail closedになる。mechanismのcredit結果をtokenと比較可能とは主張しない。実network・実key・実課金は通常gateに含めない。
+
 ## 再検討する条件
 
 - 下位が局所作業を完遂できない: 分割、context、道具、モデルの組を見直す。
@@ -98,3 +112,11 @@ DB選定とschemaは、この段階でruntimeの要件とローカルの互換�
 - 隠れた依存が受入テストでも分からない: 検証のscopeを拡大し、保証を限定する。
 
 2026-09-10の追加方針: Astra単独は費用の目安を得たため、今後の試行から省く。単独対照はLuna、群れの必要時介入はAstraを継続する。新規の機構実験はpilot 4条件・main 25条件とし、過去の実行証跡は上記の件数で保持する。
+
+2026-09-10追加の完了証拠: 各runnerの実API実行8条件が成功。token系列の3familyは37call・109,994tokens、全stageの固定oracleが成功した。永続runは完了後のresumeで追加callなし。既存単価を捏造せず、beta価格は不明のまま保持した。[横断実行と独立検証](results/deepseek-runners.md)
+
+## OpenCode Go runtime
+
+利用者の「luna swarmで実装を進めて」に従い、Lunaの作業エージェントでAPI adapter・runner接続・使用量集計を分担する。完了条件は3 API形式のschema検査、workerごとの安定session、durable再開互換、不明usageと429時の新規受付停止、既存runtimeの回帰検査。GoをCodex creditや直接DeepSeekの料金へ置換しない。[導入仕様](opencode-go.md)。上記条件を満たし、378テストとGo経由の実Luna 4条件・13callに成功した。[実装と検証記録](results/opencode-go.md)。
+
+2026-09-10追加: Astra独立レビューの6指摘と再確認で見つかった停止判定の不足を、Go DeepSeek V4.1 Flashの同一sessionで修正した。Astraが既出指摘の解消を確認し、親の404テスト・型検査・参照照合が成功した。[修正と独立検証](results/astra-go-review.md)。

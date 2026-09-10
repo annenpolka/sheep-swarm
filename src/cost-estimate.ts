@@ -24,7 +24,7 @@ export interface TokenUsage {
   readonly outputTokens: number | null;
   /** Already included in outputTokens; never charged a second time. */
   readonly reasoningOutputTokens: number | null;
-  readonly source: "turn.completed" | "raw-usage" | "normalized" | "docker-agent.per-message" | "missing" | "ambiguous";
+  readonly source: "turn.completed" | "raw-usage" | "normalized" | "docker-agent.per-message" | "deepseek.chat-completion" | "opencode-go.chat-completions" | "opencode-go.responses" | "opencode-go.messages" | "missing" | "ambiguous";
   readonly partial?: boolean;
   readonly issues: readonly string[];
 }
@@ -83,6 +83,8 @@ function token(row: Record<string, unknown>, ...keys: string[]): number | null {
 export function extractTokenUsage(receipt: unknown): TokenUsage {
   const data = record(receipt), transcript = record(data?.transcript);
   if (transcript?.runtime === "docker-agent") return dockerUsage(transcript);
+  if (transcript?.runtime === "deepseek") return deepSeekUsage(transcript);
+  if (transcript?.runtime === "opencode-go") return openCodeGoUsage(transcript);
   const events = Array.isArray(transcript?.events) ? transcript.events.flatMap(item => record(item) ? [record(item)!] : []) : [];
   const completed = events.filter(event => event.type === "turn.completed" && record(event.usage));
   const raw = events.filter(event => record(event.usage) || event.type === "usage");
@@ -112,6 +114,149 @@ export function extractTokenUsage(receipt: unknown): TokenUsage {
     issues.push("Invalid reasoning token count exceeds output tokens");
   }
   return { inputTokens, cachedInputTokens, cacheWriteInputTokens, outputTokens, reasoningOutputTokens, source, issues };
+}
+
+/** Offline usage reader for the OpenCode Go gateway.  Go's subscription is
+ * deliberately not treated as either a Codex credit balance or direct API
+ * dollars; this only extracts provider-reported token quantities. */
+function openCodeGoUsage(transcript: Record<string, unknown>): TokenUsage {
+  const row = record(transcript.rawUsage), format = transcript.apiFormat;
+  const source = format === "chat-completions" ? "opencode-go.chat-completions"
+    : format === "responses" ? "opencode-go.responses"
+      : format === "messages" ? "opencode-go.messages" : "ambiguous";
+  const unknown = (issue: string): TokenUsage => ({ inputTokens: null, outputTokens: null,
+    cachedInputTokens: null, cacheWriteInputTokens: null, reasoningOutputTokens: null,
+    source, partial: true, issues: [issue] });
+  if (!row) return unknown("Missing OpenCode Go usage");
+  if (source === "ambiguous") return unknown("Invalid or missing OpenCode Go apiFormat");
+
+  const issues: string[] = [];
+  let inputTokens: number | null;
+  let outputTokens: number | null;
+  let cachedInputTokens: number | null = null;
+  let cacheWriteInputTokens: number | null = null;
+  let total: number | null = null;
+  let reasoningOutputTokens: number | null = null;
+  if (format === "chat-completions") {
+    inputTokens = token(row, "prompt_tokens");
+    outputTokens = token(row, "completion_tokens");
+    total = token(row, "total_tokens");
+    const details = record(row.prompt_tokens_details), completion = record(row.completion_tokens_details);
+    const hit = token(row, "prompt_cache_hit_tokens"), miss = token(row, "prompt_cache_miss_tokens");
+    const detailCached = details ? token(details, "cached_tokens") : null;
+    const derivedCached = inputTokens !== null && miss !== null && integer(inputTokens - miss) ? inputTokens - miss : null;
+    cachedInputTokens = hit ?? detailCached ?? derivedCached;
+    reasoningOutputTokens = completion ? token(completion, "reasoning_tokens") : null;
+    if (Object.hasOwn(row, "prompt_tokens_details") && !details) issues.push("Invalid OpenCode Go cache details object");
+    if (Object.hasOwn(row, "completion_tokens_details") && !completion) issues.push("Invalid OpenCode Go completion details object");
+    for (const [sourceRow, key, value, limit] of [
+      [row, "prompt_cache_hit_tokens", hit, inputTokens],
+      [row, "prompt_cache_miss_tokens", miss, inputTokens],
+      [details, "cached_tokens", detailCached, inputTokens],
+      [completion, "reasoning_tokens", reasoningOutputTokens, outputTokens],
+    ] as const) {
+      if (sourceRow && Object.hasOwn(sourceRow, key) && (value === null || limit === null || value > limit))
+        issues.push(`Invalid OpenCode Go ${key}`);
+    }
+    if (hit !== null && miss !== null && inputTokens !== null && hit + miss !== inputTokens)
+      issues.push("Invalid OpenCode Go cache hit/miss partition");
+    if (hit !== null && detailCached !== null && hit !== detailCached)
+      issues.push("Invalid OpenCode Go cache detail contradiction");
+  } else if (format === "responses") {
+    inputTokens = token(row, "input_tokens");
+    outputTokens = token(row, "output_tokens");
+    total = token(row, "total_tokens");
+    const details = record(row.input_tokens_details), completion = record(row.output_tokens_details);
+    cachedInputTokens = details ? token(details, "cached_tokens") : null;
+    reasoningOutputTokens = completion ? token(completion, "reasoning_tokens") : null;
+    if (Object.hasOwn(row, "input_tokens_details") && !details) issues.push("Invalid OpenCode Go input details object");
+    if (Object.hasOwn(row, "output_tokens_details") && !completion) issues.push("Invalid OpenCode Go output details object");
+    if (details && Object.hasOwn(details, "cached_tokens") && cachedInputTokens === null) issues.push("Invalid OpenCode Go cached_tokens");
+    if (completion && Object.hasOwn(completion, "reasoning_tokens") && reasoningOutputTokens === null) issues.push("Invalid OpenCode Go reasoning_tokens");
+  } else {
+    // Anthropic Messages reports uncached input_tokens. Cache read/write are
+    // additional input subsets, so the metered input total includes each once.
+    const baseInput = token(row, "input_tokens");
+    outputTokens = token(row, "output_tokens");
+    total = null;
+    cachedInputTokens = Object.hasOwn(row, "cache_read_input_tokens") ? token(row, "cache_read_input_tokens") : 0;
+    cacheWriteInputTokens = Object.hasOwn(row, "cache_creation_input_tokens") ? token(row, "cache_creation_input_tokens") : 0;
+    // Preserve a trustworthy uncached base as a lower bound when a cache
+    // subset is malformed; the Invalid issue still prevents settlement.
+    const sum = baseInput !== null
+      ? baseInput + (cachedInputTokens ?? 0) + (cacheWriteInputTokens ?? 0) : null;
+    inputTokens = sum !== null && integer(sum) ? sum : null;
+  }
+  if (inputTokens === null) issues.push("Missing or invalid OpenCode Go input token count");
+  if (outputTokens === null) issues.push("Missing or invalid OpenCode Go output token count");
+  const required = format === "chat-completions" ? ["prompt_tokens", "completion_tokens", "total_tokens"]
+    : format === "responses" ? ["input_tokens", "output_tokens", "total_tokens"] : ["input_tokens", "output_tokens"];
+  for (const key of required) {
+    if (!Object.hasOwn(row, key) || token(row, key) === null)
+      issues.push(`Invalid OpenCode Go ${key}`);
+  }
+  if (format === "messages") {
+    for (const key of ["cache_read_input_tokens", "cache_creation_input_tokens"])
+      if (Object.hasOwn(row, key) && token(row, key) === null) issues.push(`Invalid OpenCode Go ${key}`);
+  }
+  if (format === "messages" && Object.hasOwn(row, "total_tokens")) {
+    total = token(row, "total_tokens");
+    if (total === null) issues.push("Invalid OpenCode Go total_tokens");
+  }
+  if (inputTokens !== null && outputTokens !== null && !integer(inputTokens + outputTokens))
+    issues.push("Invalid OpenCode Go total token overflow");
+  if (total !== null && (inputTokens === null || outputTokens === null || inputTokens + outputTokens !== total))
+    issues.push("Invalid OpenCode Go input/output/total token arithmetic");
+  if (inputTokens !== null && (cachedInputTokens ?? 0) + (cacheWriteInputTokens ?? 0) > inputTokens)
+    issues.push("Invalid OpenCode Go cache token partition exceeds input tokens");
+  if (outputTokens !== null && reasoningOutputTokens !== null && reasoningOutputTokens > outputTokens)
+    issues.push("Invalid OpenCode Go reasoning token count exceeds output tokens");
+  if (cachedInputTokens === null) issues.push("Cached input token count is unknown");
+  if (cacheWriteInputTokens === null) issues.push("Cache write input token count is unknown");
+  const partial = transcript.usageCompleteness !== "complete" || transcript.timedOut === true
+    || transcript.cancelled === true || transcript.httpStatus !== 200;
+  if (partial) issues.push("OpenCode Go usage is a known lower bound; the complete total is unknown");
+  return { inputTokens, outputTokens, cachedInputTokens, cacheWriteInputTokens,
+    reasoningOutputTokens, source, partial, issues };
+}
+
+/** Offline receipt reader; keep independent of execution adapters and their imports. */
+function deepSeekUsage(transcript: Record<string, unknown>): TokenUsage {
+  const row = record(transcript.rawUsage), issues: string[] = [];
+  const inputTokens = row ? token(row, "prompt_tokens") : null;
+  const outputTokens = row ? token(row, "completion_tokens") : null;
+  const total = row ? token(row, "total_tokens") : null;
+  const details = record(row?.prompt_tokens_details), completion = record(row?.completion_tokens_details);
+  const hit = row ? token(row, "prompt_cache_hit_tokens") : null;
+  const miss = row ? token(row, "prompt_cache_miss_tokens") : null;
+  const cachedDetail = details ? token(details, "cached_tokens") : null;
+  const reasoningOutputTokens = completion ? token(completion, "reasoning_tokens") : null;
+  const cachedInputTokens = hit ?? cachedDetail ?? (inputTokens !== null && miss !== null ? inputTokens - miss : null);
+  if (inputTokens === null || outputTokens === null || total === null
+    || !integer(inputTokens + outputTokens) || inputTokens + outputTokens !== total)
+    issues.push("Invalid DeepSeek input/output/total token arithmetic");
+  for (const [source, key, value, limit] of [
+    [row, "prompt_cache_hit_tokens", hit, inputTokens],
+    [row, "prompt_cache_miss_tokens", miss, inputTokens],
+    [details, "cached_tokens", cachedDetail, inputTokens],
+    [completion, "reasoning_tokens", reasoningOutputTokens, outputTokens],
+  ] as const) {
+    if (source && Object.hasOwn(source, key) && (value === null || limit === null || value > limit))
+      issues.push(`Invalid DeepSeek ${key}`);
+  }
+  if (row && ((Object.hasOwn(row, "prompt_tokens_details") && !details)
+    || (Object.hasOwn(row, "completion_tokens_details") && !completion)))
+    issues.push("Invalid DeepSeek token details object");
+  if (hit !== null && miss !== null && hit + miss !== inputTokens
+    || hit !== null && cachedDetail !== null && hit !== cachedDetail
+    || miss !== null && cachedDetail !== null && miss + cachedDetail !== inputTokens)
+    issues.push("Invalid DeepSeek cache partition");
+  if (cachedInputTokens === null) issues.push("Cached input token count is unknown");
+  const partial = transcript.usageCompleteness !== "complete" || transcript.timedOut === true
+    || transcript.cancelled === true || transcript.httpStatus !== 200;
+  if (partial) issues.push("DeepSeek usage is a known lower bound; the complete total is unknown");
+  return { inputTokens, outputTokens, cachedInputTokens, cacheWriteInputTokens: 0, reasoningOutputTokens,
+    source: row ? "deepseek.chat-completion" : "missing", partial, issues };
 }
 
 function dockerUsage(transcript: Record<string, unknown>): TokenUsage {
@@ -201,7 +346,10 @@ export function estimateTokenCost(usage: TokenUsage, rates: TokenRates | null, l
 }
 
 export function estimateCallCost(usage: TokenUsage, requestedModel: string, card: RateCard): CallEstimate {
-  const model = Object.hasOwn(card.models, requestedModel) ? card.models[requestedModel] : undefined;
+  // OpenCode Go's subscription/accounting contract has no verified per-token
+  // USD or Codex-credit rate here. Never reuse a same-named provider rate card.
+  const model = usage.source.startsWith("opencode-go.") ? undefined
+    : Object.hasOwn(card.models, requestedModel) ? card.models[requestedModel] : undefined;
   const apiUsd = estimateTokenCost(usage, model?.apiUsdPerMillion ?? null, "API USD");
   const codexCredits = estimateTokenCost(usage, model?.codexCreditsPerMillion ?? null, "Codex credits");
   const exchange = card.usdPerCredit;

@@ -94,6 +94,8 @@ Docker runtimeの受入では、固定oracleの期待値・比較をhostに置�
 
 比較runnerでも同じ隔離境界を使い、必須importの判定だけをVM内の構文情報から返す。単独Lunaは全体を読み、Manager-localとSheepの下位は元の局所checkoutを読む。管理側の不変な広域観測を将来のread dependencyへ変換しない。workerのcleanup失敗は使用量が完全でもrunの失敗とし、新規受付を止める。
 
+`swarm --runtime deepseek`は実験用のopt-in境界であり、従来のCodex既定を変えない。toolを持たない直接chat-completions呼出しへ、呼出し側が渡したschema・promptだけを送り、hostの認証storeや他のpathを渡さない。要求modelと応答の実model証拠は別recordで保持し、`finish_reason`とschema適合を検査する。使い捨ての要求であり自動retryをしない。HTTP失敗・応答過大・timeout・取消はboundedかつ秘匿情報を伏せたtranscriptで扱う。usageは主要counterが揃い整合する場合だけ完全とし、欠落・不一致は0や無料ではなく使用量不明として、発行済み同時callの回収後に新規受付と上位介入を止める。このruntime選択は`swarm`・`compare`・`durable`・`mechanism`で共通の`src/model-runtime.ts`を通じて行い、roleごとのruntime/modelを明示できる。`compare`ではrole単位で下位・上位callを数え、同じmodel idでもroleで区別する。`durable`はruntime/modelをsnapshotへ保存し、不明usageをlockして再開時の再発行を拒否する。`mechanism`のcredit予算seriesは凍結したまま、DeepSeek/混合upperは`--budget-mode tokens`の独立したtoken予算（`src/token-budget.ts`）で実行でき、credit modeでのDeepSeekは有料callの前に拒否する。token予算はcache splitを要求せずinput+outputの観測下限で受付を制御し、不明usageは恒久的に受付をlockする。
+
 VM所有記録はkernelのdurabilityとは独立する。create前にhost/PID/UUID名/templateを保存し、死んだ所有者と同一VMを照合した場合だけ復帰時に削除する。作成中断の記録を不在だけで消さず、遅れて現れるVMにも対応する。PID再利用・host不一致は保守的に残す。所有記録の回収から、モデルの完了・料金・commitを推定しない。
 
 実行APIはsrc/kernel.tsのSwarmKernel。checkoutが読取版と根拠epochを保持し、prepare→trusted verifierによるvalidate→commitで候補snapshotと権限を検査する。内容不変の訂正にも根拠epochを使う。依存登録は観測した内容版と根拠epochの両方から追いつく。完了検査のawait中に始まって終わった作業も、遷移世代の変化として拒否する。
@@ -112,3 +114,5 @@ M4の実行系はsrc/durable-run.ts。SQLiteの世代比較と短いtransaction�
 中央管理の計画観測も不変snapshotとして保持する。計画を適用する直前に観測した全体のread stampsを検査し、仕様変更の継続的な依存は仕様/APIの文脈だけへ限定する。読んだ全文・版・入力量はcall receiptへ残し、読み直し費用を隠さない。広く読んだコードを全て仕様の将来の依存へ変換すると、workerの正当な修正が他のworkerの前提まで失効させることを実走で確認した。
 
 `mechanism`のDocker経路では、要求中の追加readと、実callへ渡したreadを区別する。未読registry・policyの値を可視ケースや事前採点エラーから明かさない。必要な現stageの公開依存がcontextへ揃うまで候補採用も保留し、可視観測VMへはそのcontextのIDだけを送る。登録済みedgeから段階更新後の版を読み直し、最終oracleの失敗はstage barrierで止める。固定の期待値・境界値・必須importは従来どおりhostが保有する。
+
+OpenCode Goは別runtimeとして同じ局所成果物境界へ接続する。protocolはmodel catalogで選び、worker/roleごとのopaque session IDを送る。durableはseedを保存する。session headerを会話履歴やkernel権限とみなさず、全callで配信済み局所contextとschemaを明示する。使用量はGoのAPI形式で独立集計し、Go subscriptionを既存credit単価へ換算しない。[接続契約](opencode-go.md)

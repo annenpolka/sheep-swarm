@@ -39,3 +39,17 @@ npm run estimate:cost -- --rates pricing/openai-2026-09-10.json --root .sheep --
 この見積はStandard・通常contextの条件付き。APIでの仮想token費用、Codex tokenレートのcredit相当、購入単価を明示した換算を分ける。Proなどの含まれる利用枠からの実際の減少、月額料金の割当、Fast、tool料金、税、開発Agent、人間の準備費用は自動推定しない。入力例・レートを変えても、実workerやその予算制御は変わらない。
 
 単価変更時は新しい日付のJSONを作り、出典と確認日を記録する。過去のレートは過去の概算を再現するために残す。
+
+## DeepSeek API
+
+直接APIのレシートから`prompt_cache_hit_tokens`・`prompt_cache_miss_tokens`・`completion_tokens_details.reasoning_tokens`を読み、cacheとreasoningを二重計上しない。使用量欠落、壊れたcounter、途中終了は確定費用にしない。
+
+2026-09-10確認の[公式料金](https://api-docs.deepseek.com/quick_start/pricing/)を[off-peak](deepseek-2026-09-10-off-peak.json)と[peak](deepseek-2026-09-10-peak.json)に分けて保存した。平日01:00–04:00・06:00–10:00 UTCがpeak。run全体の時刻から料金帯を推測せず、用途に応じて料金表を明示する。通常モデルの条件付きAPI見積に使い、DeepSeekのCodexクレジット料金は設定しない。
+
+```sh
+npm run estimate:cost -- --rates pricing/deepseek-2026-09-10-peak.json --run .sheep/my-deepseek-run --output .sheep/my-deepseek-cost.json
+```
+
+期限付き`deepseek-v4.1-flash-expires-on-0910`の公表料金は確認できないためnull。要求名とprovider応答名が異なる場合も、別modelの料金を自動適用しない。これらのrunのtoken上限は費用・残高の強制上限ではない。
+
+OpenCode Goのreceiptは`runtime: opencode-go`とAPI形式に従ってtokenを読む。同じ`gpt-5.6-luna`やDeepSeekのmodel名でも、Goの利用枠を既存の直接API単価・Codex creditへ流用しない。現在はGoの金銭見積をunknownとし、tokenとsubscription残枠・実請求額を区別する。[Go実測と料金識別確認](../docs/results/opencode-go.md)。

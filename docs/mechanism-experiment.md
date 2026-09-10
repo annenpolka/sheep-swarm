@@ -62,6 +62,8 @@ npm run mechanism -- --family staged --method single-luna --groups 8 --max-credi
 
 `--rates FILE` で単独CLIへ別の価格表を渡せる。比較実験では同じ価格表を固定し、条件ごとの都合で変更しない。
 
+このCLIの既定予算はStandardクレジット相当で、DeepSeekの直接API runtimeはcredit modeの対象外とする。credit modeで`--runtime deepseek`を渡した場合は予約・有料呼出しの前に拒否する。DeepSeek/混合upperは`--budget-mode tokens --max-tokens --reserve-tokens`でtoken予算として別経路に分離する。`src/token-budget.ts`はcache splitを知らなくてもinput+outputの観測下限で受付を制御し、不明usageは新規受付をlockする。tokenの観測値をcreditの金額へ換算せず、credit結果とtoken結果を同等とは扱わない。`--rates`はcredit mode専用で、token modeと併用できない。token系列は`mechanism:experiment --budget-mode tokens ...`で逐次実行し、子runのtoken/回数を合算してfail closedにする。
+
 ## 固定した試行行列と研究全体の予算
 
 `mechanism:experiment` は複数試行を順に起動し、全体の受付を管理する。
@@ -164,3 +166,11 @@ node scripts/summarize-mechanism.mjs --run .sheep/mechanism-study-v1 --output .s
 モデルを再呼出しして再現を試す場合は、実験に対応するリポジトリの新規checkoutを用意し、その上へ対応する `frozen-source/` の内容をコピーする。そこで `npm ci` と `npm run check` を実行した後、新しい出力先で同じ設定を実行する。凍結ディレクトリには `experiments/` や参照資料snapshotの全体を含めないため、単独で完全なリポジトリ検査を再現できるアーカイブではない。保存原本へ依存ファイルや新しいrunを追加しない。再呼出しは追加費用を伴う新しい試行であり、保存済み結果のリプレイではない。
 
 この実行器とdispatcherに途中再開機能はない。中断した試行を同じIDで成功に置き換えず、旧記録と未確定の使用量を保持する。未知の使用量が残る過去ディレクトリは `--prior` として受付を通らない。元の[永続化・再開実験](results/durable-restart.md)はC=1の別実行器についての証拠である。
+
+## DeepSeek workerのtoken系列
+
+`npm run mechanism:experiment -- --budget-mode tokens`は独立したtoken系列を起動する。`--families static,semantic,staged`、`--methods sheep,single-worker`で条件を指定し、`--max-tokens`・`--reserve-tokens`・`--max-calls`が系列全体の受付を制限する。`--max-meta-calls`は子runごとの上限で既定0。`--timeout-ms`と`--max-tokens-per-call`も子runへ転送する。
+
+出力先は新規directoryに限定し、子run起動前に`token-series.json`へpending条件と引数を保存する。子の集計をそのまま信用せず、各call receiptを要求modelごとに再集計する。usage不明・receipt欠落・model不一致・集計不一致・子run失敗・割込で次条件を止め、既知の使用量は失敗時も保持する。`usageComplete:false`の観測値は下限であり、0でも無料を意味しない。中断した系列の自動resumeは提供しない。
+
+2026-09-10、指定betaのDeepSeek workerで3 familyすべてを実行し、37call・109,994tokensで固定oracleと全stageのkernel完了を確認した。[全runnerの実行記録](results/deepseek-runners.md)。これは従来credit系列の比較実験とは別の接続・動作検証である。

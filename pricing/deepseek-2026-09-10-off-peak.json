@@ -1,0 +1,59 @@
+{
+  "format": 1,
+  "verifiedOn": "2026-09-10",
+  "currency": "USD",
+  "usdPerCredit": null,
+  "period": "off-peak",
+  "assumptions": [
+    "Conditional API token estimate, not an observed invoice. User selects the rate period; no time-of-day inference from cumulative run timestamps.",
+    "Peak: Monday-Friday 01:00-04:00 and 06:00-10:00 UTC; off-peak otherwise.",
+    "Cache hit is a subset of input; reasoning is a subset of output. DeepSeek has no separate billed cache-write token class in this API contract.",
+    "Codex credit prices and the dated beta API price are unknown.",
+    "Model identity conflicts remain visible and may prevent exact pricing."
+  ],
+  "models": {
+    "deepseek-v4-flash": {
+      "apiUsdPerMillion": {
+        "input": 0.22,
+        "cachedInput": 0.007,
+        "cacheWrite": null,
+        "output": 0.66
+      },
+      "codexCreditsPerMillion": null,
+      "sources": {
+        "api": "https://api-docs.deepseek.com/quick_start/pricing/"
+      }
+    },
+    "deepseek-v4-pro": {
+      "apiUsdPerMillion": {
+        "input": 0.66,
+        "cachedInput": 0.022,
+        "cacheWrite": null,
+        "output": 1.98
+      },
+      "codexCreditsPerMillion": null,
+      "sources": {
+        "api": "https://api-docs.deepseek.com/quick_start/pricing/"
+      }
+    },
+    "deepseek-v4-flash-vision-exp": {
+      "apiUsdPerMillion": {
+        "input": 0.22,
+        "cachedInput": 0.007,
+        "cacheWrite": null,
+        "output": 0.66
+      },
+      "codexCreditsPerMillion": null,
+      "sources": {
+        "api": "https://api-docs.deepseek.com/quick_start/pricing/"
+      }
+    },
+    "deepseek-v4.1-flash-expires-on-0910": {
+      "apiUsdPerMillion": null,
+      "codexCreditsPerMillion": null,
+      "notes": [
+        "No published beta price was established. Do not inherit another model rate from the returned alias."
+      ]
+    }
+  }
+}

@@ -1,10 +1,12 @@
 import { access, mkdir, writeFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
 import { dirname, join, resolve } from "node:path";
-import { callCodex, CodexWorkerError } from "./codex-worker.ts";
+import { CodexWorkerError } from "./codex-worker.ts";
 import type { CodexCallOptions, CodexCallResult, CodexUsage } from "./codex-worker.ts";
 import { createFixture } from "./fixture.ts";
 import { SwarmKernel, KernelError } from "./kernel.ts";
 import type { Checkout, KernelState, Verdict } from "./kernel.ts";
+import { apiRun, callerForRuntime, isApiRuntime, resolveRoleRuntimes, unknownUsageForRun, usageCompleteness, type ModelRuntime } from "./model-runtime.ts";
 import { SqliteJournal } from "./journal.ts";
 
 export type DurableCheckpoint = "initialized" | "before-call" | "after-call" | "after-seen"
@@ -13,13 +15,15 @@ export type DurableCheckpoint = "initialized" | "before-call" | "after-call" | "
 export interface DurableOptions {
   directory: string; resume?: boolean; size?: number; workers?: number; maxCalls?: number; maxMetaCalls?: number;
   timeoutMs?: number; fault?: "none" | "rounded-guidance";
+  runtime?: ModelRuntime; metaRuntime?: ModelRuntime; workerModel?: string; metaModel?: string; maxTokensPerCall?: number;
   checkpoint?: (name: DurableCheckpoint, details: Record<string, unknown>) => Promise<void>;
 }
 interface ModelResponse { content: string; note: string }
 export type DurableModelCaller = (options: CodexCallOptions) => Promise<CodexCallResult<ModelResponse>>;
 interface DurableConfiguration {
   size: number; workers: number; concurrency: 1; maxCalls: number; maxMetaCalls: number; timeoutMs: number;
-  fault: "none" | "rounded-guidance"; workerModel: "gpt-5.6-luna"; metaModel: "gpt-6-astra";
+  fault: "none" | "rounded-guidance"; runtime: ModelRuntime; metaRuntime: ModelRuntime;
+  workerModel: string; metaModel: string; maxTokensPerCall: number;
 }
 export interface DurableCall {
   id: string; role: "worker" | "meta"; agent: string; target: string; model: string; context: string;
@@ -35,7 +39,8 @@ interface Individual {
 interface DurableApplication {
   kind: "sheep-durable-fixture"; format: 1; configuration: DurableConfiguration; startedAt: number;
   calls: DurableCall[]; individuals: Individual[]; nextCall: number; nextHost: number;
-  lastMetaFailureCount: number; resumes: number;
+  lastMetaFailureCount: number; resumes: number; usageLocked: boolean;
+  sessionSeed: string;
   lastResult: { success: boolean; finalErrors: string[]; finishedAt: number } | null;
 }
 export interface DurableReport {
@@ -50,11 +55,21 @@ const responseSchema = { type: "object", properties: { content: { type: "string"
 const cloned = <T>(value: T): T => structuredClone(value);
 
 function configuration(options: Omit<DurableOptions, "directory">): DurableConfiguration {
+  const resolved = resolveRoleRuntimes({
+    ...(options.runtime === undefined ? {} : { runtime: options.runtime }),
+    ...(options.metaRuntime === undefined ? {} : { metaRuntime: options.metaRuntime }),
+    ...(options.workerModel === undefined ? {} : { workerModel: options.workerModel }),
+    ...(options.metaModel === undefined ? {} : { metaModel: options.metaModel }),
+    ...(options.maxTokensPerCall === undefined ? {} : { maxTokensPerCall: options.maxTokensPerCall }),
+  });
+  if (resolved.runtime === "docker-agent" || resolved.metaRuntime === "docker-agent")
+    throw new Error("durable runs do not support the Docker Agent runtime");
   const value: DurableConfiguration = {
     size: options.size ?? 4, workers: options.workers ?? 4, concurrency: 1,
     maxCalls: options.maxCalls ?? (options.size ?? 4) * 6, maxMetaCalls: options.maxMetaCalls ?? 2,
     timeoutMs: options.timeoutMs ?? 120_000, fault: options.fault ?? "none",
-    workerModel: "gpt-5.6-luna", metaModel: "gpt-6-astra",
+    runtime: resolved.runtime, metaRuntime: resolved.metaRuntime,
+    workerModel: resolved.workerModel, metaModel: resolved.metaModel, maxTokensPerCall: resolved.maxTokensPerCall,
   };
   for (const number of [value.size, value.workers, value.maxCalls, value.timeoutMs])
     if (!Number.isSafeInteger(number) || number < 1) throw new RangeError("durable limits must be positive safe integers");
@@ -64,15 +79,41 @@ function configuration(options: Omit<DurableOptions, "directory">): DurableConfi
   return value;
 }
 
+/** Legacy format-1 snapshots predate runtime routing; fill documented defaults before validation. */
+function normalizeConfiguration(raw: Partial<DurableConfiguration>): DurableConfiguration {
+  const routingKeys = ["runtime", "metaRuntime", "maxTokensPerCall"] as const;
+  const legacy = routingKeys.every(key => !Object.hasOwn(raw, key));
+  if (!legacy && routingKeys.some(key => !Object.hasOwn(raw, key)))
+    throw new Error("incomplete durable runtime configuration");
+  if (legacy && (raw.workerModel !== "gpt-5.6-luna" || raw.metaModel !== "gpt-6-astra"))
+    throw new Error("legacy durable snapshot has a nonstandard model identity; refusing to migrate");
+  const withDefaults: DurableConfiguration = legacy ? {
+    ...(raw as DurableConfiguration),
+    runtime: "codex", metaRuntime: "codex", maxTokensPerCall: 30_000,
+  } : raw as DurableConfiguration;
+  const checked = configuration(withDefaults as Omit<DurableOptions, "directory">);
+  for (const key of Object.keys(checked) as (keyof DurableConfiguration)[])
+    if (checked[key] !== withDefaults[key]) throw new Error("durable configuration or model identity changed");
+  return checked;
+}
+
 function readApplication(state: KernelState): DurableApplication {
   const raw = state.application;
   if (!raw || raw.kind !== "sheep-durable-fixture" || raw.format !== 1 || !Array.isArray(raw.calls)
     || !Array.isArray(raw.individuals) || typeof raw.configuration !== "object" || raw.configuration === null)
     throw new Error("invalid durable application state");
   const value = cloned(raw) as unknown as DurableApplication;
-  const config = value.configuration;
-  const checked = configuration(config);
-  if (JSON.stringify(checked) !== JSON.stringify(config)) throw new Error("durable configuration or model identity changed");
+  const legacy = !Object.hasOwn(value.configuration, "runtime")
+    && !Object.hasOwn(value.configuration, "metaRuntime") && !Object.hasOwn(value.configuration, "maxTokensPerCall");
+  const config = normalizeConfiguration(value.configuration as unknown as Partial<DurableConfiguration>);
+  value.configuration = config;
+  if (legacy && !Object.hasOwn(value, "usageLocked")) value.usageLocked = false;
+  if (!Object.hasOwn(value, "sessionSeed")) {
+    if (config.runtime === "opencode-go" || config.metaRuntime === "opencode-go") throw new Error("modern durable snapshot is missing its OpenCode Go session seed");
+    value.sessionSeed = randomUUID();
+  }
+  if (typeof value.sessionSeed !== "string" || !/^[0-9a-f-]{36}$/.test(value.sessionSeed)) throw new Error("invalid durable session seed");
+  if (typeof value.usageLocked !== "boolean") throw new Error("invalid durable usage lock");
   for (const counter of [value.nextCall, value.nextHost, value.lastMetaFailureCount, value.resumes])
     if (!Number.isSafeInteger(counter) || counter < 0) throw new Error("invalid durable counter");
   if (!Number.isFinite(value.startedAt) || value.individuals.length !== config.workers
@@ -91,7 +132,7 @@ function readApplication(state: KernelState): DurableApplication {
 }
 
 /** Sequential durable execution is separate from the parallel scale-experiment runner. */
-export async function runDurableSwarm(options: DurableOptions, model: DurableModelCaller = callCodex<ModelResponse>): Promise<DurableReport> {
+export async function runDurableSwarm(options: DurableOptions, model?: DurableModelCaller): Promise<DurableReport> {
   const directory = resolve(options.directory);
   const file = join(directory, "state.sqlite");
   if (options.resume) await access(file);
@@ -110,7 +151,8 @@ export async function runDurableSwarm(options: DurableOptions, model: DurableMod
       if (!loaded) throw new Error("no durable snapshot to resume");
       generation = loaded.generation;
       application = readApplication(loaded.state);
-      for (const key of ["size", "workers", "maxCalls", "maxMetaCalls", "timeoutMs", "fault"] as const)
+      for (const key of ["size", "workers", "maxCalls", "maxMetaCalls", "timeoutMs", "fault",
+        "runtime", "metaRuntime", "workerModel", "metaModel", "maxTokensPerCall"] as const)
         if (options[key] !== undefined && options[key] !== application.configuration[key])
           throw new Error(`resume configuration mismatch: ${key}`);
       kernel = SwarmKernel.restore(loaded.state, { save });
@@ -121,6 +163,8 @@ export async function runDurableSwarm(options: DurableOptions, model: DurableMod
         if (committed) call.status = "committed";
         else {
           call.status = call.status === "reserved" ? "unknown" : "abandoned";
+          const reservedMixed = isApiRuntime(application.configuration.runtime) || isApiRuntime(application.configuration.metaRuntime);
+          if (call.status === "unknown" && reservedMixed) application.usageLocked = true;
           call.errors.push(call.status === "unknown"
             ? "Process ended before a durable response receipt; provider execution and usage remain unknown. Reservation remains consumed."
             : "Response was durable but its proposal did not commit; stale authority was fenced and this reservation remains consumed.");
@@ -140,13 +184,15 @@ export async function runDurableSwarm(options: DurableOptions, model: DurableMod
       kernel.change(fixture.changedSource.id, fixture.changedSource.content); kernel.closeInput();
       application = { kind: "sheep-durable-fixture", format: 1, configuration: config, startedAt: Date.now(),
         calls: [], individuals: Array.from({ length: config.workers }, (_, index) => ({ id: `sheep-${index + 1}`, calls: 0, memory: [] })),
-        nextCall: 0, nextHost: 0, lastMetaFailureCount: 0, resumes: 0, lastResult: null };
+        nextCall: 0, nextHost: 0, lastMetaFailureCount: 0, resumes: 0, usageLocked: false, sessionSeed: randomUUID(), lastResult: null };
       kernel.setApplication(application as unknown as Record<string, unknown>);
       save(kernel.exportState());
       kernel = SwarmKernel.restore(kernel.exportState(), { save, recover: false });
     }
     const persist = (): void => kernel.setApplication(application as unknown as Record<string, unknown>);
     const config = application.configuration;
+    // In an API/mixed run an unknown-usage receipt from either role locks admission.
+    const meteredRun = apiRun(config.runtime, config.metaRuntime);
     const fixture = createFixture({ size: config.size });
     const workspace = join(directory, "model-workspace"); await mkdir(workspace, { recursive: true });
     const expectedPolicy = `measurement-migration-v1/size-${config.size}/node-${process.versions.node}`;
@@ -182,6 +228,7 @@ export async function runDurableSwarm(options: DurableOptions, model: DurableMod
     };
     const invoke = async (role: DurableCall["role"], agent: string, target: string, context: Checkout): Promise<DurableCall> => {
       if (count(role) >= (role === "worker" ? config.maxCalls : config.maxMetaCalls)) throw new Error("durable call budget exhausted");
+      if (application.usageLocked) throw new Error("durable run is locked after unknown token usage");
       const call: DurableCall = { id: `call-${++application.nextCall}`, role, agent, target,
         model: role === "worker" ? config.workerModel : config.metaModel, context: context.id,
         contextArtifacts: Object.keys(context.reads), contextBytes: Buffer.byteLength(JSON.stringify(context.contents)),
@@ -192,9 +239,13 @@ export async function runDurableSwarm(options: DurableOptions, model: DurableMod
       if (individual) individual.calls++;
       kernel.beginWork(call.id, agent); persist();
       await hook("before-call", { role, target, callId: call.id });
+      const roleRuntime = role === "worker" ? config.runtime : config.metaRuntime;
+      const caller = model ?? callerForRuntime<ModelResponse>(roleRuntime);
       try {
-        const response = await model({ model: call.model, schema: responseSchema, cwd: workspace,
+        const response = await caller({ model: call.model, schema: responseSchema, cwd: workspace,
           timeoutMs: config.timeoutMs, outputDirectory: join(directory, "transcripts", call.id),
+          sessionId: `${application.sessionSeed}:${role}:${agent}`,
+          ...(roleRuntime === "deepseek" || roleRuntime === "opencode-go" ? { maxTokens: config.maxTokensPerCall } : {}),
           prompt: JSON.stringify({ role, target, context, observations: failures().slice(-6).map((item) => ({
             target: item.target, status: item.status, errors: item.errors.slice(0, 3), callId: item.id })),
           privateMemory: individual?.memory ?? [],
@@ -206,14 +257,22 @@ export async function runDurableSwarm(options: DurableOptions, model: DurableMod
         await writeFile(join(directory, `${call.id}.json`), JSON.stringify(response, null, 2) + "\n");
         call.inputTokens = tokens(response.usage, "inputTokens"); call.outputTokens = tokens(response.usage, "outputTokens");
         call.effectiveModelEvidence = response.transcript.effectiveModelEvidence ?? null;
-        if (response.requestedModel !== call.model || !response.result || typeof response.result.content !== "string"
+        if (usageCompleteness(response.transcript) === "partial-or-unknown"
+          || unknownUsageForRun(response.transcript, roleRuntime, meteredRun)) {
+          application.usageLocked = true;
+          call.errors.push("unknown token usage from provider; no further admissions until a fresh run");
+        }
+        if (response.requestedModel !== call.model || response.transcript.requestedModel !== call.model
+          || !response.result || typeof response.result.content !== "string"
           || typeof response.result.note !== "string") throw new Error("invalid durable model response");
         call.response = cloned(response.result); call.status = "responded";
       } catch (error) {
-        call.status = "error"; call.errors = [String(error)];
+        call.status = "error"; call.errors = [...call.errors, String(error)];
         if (error instanceof CodexWorkerError) {
           call.inputTokens = tokens(error.transcript.usage, "inputTokens"); call.outputTokens = tokens(error.transcript.usage, "outputTokens");
           call.effectiveModelEvidence = error.transcript.effectiveModelEvidence ?? null;
+          if (usageCompleteness(error.transcript) === "partial-or-unknown"
+            || unknownUsageForRun(error.transcript, roleRuntime, meteredRun, error.code)) application.usageLocked = true;
           await writeFile(join(directory, `${call.id}.json`), JSON.stringify({ error: error.code, transcript: error.transcript }, null, 2) + "\n");
         }
       }
@@ -286,6 +345,8 @@ export async function runDurableSwarm(options: DurableOptions, model: DurableMod
     await deliver();
     for (;;) {
       await hostChecks();
+      // Unknown provider usage persists across resume and permanently blocks further admissions.
+      if (application.usageLocked) break;
       const pendingTargets = [...new Set(kernel.pending().map((work) => work.consumer))].filter((id) => fixture.writableIds.includes(id));
       if (pendingTargets.length === 0) break;
       const specVersion = kernel.artifact(fixture.specId).version;
@@ -300,7 +361,9 @@ export async function runDurableSwarm(options: DurableOptions, model: DurableMod
       await deliver();
     }
     await deliver(); await hostChecks();
-    const final: Verdict = await kernel.complete((contents) => fixture.verify(contents));
+    const completion = await kernel.complete((contents) => fixture.verify(contents));
+    const final: Verdict = application.usageLocked
+      ? { ok: false, errors: [...completion.errors, "token-usage-incomplete"] } : completion;
     application.lastResult = { success: final.ok, finalErrors: [...final.errors], finishedAt: Date.now() }; persist();
     const report: DurableReport = {
       format: 1, directory, success: final.ok, finalErrors: final.errors, configuration: config, generation,

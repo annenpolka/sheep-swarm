@@ -112,7 +112,7 @@ test("static discovery reads actual imports and declarations instead of returnin
 test("all methods share fixture, token cap, role identities and final external acceptance", async t => {
   const fingerprints: string[] = [];
   for (const method of COMPARISON_METHODS) {
-    const report = await runComparison({ ...limits, method, outputDirectory: await directory(t, method) }, correctCaller(4, method === "single-luna" ? "gpt-5.6-luna" : "gpt-6-astra"));
+    const report = await runComparison({ ...limits, method, outputDirectory: await directory(t, method) }, correctCaller(4, method === "single-luna" || method === "single-worker" ? "gpt-5.6-luna" : "gpt-6-astra"));
     assert.equal(report.success, true, `${method}: ${report.finalErrors.join("\n")}`);
     assert.equal(report.qualityPass, true);
     fingerprints.push(report.fixtureFingerprint);
@@ -161,7 +161,7 @@ test("single-upper retains two correct sensor patches and completes remaining wo
 test("shared rounded-guidance fault recovers through each method's own allowed path", async t => {
   const fingerprints: string[] = [];
   for (const method of COMPARISON_METHODS) {
-    const report = await runComparison({ ...limits, method, fault: "rounded-guidance", outputDirectory: await directory(t, method) }, correctCaller(4, method === "single-luna" ? "gpt-5.6-luna" : "gpt-6-astra"));
+    const report = await runComparison({ ...limits, method, fault: "rounded-guidance", outputDirectory: await directory(t, method) }, correctCaller(4, method === "single-luna" || method === "single-worker" ? "gpt-5.6-luna" : "gpt-6-astra"));
     assert.equal(report.success, true, `${method}: ${report.finalErrors.join("\n")}`);
     fingerprints.push(report.fixtureFingerprint);
     assert.equal(report.configuration.fault, "rounded-guidance");
