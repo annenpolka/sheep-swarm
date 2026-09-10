@@ -101,6 +101,10 @@ dispatcherは結果・レシート・保存ソースのhashを確認し、中断
 
 `npm run sandbox:swarm-probe`は実VMで合成fixtureの基準解成功・旧実装失敗・閾値変異拒否・host API import拒否・無限loopと回収を検査する。setup失敗を変異拒否の成功へ数えない。実Lunaの道具付きswarmは別runに保存する。受入VMは同期`.mjs`の局所importのみを扱い、任意repositoryの実行互換性を保証しない。
 
+`sandbox:comparison-probe`はthermal fixtureの値・境界・必須importを実VMで検査する。等価な値を返す実装でも、importをコメントへ変えた変異を拒否する。通常gateで単独Luna・Manager-local・Sheep-fixed/fullのtool、role権限、oracle、途中usage・cleanup失敗の受付停止を揃える。一括dispatcherは同一profileを全条件へ渡し、使用量不明の最初の結果で後続を止める。
+
+`sandbox:recovery-probe`は実child processをSIGKILLし、残留VMの回収、生存中のVMの保護、作成前crashの記録保持と遅延出現の回収を検査する。通常gateでは他host、PID生存、不正record、symlink、image不一致、削除失敗、同時回収を拒否・保留できることを確認する。VM資源の回収を、元runの成功・再開・usage復元とは扱わない。
+
 ## 現在の実行証拠の範囲
 
 M3は既知依存の合成taskで、主比較15runと別pilot1run。M4はC=1の専用実行系。M5は温度・圧力の別合成task、下位Luna/上位Astra、共通500,000token上限、30,000tokenの受付予約で比較する。単一上位にも増分の局所確定を許し、最終全体受入を共通にする。

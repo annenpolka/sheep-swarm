@@ -60,7 +60,11 @@ npm run swarm -- --runtime docker-agent --worker-tools local \
   --max-meta-calls 0 --timeout-ms 240000
 ```
 
-最後の例は4 consumerと1 reportを持つ既存fixture。登録4体は呼出し4回を意味しない。最大6呼出しの受付を与える。`--worker-tools`の既定値は`none`で、`local`にはDocker runtimeが必要。`--runtime`を省略すると従来のCodex adapterになる。`compare`・`mechanism`・`durable`は今回の切替対象に含めない。
+最後の例は4 consumerと1 reportを持つ既存fixture。登録4体は呼出し4回を意味しない。最大6呼出しの受付を与える。`--worker-tools`の既定値は`none`で、`local`にはDocker runtimeが必要。`--runtime`を省略すると従来のCodex adapterになる。
+
+`compare`でも同じflagsを使用できる。`single-luna`・`manager-local`・`sheep-fixed`・`sheep-full`の実装callに同じtoolを与え、管理・仕様介入callはtool-lessを保つ。各方式の編集権限と観測範囲は元のprotocolを維持する。単独Lunaは全体context、局所workerはcheckoutの範囲と固定可視検査を受け取り、全差分をそれぞれの権限で検査する。最終採点値・case・必須importは共通である。
+
+`scripts/compare-experiment.mjs --source <固定したsource> --output <新規run> --runtime docker-agent --worker-tools local`で12条件の系列を構成できる。sourceには今回のruntime対応が必要で、そこで`npm run sandbox:install`も準備する。既存の凍結sourceは書き換えない。今回の実機検証は小規模CLI runまでで、12条件の一括実走は行っていない。`mechanism`・`durable`のruntime切替は後続範囲。
 
 `callDockerAgent`は既存のcaller interfaceに接続する。`files`を指定しない場合はcwdをコピーせず、prompt内contextだけで働く。局所道具を使うときは`tools: "local"`と`files`を明示する。JSON形式のYAML例は[configs/docker-agent-local.yaml](../configs/docker-agent-local.yaml)。`permissions`はconfigの最上位に置く。
 
@@ -82,13 +86,13 @@ pilotと道具付きswarmはモデルが最終回答に書いた`content`より�
 
 道具付きswarmには、版付きcheckoutの全内容と固定生成の`visible.test.mjs`を投入する。テストはfeedback用で、書換えは全差分検査で拒否される。consumerとreportを同じ局所手順で処理し、上位は引き続きtool-lessの仕様介入を担当する。
 
-Docker runtimeのswarm受入では、候補と依存閉包を別の通信拒否VMへ送り、観測値だけをhostへ返す。従来の`fixture.ts`の期待値・case・比較式はhostに保持する。workerの可視テストや認証を受入VMにコピーしない。VM内の評価は同期`.mjs`と供給済みの相対importだけに限定し、Node builtin・外部import・汎用shellを候補へ提供しない。一般repositoryの実行環境ではない。受入ごとのreceiptはrun内の`acceptance/`へ保存する。
+Docker runtimeのswarm/compare受入では、候補と依存閉包を別の通信拒否VMへ送り、観測値だけをhostへ返す。従来のfixtureの期待値・case・比較式はhostに保持する。workerの可視テストや認証を受入VMにコピーしない。VM内の評価は同期`.mjs`と供給済みの相対importだけに限定し、Node builtin・外部import・汎用shellを候補へ提供しない。比較fixtureでは`SourceTextModule.dependencySpecifiers`で必須importを構文解析し、コメントによる偽装も拒否する。固定Node22とhost Node26の両方で確認した。一般repositoryの実行環境ではない。受入ごとのreceiptはrun内の`acceptance/`へ保存する。
 
 ## 記録と失敗
 
 各呼出しは`.sheep/.../sheep-docker-call-*/receipt.json`に設定、入力ファイル、NDJSON、stderr、版、hash、sandbox名、各lifecycle操作、削除結果を保存する。timeoutでも既に届いたusageを残し、未完了の推論がある場合は`usageCompleteness: partial-or-unknown`とする。総費用0とは扱わない。
 
-swarmはusage不明が出たwaveを回収した後、新しいworkerと上位の呼出しを止める。受入VMの基盤障害も新規受付を止め、仕様の誤りを直すための上位介入を起こさない。既に並列で発行した呼出しの使用量とcleanupも記録する。
+swarm/compareはusage不明が出たwaveを回収した後、新しいworkerと上位の呼出しを止める。受入VMの基盤障害とworkerのcleanup失敗も新規受付を止め、仕様の誤りを直すための上位介入を起こさない。既に並列で発行した呼出しの使用量とcleanupも記録する。offline費用見積器はDockerのper-message usageをcache込みで読む。部分usageの金額は下限だけを表示し、上限・総額は不明にする。CreditBudgetでも追加受付をlockする。
 
 `token_usage.usage`は実測とv1.137.0のコードでは直近のcontext snapshot。消費量は各`last_message`のinput・cache read/write・outputから集計する。`budget_usage`を加算せず、同一usage eventの重複も拒否する。`last_message.Model`はruntimeの設定IDに由来するため`configuredModelEvidence`に残し、`effectiveModelEvidence`はnullとする。
 
@@ -96,7 +100,9 @@ Lunaのruntime価格は`unpriced`、costは0と表示された。これは無料
 
 `sandbox:pilot -- --response <保存済みresponse.json>`はモデル再呼出しなしで、保存済み候補を別VMで検査する。新しい結果には元ファイルのpath・hashを残す。元runを成功へ書き換えない。
 
-hostプロセス自体のSIGKILLや電源断後の自動回収は未実装。残存名はreceiptのsandbox名で確認し、`sbx rm --force <その名前>`で個別削除する。`sbx rm --all`や`reset`は本導入の手順では使わない。VMのpool再利用、32台の同時起動、上位のSandbox内tool利用は未検証。
+作成前に`.sheep/sandbox-owners/<UUID名>.json`へhost・PID・templateを同期保存する。正常cleanup後は解放済みと記録する。SIGKILL後は次のruntime processの起動時、または`npm run sandbox:reap`で、同じhostの死んだ所有PIDに属する名前だけを照合・削除する。作成途中で死んだ記録はVMが不在でも保持し、後から現れた同じ名前を次のsweepで回収する。生存PID・PID再利用が疑われる場合・別host・未知のVMは削除しない。名前・image・mountの相違は拒否する。
+
+これは復帰時の資源回収である。常駐監視による即時削除、processが戻らない間の回収、モデルcallの再開、未保存usageの復元、電源断で失われた所有記録の復旧は保証しない。記録はhost管理のため、手でVM名を再利用しない。`sbx rm --all`や`reset`は本導入の手順では使わない。VMのpool再利用、32台の同時起動、上位のSandbox内tool利用は未検証。
 
 ## 調査から修正した点と出典
 

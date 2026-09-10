@@ -19,7 +19,7 @@ function supplied(options: CodexCallOptions) {
   assert.ok(match);
   return { files: JSON.parse(match[1]!) as Record<string, string>, extra: JSON.parse(match[2]!) as Record<string, unknown> };
 }
-function correctCaller(size = 4): ComparisonCaller {
+function correctCaller(size = 4, singleModel = "gpt-6-astra"): ComparisonCaller {
   const fixture = createHeldoutFixture({ size, variant: "migrated" });
   return async options => {
     const { files, extra } = supplied(options);
@@ -34,7 +34,7 @@ function correctCaller(size = 4): ComparisonCaller {
       return result(options, { writes: [{ id: fixture.specId, content: fixture.artifacts[fixture.specId]! }], targets: [], note: "Correct rounding guidance from acceptance evidence." });
     }
     if (options.prompt.startsWith("Solve the complete")) {
-      assert.equal(options.model, "gpt-6-astra");
+      assert.equal(options.model, singleModel);
       return result(options, { writes: [...fixture.writableIds, ...(brokenGuidance ? [fixture.specId] : [])]
         .map(id => ({ id, content: fixture.artifacts[id]! })), targets: [], note: "Complete migration." });
     }
@@ -109,10 +109,10 @@ test("static discovery reads actual imports and declarations instead of returnin
   assert.ok(!changed.edges.some(edge => edge.consumer === first && edge.provider === fixture.sourceId));
 });
 
-test("all four methods share fixture, token cap, role identities and final external acceptance", async t => {
+test("all methods share fixture, token cap, role identities and final external acceptance", async t => {
   const fingerprints: string[] = [];
   for (const method of COMPARISON_METHODS) {
-    const report = await runComparison({ ...limits, method, outputDirectory: await directory(t, method) }, correctCaller());
+    const report = await runComparison({ ...limits, method, outputDirectory: await directory(t, method) }, correctCaller(4, method === "single-luna" ? "gpt-5.6-luna" : "gpt-6-astra"));
     assert.equal(report.success, true, `${method}: ${report.finalErrors.join("\n")}`);
     assert.equal(report.qualityPass, true);
     fingerprints.push(report.fixtureFingerprint);
@@ -123,6 +123,7 @@ test("all four methods share fixture, token cap, role identities and final exter
     assert.ok(report.calls.every(call => call.agent === "upper" ? call.model === "gpt-6-astra" : call.model === "gpt-5.6-luna"));
     assert.ok(report.maxActiveModelCalls <= limits.concurrency);
     if (method === "single-upper") { assert.equal(report.upperCalls, 1); assert.equal(report.lowerCalls, 0); }
+    if (method === "single-luna") { assert.equal(report.upperCalls, 0); assert.equal(report.lowerCalls, 1); assert.equal(report.configuration.concurrency, 1); }
     if (method === "manager-local") assert.ok(report.upperCalls >= 2 && report.lowerCalls === 5);
     if (method.startsWith("sheep-")) assert.equal(report.upperCalls, 0);
     if (method === "sheep-full") assert.ok(report.discovery.scans > 1 && report.discovery.bytesRead > 0);
@@ -160,7 +161,7 @@ test("single-upper retains two correct sensor patches and completes remaining wo
 test("shared rounded-guidance fault recovers through each method's own allowed path", async t => {
   const fingerprints: string[] = [];
   for (const method of COMPARISON_METHODS) {
-    const report = await runComparison({ ...limits, method, fault: "rounded-guidance", outputDirectory: await directory(t, method) }, correctCaller());
+    const report = await runComparison({ ...limits, method, fault: "rounded-guidance", outputDirectory: await directory(t, method) }, correctCaller(4, method === "single-luna" ? "gpt-5.6-luna" : "gpt-6-astra"));
     assert.equal(report.success, true, `${method}: ${report.finalErrors.join("\n")}`);
     fingerprints.push(report.fixtureFingerprint);
     assert.equal(report.configuration.fault, "rounded-guidance");

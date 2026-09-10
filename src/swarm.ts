@@ -1,8 +1,9 @@
+export { dockerWorkspaceWrites } from "./docker-agent-worker.ts";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { createFixture, type FixtureObserver } from "./fixture.ts";
-import { callCodex, CodexWorkerError, type CodexCallResult, type CodexTranscript } from "./codex-worker.ts";
-import { callDockerAgent, validateFiles, SANDBOX_TEMPLATE, type DockerAgentOptions, type DockerTranscript } from "./docker-agent-worker.ts";
+import { callCodex, CodexWorkerError, type CodexCallResult } from "./codex-worker.ts";
+import { callDockerAgent, dockerWorkspaceWrites, validateFiles, SANDBOX_TEMPLATE, type DockerAgentOptions, type DockerTranscript } from "./docker-agent-worker.ts";
 import { createDockerFixtureObserver } from "./docker-fixture-observer.ts";
 import { SwarmKernel, KernelError, type Checkout, type Verdict } from "./kernel.ts";
 import { WorkerPool, type WorkerMemory, type WorkerStats } from "./worker-pool.ts";
@@ -37,17 +38,6 @@ export interface SwarmReport {
 }
 const SCHEMA = { type: "object", properties: { content: { type: "string" }, note: { type: "string" } },
   required: ["content", "note"], additionalProperties: false };
-
-/** Every change reaches kernel scope checks; final-answer text never substitutes for files. */
-export function dockerWorkspaceWrites(transcript: CodexTranscript): Record<string, string> {
-  const receipt = transcript as Partial<DockerTranscript>;
-  if (receipt.runtime !== "docker-agent" || receipt.cleanupSucceeded !== true || receipt.usageCompleteness !== "complete"
-    || !receipt.workspaceChanges || typeof receipt.workspaceChanges !== "object" || Array.isArray(receipt.workspaceChanges)) throw new Error("Missing completed Docker workspace receipt");
-  if (Object.values(receipt.workspaceChanges).some(value => typeof value !== "string")) throw new Error("Workspace deletions are unsupported");
-  const changes = receipt.workspaceChanges as Record<string, string>;
-  validateFiles(changes);
-  return changes;
-}
 
 /** A bounded experimental scheduler. Semantic work belongs to the requested models. */
 export async function runSwarm(options: SwarmOptions,
@@ -99,6 +89,7 @@ export async function runSwarm(options: SwarmOptions,
   let lastMetaFailureCount = 0;
   let serial = 0;
   let unknownModelUsage = false;
+  let runtimeCleanupFailed = false;
   let verificationUnavailable = false;
   const verify: typeof fixture.verify = async (contents, scope) => {
     const result = await fixture.verify(contents, scope);
@@ -180,6 +171,8 @@ export async function runSwarm(options: SwarmOptions,
         record.effectiveModelEvidence = error.transcript.effectiveModelEvidence;
         record.usageCompleteness = (error.transcript as Partial<DockerTranscript>).usageCompleteness ?? null;
         if (record.usageCompleteness === "partial-or-unknown") unknownModelUsage = true;
+        if ((error.transcript as Partial<DockerTranscript>).runtime === "docker-agent" && (error.transcript as Partial<DockerTranscript>).cleanupSucceeded === false)
+          runtimeCleanupFailed = true;
         await writeFile(join(options.outputDirectory, `${id}.json`), JSON.stringify({ error: error.code, transcript: error.transcript }, null, 2) + "\n");
       }
       throw error;
@@ -298,7 +291,7 @@ export async function runSwarm(options: SwarmOptions,
       const unexpected = results.filter((result): result is PromiseRejectedResult => result.status === "rejected");
       if (unexpected.length) throw new AggregateError(unexpected.map((result) => result.reason), "worker scheduler failed");
       // Already dispatched concurrent calls finish and clean up; admit no further spend.
-      if (unknownModelUsage || verificationUnavailable) break;
+      if (unknownModelUsage || verificationUnavailable || runtimeCleanupFailed) break;
       // Transport failures provide no evidence that shared semantic guidance needs changing.
       const semanticFailures = calls.filter((item) => item.role === "worker" && item.outcome === "rejected");
       const failureCount = semanticFailures.length;
@@ -308,13 +301,14 @@ export async function runSwarm(options: SwarmOptions,
         await intervene();
       } else if (!wave.length) break;
       await snapshot();
-      if (unknownModelUsage) break;
+      if (unknownModelUsage || runtimeCleanupFailed) break;
     }
     kernel.deliverAll(); await verifyPinnedSource();
     final = await kernel.complete((contents) => verify(contents));
   } catch (error) {
     final = { ok: false, errors: [`execution-error: ${String(error)}`] };
   } finally { await snapshot(); }
+  if (runtimeCleanupFailed) final = { ok: false, errors: [...final.errors, "sandbox-cleanup-failed"] };
   const report: SwarmReport = {
     format: 2, startedAt: new Date(start).toISOString(), durationMs: Date.now() - start, configuration,
     success: final.ok, finalErrors: final.errors, maxActiveWorkers: maxActive, registeredWorkers: pool.stats().length,

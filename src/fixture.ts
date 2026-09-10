@@ -12,7 +12,8 @@ const DEFAULT_SIZE = 16;
 export type FixtureVariant = "baseline" | "migrated";
 export type FixtureContents = Readonly<Record<string, string>>;
 /** Observations only: expected values and comparison remain in the trusted caller. */
-export type FixtureObserver = (files: FixtureContents, calls: readonly Invocation[], timeoutMs: number) => Promise<unknown>;
+export type FixtureObserver = (files: FixtureContents, calls: readonly Invocation[], timeoutMs: number,
+  imports?: readonly { consumer: string; provider: string }[]) => Promise<unknown>;
 export interface FixtureResult {
   readonly ok: boolean;
   readonly errors: readonly string[];
@@ -48,8 +49,8 @@ interface RawMeasurement {
 }
 export interface Invocation {
   readonly id: string;
-  readonly method: "measure" | "summarize" | "evaluate";
-  readonly args: readonly RawMeasurement[];
+  readonly method: string;
+  readonly args: readonly unknown[];
 }
 
 function layout(size: number) {

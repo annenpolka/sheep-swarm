@@ -3,7 +3,8 @@ import { mkdtemp, mkdir, realpath, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, posix } from "node:path";
 import { promisify } from "node:util";
-import type { Contents, Verdict } from "./kernel.ts";
+import type { Contents } from "./kernel.ts";
+import type { FixtureObserver, FixtureResult } from "./fixture.ts";
 
 const execute = promisify(execFile);
 const SOURCE = "lib/thermal.mjs";
@@ -17,7 +18,8 @@ export interface HeldoutFixture {
   readonly changedSource: { readonly id: string; readonly content: string };
   readonly writableIds: readonly string[];
   readonly dependencies: readonly FixtureEdge[];
-  readonly verify: (contents: Contents, scope?: readonly string[]) => Promise<Verdict>;
+  readonly verify: (contents: Contents, scope?: readonly string[]) => Promise<FixtureResult>;
+  readonly visibleTest: (targets: readonly string[]) => string;
 }
 interface Raw { temperatureC: number; pressureKPa: number }
 interface Sensor { id: string; index: number }
@@ -66,7 +68,7 @@ function createLayout(size: number) {
 }
 
 /** A fresh synthetic task with an affine unit conversion, not a real-repository generalization test. */
-export function createHeldoutFixture(options: { size?: number; variant?: "baseline" | "migrated" } = {}): HeldoutFixture {
+export function createHeldoutFixture(options: { size?: number; variant?: "baseline" | "migrated"; observe?: FixtureObserver } = {}): HeldoutFixture {
   const size = options.size ?? 8;
   if (options.variant !== undefined && !["baseline", "migrated"].includes(options.variant)) throw new TypeError("unknown heldout variant");
   const migrated = options.variant === "migrated";
@@ -106,7 +108,19 @@ export function combine(leftInput, rightInput) {
   const writableIds = [...sensors, ...summaries].map(item => item.id);
   return { task: "thermal-offset-migration-v1", artifacts, sourceId: SOURCE, specId: SPEC,
     changedSource: { id: SOURCE, content: library(true) }, writableIds, dependencies,
-    verify: (contents, scope) => verifyThermal(contents, size, scope) };
+    verify: (contents, scope) => verifyThermal(contents, size, scope, options.observe),
+    visibleTest: targets => {
+      if (!targets.length || targets.some(id => !writableIds.includes(id))) throw new Error("Unknown visible test target");
+      const raw = { temperatureC: 0, pressureKPa: 50 };
+      const checks = targets.map(id => {
+        const sensor = sensors.find(item => item.id === id);
+        const summary = summaries.find(item => item.id === id)!;
+        return { id, method: sensor ? "summarize" : "combine", args: sensor ? [raw] : [raw, raw],
+          expected: sensor ? { kelvin: 273.15, pascals: 50000, safe: safe(sensor, raw) }
+            : { meanCelsius: 0, maximumKPa: 50, allSafe: safe(summary.left, raw) && safe(summary.right, raw) } };
+      });
+      return `import assert from 'node:assert/strict';\nimport { test } from 'node:test';\nfor(const c of ${JSON.stringify(checks)}) test(c.id,async()=>{const mod=await import('./'+c.id);assert.deepEqual(await mod[c.method](...c.args),c.expected)});\n`;
+    } };
 }
 
 /** Discover the declared static dependencies from actual file bytes, without a supplied truth graph. */
@@ -175,7 +189,7 @@ for (const call of request.calls) {
 process.stdout.write(JSON.stringify(outputs));
 `;
 
-async function verifyThermal(contents: Contents, size: number, scope?: readonly string[]): Promise<Verdict> {
+async function verifyThermal(contents: Contents, size: number, scope?: readonly string[], observe?: FixtureObserver): Promise<FixtureResult> {
   const { sensors, summaries, dependencies } = createLayout(size);
   const ids = [SOURCE, SPEC, ...sensors.map(x => x.id), ...summaries.map(x => x.id)];
   const targets = scope === undefined ? ids : [...new Set(scope)];
@@ -213,23 +227,28 @@ async function verifyThermal(contents: Contents, size: number, scope?: readonly 
     expected.push({ meanCelsius: (left.temperatureC + right.temperatureC) / 2,
       maximumKPa: Math.max(left.pressureKPa, right.pressureKPa), allSafe: safe(summary.left, left) && safe(summary.right, right) });
   }
-  const directory = await realpath(await mkdtemp(join(tmpdir(), "sheep-thermal-oracle-")));
+  let directory: string | undefined;
   try {
-    for (const id of required) { const path = join(directory, id); await mkdir(dirname(path), { recursive: true }); await writeFile(path, contents[id]!); }
-    const entry = join(directory, "__oracle-runner.mjs");
-    await writeFile(entry, runner);
-    const child = execute(process.execPath, ["--experimental-vm-modules", "--permission", `--allow-fs-read=${directory}`,
-      "--preserve-symlinks", "--preserve-symlinks-main", "--disable-proto=throw", "--max-old-space-size=64", entry],
-    { cwd: directory, env: {}, timeout: 3000, killSignal: "SIGKILL", maxBuffer: 1024 * 1024 });
-    child.child.stdin!.end(JSON.stringify({ calls, imports: requiredImports }));
-    const observations: unknown = JSON.parse((await child).stdout);
+    let observations: unknown;
+    if (observe) observations = await observe(Object.fromEntries([...required].map(id => [id, contents[id]!])), calls, 3000, requiredImports);
+    else {
+      directory = await realpath(await mkdtemp(join(tmpdir(), "sheep-thermal-oracle-")));
+      for (const id of required) { const path = join(directory, id); await mkdir(dirname(path), { recursive: true }); await writeFile(path, contents[id]!); }
+      const entry = join(directory, "__oracle-runner.mjs");
+      await writeFile(entry, runner);
+      const child = execute(process.execPath, ["--experimental-vm-modules", "--permission", `--allow-fs-read=${directory}`,
+        "--preserve-symlinks", "--preserve-symlinks-main", "--disable-proto=throw", "--max-old-space-size=64", entry],
+      { cwd: directory, env: {}, timeout: 3000, killSignal: "SIGKILL", maxBuffer: 1024 * 1024 });
+      child.child.stdin!.end(JSON.stringify({ calls, imports: requiredImports }));
+      observations = JSON.parse((await child).stdout);
+    }
     if (!Array.isArray(observations) || observations.length !== calls.length) errors.push("invalid observation count");
     else for (let i = 0; i < calls.length; i++) {
       const observation = observations[i] as { output?: unknown; error?: string } | null;
       if (!observation || !matches(observation.output, expected[i])) errors.push(`${calls[i]!.id}: ${observation?.error
         ?? `expected ${JSON.stringify(expected[i])}; received ${JSON.stringify(observation?.output)}`}`);
     }
-  } catch (error) { errors.push(`thermal oracle execution failed: ${String(error).slice(0, 1000)}`); }
-  finally { await rm(directory, { recursive: true, force: true }); }
+  } catch (error) { return { ok: false, errors: [`thermal oracle execution failed: ${String(error).slice(0, 1000)}`], executionFailure: true }; }
+  finally { if (directory) await rm(directory, { recursive: true, force: true }); }
   return { ok: !errors.length, errors };
 }

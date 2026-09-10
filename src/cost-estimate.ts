@@ -24,7 +24,8 @@ export interface TokenUsage {
   readonly outputTokens: number | null;
   /** Already included in outputTokens; never charged a second time. */
   readonly reasoningOutputTokens: number | null;
-  readonly source: "turn.completed" | "raw-usage" | "normalized" | "missing" | "ambiguous";
+  readonly source: "turn.completed" | "raw-usage" | "normalized" | "docker-agent.per-message" | "missing" | "ambiguous";
+  readonly partial?: boolean;
   readonly issues: readonly string[];
 }
 
@@ -81,6 +82,7 @@ function token(row: Record<string, unknown>, ...keys: string[]): number | null {
 /** Prefer the terminal turn receipt over cumulative updates and normalized copies. */
 export function extractTokenUsage(receipt: unknown): TokenUsage {
   const data = record(receipt), transcript = record(data?.transcript);
+  if (transcript?.runtime === "docker-agent") return dockerUsage(transcript);
   const events = Array.isArray(transcript?.events) ? transcript.events.flatMap(item => record(item) ? [record(item)!] : []) : [];
   const completed = events.filter(event => event.type === "turn.completed" && record(event.usage));
   const raw = events.filter(event => record(event.usage) || event.type === "usage");
@@ -110,6 +112,44 @@ export function extractTokenUsage(receipt: unknown): TokenUsage {
     issues.push("Invalid reasoning token count exceeds output tokens");
   }
   return { inputTokens, cachedInputTokens, cacheWriteInputTokens, outputTokens, reasoningOutputTokens, source, issues };
+}
+
+function dockerUsage(transcript: Record<string, unknown>): TokenUsage {
+  const unknown = (issue: string): TokenUsage => ({ inputTokens: null, outputTokens: null, cachedInputTokens: null,
+    cacheWriteInputTokens: null, reasoningOutputTokens: null, source: "ambiguous", partial: true, issues: [issue] });
+  // Keep the offline estimator self-contained; pinned snapshot dispatchers copy
+  // it without installing or importing an execution runtime.
+  if (transcript.runtimeVersion !== "v1.137.0" || typeof transcript.requestedModel !== "string" || !Array.isArray(transcript.events))
+    return unknown("Unrecognized Docker Agent usage contract");
+  const events = transcript.events.map(value => record(value));
+  const starts = events.filter(event => event?.type === "stream_started"), stops = events.filter(event => event?.type === "stream_stopped");
+  let partial = transcript.usageCompleteness !== "complete" || events.some(event => !event)
+    || starts.length !== 1 || stops.length !== 1 || stops[0]?.reason !== "normal"
+    || events.indexOf(starts[0]) > events.indexOf(stops[0])
+    || new Set(events.filter(event => event?.session_id).map(event => event!.session_id)).size !== 1
+    || events.some(event => event?.type === "error" || event?.type === "budget_exceeded");
+  const rows: Record<string, unknown>[] = [], seen = new Set<string>();
+  for (const event of events.filter(event => event?.type === "token_usage")) {
+    const row = record(record(event?.usage)?.last_message), key = JSON.stringify(event);
+    if (!row || !["input_tokens", "output_tokens", "cached_input_tokens", "cached_write_tokens"].every(key => integer(row[key]))) { partial = true; continue; }
+    if (seen.has(key)) { partial = true; continue; }
+    seen.add(key); rows.push(row);
+  }
+  if (!rows.length) return unknown("Missing Docker Agent per-message usage");
+  if (rows.some(row => row.Model !== undefined && row.Model !== transcript.requestedModel && row.Model !== `chatgpt/${transcript.requestedModel}`))
+    return unknown("Conflicting Docker Agent configured model");
+  const sum = (key: string): number | null => {
+    if (!rows.every(row => integer(row[key]))) return null;
+    const total = rows.reduce((value, row) => value + (row[key] as number), 0);
+    return integer(total) ? total : null;
+  };
+  const cachedInputTokens = sum("cached_input_tokens"), cacheWriteInputTokens = sum("cached_write_tokens");
+  const uncached = sum("input_tokens"), outputTokens = sum("output_tokens");
+  if (cachedInputTokens === null || cacheWriteInputTokens === null || uncached === null || outputTokens === null
+    || !integer(uncached + cachedInputTokens + cacheWriteInputTokens)) return unknown("Invalid Docker Agent token arithmetic");
+  return { inputTokens: uncached + cachedInputTokens + cacheWriteInputTokens, outputTokens,
+    cachedInputTokens, cacheWriteInputTokens, reasoningOutputTokens: sum("reasoning_tokens"), source: "docker-agent.per-message", partial,
+    issues: partial ? ["Docker Agent usage is a known lower bound; the complete total is unknown"] : [] };
 }
 
 function interval(lower: number, upper: number | null, reasons: readonly string[]): CostInterval {
@@ -156,7 +196,8 @@ export function estimateTokenCost(usage: TokenUsage, rates: TokenRates | null, l
   }
   pieces.push(usage.outputTokens === null ? interval(0, null, [`${label}: output token count is unknown`])
     : fixed(usage.outputTokens, prices.output, "output"));
-  return sumCostIntervals(pieces);
+  const known = sumCostIntervals(pieces);
+  return usage.partial ? interval(known.lower, null, [...known.unknownReasons, ...usage.issues, `${label}: unfinished usage total is unknown`]) : known;
 }
 
 export function estimateCallCost(usage: TokenUsage, requestedModel: string, card: RateCard): CallEstimate {

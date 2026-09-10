@@ -1,8 +1,10 @@
-import { spawn } from "node:child_process";
+import { capture, type Capture } from "./sandbox-process.ts";
+export { capture, type Capture } from "./sandbox-process.ts";
 import { createHash, randomUUID } from "node:crypto";
 import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { join, posix } from "node:path";
 import { fileURLToPath } from "node:url";
+import { ownSandbox, recoverBeforeSandboxStart } from "./sandbox-ownership.ts";
 import { assertSupportedSchema, conforms, CodexWorkerError,
   type CodexCallOptions, type CodexCallResult, type CodexTranscript, type CodexUsage } from "./codex-worker.ts";
 
@@ -25,10 +27,6 @@ export interface DockerAgentOptions extends CodexCallOptions {
   readonly tools?: "none" | "local";
   readonly maxTokens?: number;
 }
-export interface Capture {
-  stdout: string; stderr: string; exitCode: number | null; signal: NodeJS.Signals | null;
-  timedOut: boolean; cancelled: boolean; tooLarge: boolean;
-}
 export interface DockerTranscript extends CodexTranscript {
   runtime: "docker-agent"; runtimeVersion: string; sandboxVersion: string;
   runtimeSha256: string;
@@ -39,34 +37,6 @@ export interface DockerTranscript extends CodexTranscript {
   usageCompleteness: "complete" | "partial-or-unknown";
 }
 
-/** Bounded capture; killing an sbx client alone is insufficient: caller must remove its VM. */
-export async function capture(command: string, args: string[], options: {
-  timeoutMs: number; signal?: AbortSignal; input?: string;
-}): Promise<Capture> {
-  const env: NodeJS.ProcessEnv = {};
-  for (const key of ["PATH", "HOME", "TMPDIR", "USER", "LANG"]) if (process.env[key]) env[key] = process.env[key];
-  const child = spawn(command, args, { env, detached: true, stdio: ["pipe", "pipe", "pipe"] });
-  const result: Capture = { stdout: "", stderr: "", exitCode: null, signal: null, timedOut: false, cancelled: false, tooLarge: false };
-  const chunks = { stdout: [] as Buffer[], stderr: [] as Buffer[] };
-  const sizes = { stdout: 0, stderr: 0 };
-  const kill = () => { try { if (child.pid) process.kill(-child.pid, "SIGKILL"); } catch { child.kill("SIGKILL"); } };
-  for (const name of ["stdout", "stderr"] as const) child[name].on("data", (chunk: Buffer) => {
-    sizes[name] += chunk.length;
-    if (sizes[name] > LIMIT) { result.tooLarge = true; kill(); } else chunks[name].push(chunk);
-  });
-  const abort = () => { result.cancelled = true; kill(); };
-  const timer = setTimeout(() => { result.timedOut = true; kill(); }, options.timeoutMs);
-  options.signal?.addEventListener("abort", abort, { once: true });
-  if (options.signal?.aborted) abort();
-  child.stdin.on("error", () => {});
-  child.on("error", (error) => { result.stderr = error.message; });
-  child.stdin.end(options.input);
-  await new Promise<void>((resolve) => child.once("close", (code, signal) => { result.exitCode = code; result.signal = signal; resolve(); }));
-  clearTimeout(timer); options.signal?.removeEventListener("abort", abort);
-  result.stdout = Buffer.concat(chunks.stdout).toString("utf8");
-  result.stderr += Buffer.concat(chunks.stderr).toString("utf8");
-  return result;
-}
 
 function record(value: unknown): Record<string, unknown> | undefined {
   return typeof value === "object" && value !== null && !Array.isArray(value) ? value as Record<string, unknown> : undefined;
@@ -199,6 +169,7 @@ export async function callDockerAgent<T = unknown>(options: DockerAgentOptions):
     timedOut: false, cancelled: false, durationMs: 0,
   };
   let attemptedCreate = false, failure: unknown, result: T | undefined;
+  let owner: Awaited<ReturnType<typeof ownSandbox>> | undefined;
   const run = async (args: string[], input?: string, timeoutMs = 120_000): Promise<Capture> => {
     if (options.signal?.aborted) { Object.assign(transcript, { cancelled: true }); throw new Error("cancelled before sandbox operation"); }
     const output = await capture("sbx", args, { timeoutMs, ...(input === undefined ? {} : { input }), ...(options.signal ? { signal: options.signal } : {}) });
@@ -220,6 +191,8 @@ export async function callDockerAgent<T = unknown>(options: DockerAgentOptions):
     const bytes = await readFile(binary);
     if (createHash("sha256").update(bytes).digest("hex") !== HASHES[arch]) throw new Error("Docker Agent binary hash mismatch; run npm run sandbox:install");
     transcript.runtimeSha256 = HASHES[arch]!;
+    await recoverBeforeSandboxStart();
+    owner = await ownSandbox(name, SANDBOX_TEMPLATE);
     attemptedCreate = true;
     await run(["create", "--name", name, "--cpus", "2", "--memory", "4g", "--deny-network", "**", "--template", SANDBOX_TEMPLATE, "docker-agent"]);
     // No workspace argument, no kits, no host Docker socket, no user config.
@@ -276,11 +249,22 @@ export async function callDockerAgent<T = unknown>(options: DockerAgentOptions):
         const stop = await capture("sbx", ["stop", name], { timeoutMs: 30_000 });
         transcript.lifecycle.push({ command: `stop ${name}`, result: stop });
         failure ??= new Error(`Sandbox cleanup failed: ${name}`);
-      }
+      } else try { await owner?.release(); } catch (error) { failure ??= error; }
     } else transcript.cleanupSucceeded = true;
     Object.assign(transcript, { durationMs: Date.now() - started });
     await writeFile(join(directory, "receipt.json"), JSON.stringify({ failure: failure ? String(failure) : null, transcript }, null, 2) + "\n");
   }
   if (failure) throw new CodexWorkerError(transcript.cancelled ? "cancelled" : transcript.timedOut ? "timeout" : "nonzero-exit", `Docker Agent: ${String(failure)}; receipt: ${directory}`, transcript, failure);
   return { result: result!, requestedModel: options.model, usage: transcript.usage, transcript };
+}
+
+/** Every change reaches kernel scope checks; final-answer text never substitutes for files. */
+export function dockerWorkspaceWrites(transcript: CodexTranscript): Record<string, string> {
+  const receipt = transcript as Partial<DockerTranscript>;
+  if (receipt.runtime !== "docker-agent" || receipt.cleanupSucceeded !== true || receipt.usageCompleteness !== "complete"
+    || !receipt.workspaceChanges || typeof receipt.workspaceChanges !== "object" || Array.isArray(receipt.workspaceChanges)) throw new Error("Missing completed Docker workspace receipt");
+  if (Object.values(receipt.workspaceChanges).some(value => typeof value !== "string")) throw new Error("Workspace deletions are unsupported");
+  const changes = receipt.workspaceChanges as Record<string, string>;
+  validateFiles(changes);
+  return changes;
 }

@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { capture, SANDBOX_TEMPLATE, type Capture } from "./docker-agent-worker.ts";
 import type { Verdict } from "./kernel.ts";
+import { ownSandbox, recoverBeforeSandboxStart } from "./sandbox-ownership.ts";
 
 // Frozen acceptance for the introduction pilot. Never sent to the worker.
 // VM isolation protects the host; the inner vm context limits this fixture's API.
@@ -27,6 +28,8 @@ export async function verifySandboxPilot(source: string): Promise<Verdict & { ev
   const name = `sheep-verify-${randomUUID()}`;
   const operations: { operation: string; result: Capture }[] = [];
   let verdict: Verdict = { ok: false, errors: ["verifier not run"] };
+  await recoverBeforeSandboxStart();
+  const owner = await ownSandbox(name, SANDBOX_TEMPLATE);
   try {
     const created = await capture("sbx", ["create", "--name", name, "--cpus", "2", "--memory", "4g", "--deny-network", "**", "--template", SANDBOX_TEMPLATE, "docker-agent"], { timeoutMs: 120_000 });
     operations.push({ operation: "create", result: created });
@@ -40,6 +43,7 @@ export async function verifySandboxPilot(source: string): Promise<Verdict & { ev
     const cleanup = await capture("sbx", ["rm", "--force", name], { timeoutMs: 60_000 });
     operations.push({ operation: "cleanup", result: cleanup });
     if (cleanup.exitCode !== 0) verdict = { ok: false, errors: [...verdict.errors, `Verifier cleanup failed: ${name}`] };
+    else await owner.release();
   }
   return { ...verdict, evidence: { name, operations } };
 }

@@ -133,6 +133,8 @@ Working default:
 Validation: [導入手順](../docs/docker-agent-sandbox.md)と[実測](../docs/results/docker-agent-sandbox.md)。一般repo、pool再利用、並列durability、費用優位は未確認。
 
 2026-09-10のPR化・継続依頼を受け、次の局所範囲を既存swarm fixtureのtool接続とした。可視テストは固定feedbackとして追加し、採点値を変えずに受入実行を独立VMへ移す。全workspace差分の検査を保ち、基盤障害を上位への意味的相談の材料にしない。
+
+「わかっているところまで進めて」に対し、`compare`の4方式への同一tool追加、単独Luna対照、所有process終了後の復帰時回収を進めた。機構実験のreadRequests・段階別oracleまで同じ形で移植できるとは仮定しない。Docker usageのper-message計上と中断時の既知下限を費用見積器へ接続し、資源回収や価格catalogの0から成功・総費用を推定しない。
 Status: active
 
 ## Open Questions And Discomfort

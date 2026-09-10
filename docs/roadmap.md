@@ -83,7 +83,9 @@ DB選定とschemaは、この段階でruntimeの要件とローカルの互換�
 
 継続範囲の完了証拠: [道具付きの実Luna N=4/C=2](results/docker-agent-tools-swarm.md)で5call・5artifact・全体受入成功。全件の可視テスト失敗→成功と、worker 5台・受入6台の削除を確認した。
 
-次の範囲: toolを`compare`・`mechanism`等の各比較条件へ同じ権限で追加すること、SIGKILL後の残留VM回収、pool再利用と汚染検査、Node 24+のtemplate、Astra介入を含む実走。一般repo・32 VM並列・費用優位・並列durabilityは本導入の完了条件に含まない。
+追加の既知範囲: `compare`の単独Luna・Manager-local・Sheep-fixed/fullへ共通toolと独立VM受入を追加した。必須importと固定採点値を保持し、単独Astraの新規Docker実行を拒否する。比較系列の共通profileと使用量不明時の停止、Docker usageの費用見積、作成前の所有記録と復帰時のVM回収も実装した。[継続結果](results/docker-agent-comparison-recovery.md)
+
+次の範囲: `mechanism`の課金付きreadRequests・段階別の可視/最終oracleに合わせたtool接続、pool再利用と汚染検査、Node 24+のtemplate、Astra介入を含む実走。機構実験はtoolから未読policyや最終採点値が漏れないfeedback設計と、そのread set・料金・段階境界の検査を先に置く。今回の復帰時回収は常駐watcherやrun再開ではない。一般repo・32 VM並列・費用優位・並列durabilityは本導入の完了条件に含まない。
 
 ## 再検討する条件
 

@@ -23,7 +23,10 @@
     "sandbox:install": "node scripts/install-docker-agent.mjs",
     "sandbox:probe": "node scripts/probe-docker-sandbox.mjs",
     "sandbox:pilot": "node src/docker-agent-pilot.ts",
-    "sandbox:swarm-probe": "node scripts/probe-docker-swarm.mjs"
+    "sandbox:swarm-probe": "node scripts/probe-docker-swarm.mjs",
+    "sandbox:reap": "node scripts/reap-docker-sandboxes.mjs",
+    "sandbox:recovery-probe": "node scripts/probe-docker-recovery.mjs",
+    "sandbox:comparison-probe": "node scripts/probe-docker-comparison.mjs"
   },
   "devDependencies": {
     "@types/node": "24.13.3",

@@ -2,6 +2,8 @@
 
 2026-09-10、macOS arm64。Docker Agent v1.137.0、sbx v0.42.1、digest固定template。合成measurement migration fixtureに対する導入受入であり、有用性比較の本実験ではない。
 
+後続の[比較系・復帰時回収](docker-agent-comparison-recovery.md)は別の実走として記録した。以下の結果は当時のscopeで保持する。
+
 ## 実行条件と結果
 
 ```sh

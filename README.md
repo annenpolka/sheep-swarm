@@ -63,6 +63,8 @@ TypeScriptの実行にはNode.jsのtype strippingを使い、型検査は別に 
 
 `--worker-tools local`を併用すると、各workerへ版付きの局所ファイルと可視テストを投入し、read/edit/testを利用できる。全workspace差分をlease検査へ渡し、Docker runtimeの受入実行は独立した通信拒否VMで行う。`npm run sandbox:swarm-probe`で基準解・変異・禁止import・timeoutをモデル呼出しなしで検証する。可視テストの成功や最終回答のコードだけでは確定しない。
 
+`compare`にも同じruntime/toolを追加した。単独Luna・Manager-local・Sheep-fixed/fullで共通の可視検査と別VMの固定受入を使う。`npm run sandbox:comparison-probe`は必須importを含むoracle互換を、`npm run sandbox:recovery-probe`は所有processのSIGKILLとVM回収を検証する。次回のruntime起動時に死んだ所有processの残留VMを回収し、`npm run sandbox:reap`でも実行できる。[継続実装と検証](docs/results/docker-agent-comparison-recovery.md)
+
 ```sh
 npm run swarm -- --workers 4 --concurrency 4 --size 4
 npm run swarm -- --workers 4 --concurrency 4 --size 4 --fault rounded-guidance
@@ -70,14 +72,15 @@ npm run swarm -- --workers 16 --concurrency 16 --size 32
 npm run durable -- --directory .sheep/durable-luna --size 4 --workers 4
 npm run durable -- --directory .sheep/durable-luna --resume
 npm run compare -- --method sheep-full --size 8 --workers 4 --concurrency 4 --max-tokens 500000 --reserve-tokens 30000
+npm run compare -- --runtime docker-agent --worker-tools local --method single-luna --size 2 --max-calls 5 --max-upper-calls 0 --max-tokens 200000 --reserve-tokens 40000 --timeout-ms 240000
 npm run mechanism -- --family staged --method sheep --groups 1 --workers 4 --concurrency 4 --output .sheep/my-mechanism-pilot
 ```
 
 これらは実モデルを呼び出す。結果・コード・使用量・失敗履歴は `.sheep/` の一意なrunディレクトリへ保存する。`--max-calls`、`--max-meta-calls`、`--max-rounds`、`--timeout-ms` で上限を指定できる。通常の `npm run check` はモデルを呼び出さない。
 
-`compare` の方式は `single-upper`、`manager-local`、`sheep-fixed`、`sheep-full`。token予約は呼出しの受付制御であり、providerの強制上限ではない。超過・使用量不明は予算付き比較の成功にしない。Sheep-fullが発見するのは実ファイルの静的importと明示された仕様依存であり、任意の意味依存ではない。
+`compare` の新規対照は `single-luna`、`manager-local`、`sheep-fixed`、`sheep-full`。`single-upper`は過去の再現用に保持し、Docker runtimeでの新規実行は拒否する。token予約は呼出しの受付制御であり、providerの強制上限ではない。超過・使用量不明は予算付き比較の成功にしない。`--max-upper-calls`で上位の受付数も制限できる。Sheep-fullが発見するのは実ファイルの静的importと明示された仕様依存であり、任意の意味依存ではない。
 
-今後の単独比較はLunaに統一し、費用の目安を得たAstra単独は新規試行から省く。Astraは群れへの必要時介入で継続する。`mechanism:experiment` はpilot 4条件・main 25条件、旧 `scripts/compare-experiment.mjs` の既定も単独上位を除外する。旧単独方式の実装は過去の再現用に残す。
+今後の単独比較はLunaに統一し、費用の目安を得たAstra単独は新規試行から省く。Astraは群れへの必要時介入で継続する。`mechanism:experiment` はpilot 4条件・main 25条件。`scripts/compare-experiment.mjs`の既定は単独Lunaを含む4方式×3条件で、共通runtime/toolを指定できる。使用量不明・検証基盤障害・cleanup失敗で系列の新規実行を止める。旧単独方式の実装は過去の再現用に残す。
 
 `mechanism` の方式は `sheep`、`single-luna`、`single-astra`、`no-memory`、`no-upper`。既定30 credits相当の中で、下位・上位・追加読取・再試行を精算する。使用量不明は0とせず停止する。今回の追加N16/32比較は23.729217／100 credits相当、今回の機構実験全体の既知下限は58.395228相当＋使用量不明1呼出し。N16/32の試行費用では上位介入が約半分を占め、Nを増やす明確な利点はまだ見えていない。各1回・合成課題の観測として[結果](docs/results/mechanism-findings.md)を参照する。
 

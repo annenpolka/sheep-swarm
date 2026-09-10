@@ -161,3 +161,14 @@ test("workspace acceptance requires both cleanup and complete usage receipts", a
   for (const fields of [{ cleanupSucceeded: false }, { usageCompleteness: "partial-or-unknown" }, { workspaceChanges: 42 }])
     assert.throws(() => dockerWorkspaceWrites({ ...valid, ...fields }), /Missing completed Docker workspace receipt/);
 });
+
+test("failed worker cleanup stops swarm admission even after a fully metered response", async t => {
+  const report = await runSwarm({ workers: 4, concurrency: 2, size: 4, outputDirectory: await output(t),
+    runtime: "docker-agent", workerTools: "local", maxCalls: 10, maxMetaCalls: 2 }, async options => {
+    const response = await callerWith(() => ({}))(options);
+    throw new CodexWorkerError("nonzero-exit", "VM cleanup failed", { ...response.transcript,
+      ...{ runtime: "docker-agent", cleanupSucceeded: false, usageCompleteness: "complete" } });
+  }, observeLocally);
+  assert.equal(report.lowerCalls, 2); assert.equal(report.upperCalls, 0);
+  assert.equal(report.success, false); assert.ok(report.finalErrors.includes("sandbox-cleanup-failed"));
+});
