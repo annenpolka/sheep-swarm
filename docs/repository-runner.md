@@ -75,3 +75,38 @@ POSIXでは検査コマンドごとにprocess groupを分け、正常終了・�
 trackedな通常ファイルの現在のbytesと、明示したcontext/protected/targetを採用する。既存のtracked変更・削除を反映し、無関係なuntrackedやignoredファイルは含めない。binaryはsnapshotとして保持できるが、workerが読むtarget/contextはUTF-8 textに限定する。symlink・submodule・特殊ファイルは拒否する。`.git`、`.sheep`、`.env*`、`node_modules`は対象外。snapshotは最大10000ファイル・128MiB、workerへ渡す各textは2MiBまで。
 
 任意の言語へ検査コマンドを設定できることと、あらゆるbuild環境・依存関係・リポジトリで成功することは別である。固定した対象範囲・検査の受入結果として報告する。
+
+## task v2: 局所contextと根拠付き追加読取
+
+共通入口 `npm run sheep -- repo ...` と旧入口の両方で利用できる。[CLIの対応表](cli.md)も参照。v1は全targetへの明示context、全manifest入りgoal、content/note応答を保持する。v2は上のtaskを `version:2` にして、次を追加する。
+
+```json
+"discovery": {
+  "mode": "static+reads",
+  "readable": ["registry.json", "policies/retail.json"],
+  "maxReadCalls": 2,
+  "maxDeliveredBytes": 65536
+}
+```
+
+`readable`は本文を配信してよい既存ファイルの明示集合。targetと共通contextも公開catalogに入り、workerには最初から全catalogの**名前**を見せる。本文は担当target・固有の指示・共通goal/guidance/context・必要な依存先だけを渡す。他targetの指示、未公開の固定検査は渡さない。protectedを追加公開するには、従来どおりcontextにも明示する必要がある。source snapshotのUTF-8・サイズ・path・symlink等の検査を通す。
+
+`.mjs`の静的import/reexportをNodeの構文parserで走査し、link/evaluateせず局所依存を求める。`node:`組込みはrepo依存に含めず、相対pathは拡張子付きの公開ファイルへ解決する。bare package、解決不能参照、対象に到達する循環は有限の拒否となる。初期targetの解決不能参照/循環はrun全体のpreflightを止める。動的import、他言語、意味依存の完全性は保証しない。関係のない公開ファイルもhost indexでは走査するため、走査量と配信量は別の指標になる。
+
+`static`はモデルの追加readを拒否し、`static+reads`は許可する。どちらも新しい静的importを含むwriteの依存先が未配信なら、そのwriteを確定せず追加配信へ戻す。`maxReadCalls`はtargetごとのread応答と、このhostによる追加配信要求の合計上限（既定2、最大32）。配信は次の通常worker callで行い、そのcallも下位回数・token予算へ計上する。`maxDeliveredBytes`はtargetごとに配信を確認できた追加context本文の**累積**bytes上限（既定65,536、最大2MiB）。再配信も数え、担当target・固有指示・goal/guidance・明示共通contextは除く。全promptの出力量上限ではない。
+
+workerは一度にwrite/read/uncertainの一つだけを返す。provider adapter共通のschema部分集合に合わせ、wireには必ず7fieldを置く。使わない配列は`[]`、文字列は`""`。hostが厳密な判別unionへ変換し、混合actionを拒否する。
+
+```json
+{"kind":"read","content":"","paths":["registry.json"],"observed":[],"missing":[],"hypothesis":"","note":"policyの所在を確認する"}
+```
+
+writeではcontentとnoteのみ、uncertainではobserved/missing/hypothesis/noteのみを埋める。uncertainのmissingは1項目以上。仮説は未確認のmodel-claimとして保存し、blocking claimで完了を妨げる。上位は通常の反復失敗観測時に限定してこの記録を見られるが、workerが上位を直接呼ぶactionはない。claimはworkerの現版に対するhost検証・kernel確定後に閉じ、上位の発言だけでは閉じない。
+
+read要求の受理と本文の配信記録を分ける。成功したprovider応答が返ったcallについて、実際に送ったcheckoutのversion/evidenceEpoch・本文hashを記録する。予約拒否や応答のないtransport失敗を、配信確認済みとは数えない。usage不明は従来どおり受付と成功を止める。配信確認時にproviderが変わっていればkernelにcatch-upの仕事が発生し、古いread stampのwriteは拒否される。発見でwrite leaseは増えず、過去の依存edgeを自動で削除しない。
+
+v2の出力には `dependency-evidence.json`（parser証拠と配信に基づく依存）、`read-deliveries.json`（要求・拒否・配信）、`uncertainties.json`（未確認の観測と解決証拠）を追加する。作業中のsnapshotは`swarm/`にも残る。`result.json.discovery`は走査量、選択/起動target数、workerのLocal-files JSONのcontext bytes合計/p95/最大、固有配信依存数を示す。context bytesにはpromptの指示、履歴、schema等は含まれず、provider tokensと同一ではない。成功runでも最初は全選択targetを起動する。起動自体を静的差分だけに絞る仕組みではない。
+
+v1/v2とも `result.json.verifications` にcandidateDigest、checksDigest、environmentId、local/final、pass/reject/infrastructure-error、cleanupを保存する。候補のbytes/mode・固定command/timeout・実行環境識別が一致しないreceiptは受け入れない。cleanupはprocess-groupの終了処理を試みた記録であり、別sessionまで完全回収したという証明ではない。
+
+固定した疎通用repoは `node scripts/prepare-repo-discovery-pilot.mjs --output NEW_DIRECTORY` で作れる。親directoryは先に用意する。基準解は公開repoへコピーしない。[実装と実モデルの結果](results/repository-discovery.md)には失敗試行と親の修正も含める。

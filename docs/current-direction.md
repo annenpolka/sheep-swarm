@@ -128,3 +128,9 @@
 ## 明示したGit作業ツリーへの実行経路
 
 2026-09-10の利用者指定「任意リポジトリで実行できるように」「opencode-go/deepseek-flashのswarm」に合わせ、task JSONを既存kernelへ接続した。target/context・依存・固定受入は呼出側が先に指定し、生成内容をhostの候補workspaceで検証する。一般repoでの言語別コマンドを扱える経路であり、Docker隔離や未知依存の自動発見とは別に扱う。[使用手順](repository-runner.md)、[実走と補修の記録](results/repository-runner.md)。既存Luna規模比較のprofileは変更しない。
+
+## M6: CLIと依存発見
+
+2026-09-10の添付議論を[精査](discussion-review-20260910.md)し、[次の実行計画](execplan-repository-discovery.md)を作成した。CLI整理は利用者の追加指示。共通入口と設定確認、host検証の契約、opt-in task v2の静的依存発見・追加読取・未解決記録を実装した。利用者指定のGo DeepSeek swarmを使い、3targetの小規模疎通は固定受入まで成功した。[初回失敗・親の補修・通常gate](results/repository-discovery.md)を残す。新しいN比較や有用性比較は未実行で、一般的な意味依存発見は引き続き保証しない。
+
+「読む依存を発見する」「必要なtargetを起動する」「書込を許可する」を分け、初回は読取の発見を扱う。全manifestの複製を含む個体contextと発見費用を測り、N=16を中心に8/16/32の観測へ戻す。C固定で速度差が出なかったことを中心仮説の反証とはせず、品質・局所性・復旧・調整費用で評価する。早期受付制御は別条件とし、Astra単独の新規比較は追加しない。

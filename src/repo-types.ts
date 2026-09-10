@@ -10,14 +10,23 @@ export interface RepoFileTask {
   readonly dependsOn: readonly string[];
   readonly checks: readonly RepoCommand[];
 }
-export interface RepoTask {
-  readonly version: 1;
+interface RepoTaskBase {
   readonly goal: string;
   readonly files: readonly RepoFileTask[];
   readonly context: readonly string[];
   readonly protected: readonly string[];
   readonly checks: readonly RepoCommand[];
 }
+export interface RepoDiscoveryOptions {
+  readonly mode: 'static' | 'static+reads';
+  readonly readable: readonly string[];
+  readonly maxReadCalls: number;
+  readonly maxDeliveredBytes: number;
+}
+export type RepoTask = RepoTaskBase & (
+  | {readonly version: 1; readonly discovery?: never}
+  | {readonly version: 2; readonly discovery: RepoDiscoveryOptions}
+);
 export interface RepoEntry { readonly bytes: Buffer; readonly mode: number }
 export interface RepoSnapshot {
   readonly root: string;
@@ -72,6 +81,7 @@ export interface RepoRunReport {
   readonly changedPaths: readonly string[];
   readonly budget: TokenBudgetSnapshot;
   readonly swarm: SwarmReport;
+  readonly discovery?: ReturnType<import('./repo-discovery.ts').RepositoryDiscovery['metrics']>;
   readonly verifications: readonly RepoVerification[];
   readonly errors: readonly string[];
 }

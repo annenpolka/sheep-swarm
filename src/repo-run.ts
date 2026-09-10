@@ -11,7 +11,8 @@ import type {
 } from './repo-types.ts';
 import { parseRepoTask } from './repo-manifest.ts';
 import { captureRepository, applyRepository } from './repo-files.ts';
-import { runRepoChecks } from './repo-checks.ts';
+import {createHostRepoVerifier, assertVerificationReceipt, type HostRepoVerifier} from './repo-verifier.ts';
+import {RepositoryDiscovery} from './repo-discovery.ts';
 import { callerForRuntime, resolveRoleRuntimes } from './model-runtime.ts';
 import { TokenBudget, type TokenBudgetSnapshot } from './token-budget.ts';
 import {
@@ -72,6 +73,7 @@ function originalContent(snapshot: RepoSnapshot, path: string): string {
 }
 
 function buildGoalArtifact(snapshot: RepoSnapshot): string {
+  if(snapshot.task.version===2)return `# Fixed repository goal\n${snapshot.task.goal}\nHost owns acceptance commands and write capabilities. Only assigned targets may be changed.`;
   const manifest = JSON.stringify(snapshot.task, null, 2);
   return [
     '# Host-owned repository task (immutable)',
@@ -100,6 +102,7 @@ function buildGoalArtifact(snapshot: RepoSnapshot): string {
 }
 
 function buildGuidanceArtifact(snapshot: RepoSnapshot): string {
+  if(snapshot.task.version===2)return 'Use your own immutable target instructions and delivered files. Shared guidance cannot replace the fixed host oracle.';
   return [
     `# Shared guidance for goal: ${snapshot.task.goal}`,
     '',
@@ -124,9 +127,12 @@ function makeTask(
   checkDirectory: string,
   verifications: RepoVerification[],
   finalChecks: {value?: RepoVerification},
+  verifier:HostRepoVerifier,
+  discovery?:RepositoryDiscovery,
 ): SwarmTask {
   return {
     id: 'repository-task',
+    ...(discovery?{control:discovery}:{}),
     createFixture: (): CodeFixture => {
       const selected = new Set<string>([
         ...snapshot.task.files.map((file) => file.path),
@@ -134,6 +140,7 @@ function makeTask(
       ]);
       const contents: Record<string, string> = Object.create(null);
       for (const selectedPath of selected) contents[selectedPath] = originalContent(snapshot, selectedPath);
+      Object.assign(contents,discovery?.artifacts);
       contents[GOAL_ARTIFACT] = 'Repository task awaiting activation.';
       contents[GUIDANCE_ARTIFACT] = guidanceArtifact;
 
@@ -178,9 +185,9 @@ function makeTask(
         }
 
         // Read-only context (unless also declared writable) must remain unchanged.
-        for (const ctx of snapshot.task.context) {
+        for (const ctx of [...snapshot.task.context,...(snapshot.task.discovery?.readable??[]),...(discovery?.instructions.values()??[])]) {
           if (writableSet.has(ctx)) continue;
-          if (candidate[ctx] !== undefined && candidate[ctx] !== originalContent(snapshot, ctx)) {
+          if (candidate[ctx] !== undefined && candidate[ctx] !== (discovery?.artifacts[ctx]??originalContent(snapshot, ctx))) {
             errors.push(`context ${ctx} must remain unchanged`);
           }
         }
@@ -199,12 +206,10 @@ function makeTask(
 
         const runChecks = async (commands: readonly RepoCommand[]): Promise<void> => {
           if (executionFailure) return;
-          const verification = await runRepoChecks(
-            snapshot,
-            targetOverlay(),
-            commands,
-            checkDirectory,
-          );
+          const request={snapshot,overlay:targetOverlay(),commands,outputRoot:checkDirectory,phase:scoped===undefined?'final' as const:'local' as const};
+          const verification=await verifier.verify(request);
+          try {assertVerificationReceipt(request,verification,verifier.environmentId);}
+          catch(error){executionFailure=true;errors.push(`verification receipt rejected: ${String(error)}`);return;}
           verifications.push(verification);
           if (scoped === undefined) finalChecks.value = verification;
           if (verification.executionFailure) executionFailure = true;
@@ -247,7 +252,7 @@ function makeTask(
 
       return {
         artifacts: contents,
-        dependencies,
+        dependencies:discovery?.dependencies()??dependencies,
         changedSource: { id: GOAL_ARTIFACT, content: goalArtifact },
         sourceId: GOAL_ARTIFACT,
         specId: GUIDANCE_ARTIFACT,
@@ -321,7 +326,7 @@ export async function runRepository(
     ((options.goThinking !== 'enabled' && options.goThinking !== 'disabled') || resolved.runtime !== 'opencode-go' || !resolved.workerModel.startsWith('deepseek-')))
     throw new RangeError('goThinking requires an OpenCode Go DeepSeek worker and enabled or disabled');
   const snapshot = await captureRepository(options.repository, task);
-  for (const file of [...task.files.map(f=>f.path),...task.context,...task.protected]) {
+  for (const file of [...task.files.map(f=>f.path),...task.context,...task.protected,...(task.discovery?.readable??[])]) {
     const absolute=join(snapshot.root,file);
     if(absolute===outputDirectory || absolute.startsWith(outputDirectory+sep) || outputDirectory.startsWith(absolute+sep))
       throw new Error('outputDirectory overlaps a selected repository path');
@@ -331,6 +336,8 @@ export async function runRepository(
     originalHashes[file.path] = hashContent(originalContent(snapshot, file.path));
   }
 
+  const discovery=task.version===2?await RepositoryDiscovery.create(snapshot):undefined;
+  const verifier=createHostRepoVerifier();
   const goalArtifact = buildGoalArtifact(snapshot);
   const guidanceArtifact = buildGuidanceArtifact(snapshot);
 
@@ -375,7 +382,7 @@ export async function runRepository(
       throw new Error('token budget admission is locked; refusing new provider call');
     }
     const role = roleOf(callOptions.sessionId);
-    const callId = `${role}-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
+    const callId = callOptions.callId ?? `${role}-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
     if (!budget.reserve(callOptions.model, callId)) {
       admissionLocked = true;
       await serializeWrite(() => writeJson(join(outputDirectory, 'budget.json'), budget.snapshot()));
@@ -414,7 +421,7 @@ export async function runRepository(
 
   const verifications: RepoVerification[] = [];
   const finalChecks: {value?: RepoVerification} = {};
-  const swarmTask = makeTask(snapshot, goalArtifact, guidanceArtifact, checksDirectory, verifications, finalChecks);
+  const swarmTask = makeTask(snapshot, goalArtifact, guidanceArtifact, checksDirectory, verifications, finalChecks, verifier, discovery);
 
   const swarmOptions: SwarmOptions = {
     workers,
@@ -443,6 +450,7 @@ export async function runRepository(
     swarmFailure = error;
   }
 
+  await discovery?.save(outputDirectory);
   const budgetSnapshot: TokenBudgetSnapshot = budget.snapshot();
   await writeJson(join(outputDirectory, 'budget.json'), budgetSnapshot);
 
@@ -475,7 +483,10 @@ export async function runRepository(
   // stopped before reaching it. This avoids executing successful checks twice.
   let finalVerification = finalChecks.value;
   if (!finalVerification) {
-    finalVerification = await runRepoChecks(snapshot,outerArtifacts,task.checks,checksDirectory);
+    const request={snapshot,overlay:outerArtifacts,commands:task.checks,outputRoot:checksDirectory,phase:'final' as const};
+    const receipt=await verifier.verify(request);
+    assertVerificationReceipt(request,receipt,verifier.environmentId);
+    finalVerification=receipt;
     verifications.push(finalVerification);
   }
   if (!finalVerification.ok) errors.push(...finalVerification.errors);
@@ -533,6 +544,7 @@ export async function runRepository(
     budget: budgetSnapshot,
     swarm: swarmReport,
     verifications,
+    ...(discovery?{discovery:discovery.metrics(swarmReport.calls)}:{}),
     errors,
   };
 

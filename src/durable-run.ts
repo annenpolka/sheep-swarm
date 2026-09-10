@@ -1,4 +1,5 @@
-import { access, mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, writeFile, readFile, mkdtemp, rm } from "node:fs/promises";
+import {tmpdir} from "node:os";
 import { randomUUID } from "node:crypto";
 import { dirname, join, resolve } from "node:path";
 import { CodexWorkerError } from "./codex-worker.ts";
@@ -383,4 +384,27 @@ export async function runDurableSwarm(options: DurableOptions, model?: DurableMo
     await hook("completed", { success: report.success });
     return report;
   } finally { journal.close(); }
+}
+
+/** Inspect a stable byte copy, so help/dry-run never opens the source DB or creates its WAL/SHM. */
+export async function inspectDurableRun(directory:string):Promise<{configuration:DurableConfiguration;generation:number;usageLocked:boolean}> {
+  const files=['state.sqlite','state.sqlite-wal'];
+  const read=async()=>Promise.all(files.map(async f=>{
+    try{return await readFile(join(directory,f));}catch(error){
+      if(f.endsWith('-wal')&&(error as NodeJS.ErrnoException).code==='ENOENT')return null;
+      throw error;
+    }
+  }));
+  const before=await read();const copy=await mkdtemp(join(tmpdir(),'sheep-inspect-'));
+  try {
+    for(const [i,bytes] of before.entries())if(bytes)await writeFile(join(copy,files[i]!),bytes);
+    const after=await read();
+    if(before.some((bytes,i)=>bytes===null?after[i]!==null:!after[i]||!bytes.equals(after[i]!)))throw new Error('durable state changed while inspecting; retry when idle');
+    const journal=new SqliteJournal(join(copy,'state.sqlite'));
+    try {
+      const loaded=journal.load();if(!loaded)throw new Error('no durable snapshot to resume');
+      const app=readApplication(loaded.state);
+      return {configuration:app.configuration,generation:loaded.generation,usageLocked:app.usageLocked};
+    }finally{journal.close();}
+  }finally{await rm(copy,{recursive:true,force:true});}
 }

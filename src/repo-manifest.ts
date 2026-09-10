@@ -147,9 +147,9 @@ function parseFileTask(value: unknown, where: string): RepoFileTask {
 
 export function parseRepoTask(value: unknown): RepoTask {
   if (!isPlainObject(value)) throw new Error('repository task must be an object');
-  rejectUnknownKeys(value, ['version', 'goal', 'files', 'context', 'protected', 'checks'], 'repository task');
+  rejectUnknownKeys(value, ['version', 'goal', 'files', 'context', 'protected', 'checks', ...(value.version === 2 ? ['discovery'] : [])], 'repository task');
   if (!Object.prototype.hasOwnProperty.call(value, 'version')) throw new Error('repository task.version is required');
-  if (value.version !== 1) throw new Error('repository task.version must be 1');
+  if (value.version !== 1 && value.version !== 2) throw new Error('repository task.version must be 1 or 2');
   if (!Object.prototype.hasOwnProperty.call(value, 'goal')) throw new Error('repository task.goal is required');
   const goal = requireString(value.goal, 'repository task.goal', MAX_GOAL_INSTRUCTIONS);
   if (!Object.prototype.hasOwnProperty.call(value, 'files')) throw new Error('repository task.files is required');
@@ -202,5 +202,20 @@ export function parseRepoTask(value: unknown): RepoTask {
   for (const path of targetPaths) {
     if (protectedPaths.includes(path)) throw new Error(`target overlaps protected path: ${path}`);
   }
-  return { version: 1, goal, files, context, protected: protectedPaths, checks };
+  const base = {goal, files, context, protected: protectedPaths, checks};
+  if (value.version === 1) return {version:1,...base};
+  const d=value.discovery;
+  if (!isPlainObject(d)) throw new Error('version 2 requires discovery');
+  rejectUnknownKeys(d,['mode','readable','maxReadCalls','maxDeliveredBytes'],'discovery');
+  if (d.mode !== 'static' && d.mode !== 'static+reads') throw new Error('invalid discovery mode');
+  const readable=parsePathList(d.readable,'discovery.readable');
+  for (const path of readable) if (protectedPaths.includes(path) && !context.includes(path))
+    throw new Error(`discovery cannot publish protected file: ${path}`);
+  const bounded=(v:unknown,fallback:number,max:number):number=>{
+    if(v===undefined)return fallback;
+    if(typeof v!=='number'||!Number.isSafeInteger(v)||v<0||v>max)throw new Error('invalid discovery limit');
+    return v;
+  };
+  return {version:2,...base,discovery:{mode:d.mode,readable,
+    maxReadCalls:bounded(d.maxReadCalls,2,32),maxDeliveredBytes:bounded(d.maxDeliveredBytes,65536,2*1024*1024)}};
 }

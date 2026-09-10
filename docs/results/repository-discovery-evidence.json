@@ -1,0 +1,333 @@
+{
+  "format": 1,
+  "branch": "codex/cli-repository-discovery",
+  "base": "b8720ea330c12bbd667bd5eb89c2a9515b363709",
+  "implementationModel": "opencode-go/deepseek-flash",
+  "runs": {
+    "components-run": {
+      "success": false,
+      "applied": false,
+      "lowerCalls": 6,
+      "upperCalls": 0,
+      "workers": 4,
+      "concurrency": 2,
+      "maxActiveWorkers": 2,
+      "actualWorkers": 4,
+      "observedTokens": 146998,
+      "unknownUsageCalls": 0,
+      "activeReservations": 0,
+      "errors": [
+        "pending-work",
+        "blocking-claims",
+        "command exited with code 1: node --test tests/next-components.test.ts"
+      ],
+      "resultSha256": "4189d65fc211b0bbbe8e9128204b5fec92ba25d88856c35a93e0da3c3788ba6f",
+      "requestedModel": "deepseek-flash",
+      "effectiveEvidence": [
+        "deepseek-flash"
+      ],
+      "contextBytes": {
+        "total": 378918,
+        "p95": 63155,
+        "max": 63155
+      },
+      "callOutcomes": [
+        {
+          "id": "call-1",
+          "target": "src/worker-proposal.ts",
+          "outcome": "committed"
+        },
+        {
+          "id": "call-2",
+          "target": "src/cli-options.ts",
+          "outcome": "committed"
+        },
+        {
+          "id": "call-3",
+          "target": "src/repo-dependencies.ts",
+          "outcome": "rejected"
+        },
+        {
+          "id": "call-4",
+          "target": "src/repo-verifier.ts",
+          "outcome": "committed"
+        },
+        {
+          "id": "call-5",
+          "target": "src/repo-dependencies.ts",
+          "outcome": "rejected"
+        },
+        {
+          "id": "call-6",
+          "target": "src/repo-dependencies.ts",
+          "outcome": "malformed-output"
+        }
+      ]
+    },
+    "profile-run": {
+      "success": true,
+      "applied": false,
+      "lowerCalls": 1,
+      "upperCalls": 0,
+      "workers": 4,
+      "concurrency": 2,
+      "maxActiveWorkers": 1,
+      "actualWorkers": 1,
+      "observedTokens": 61677,
+      "unknownUsageCalls": 0,
+      "activeReservations": 0,
+      "errors": [],
+      "resultSha256": "d98e255244c20c4fe0788890937f4ddf045c0a391bd5c4a1f606e5ba5a314e3d",
+      "requestedModel": "deepseek-flash",
+      "effectiveEvidence": [
+        "deepseek-flash"
+      ],
+      "contextBytes": {
+        "total": 202051,
+        "p95": 202051,
+        "max": 202051
+      },
+      "callOutcomes": [
+        {
+          "id": "call-1",
+          "target": "src/cli-profile.ts",
+          "outcome": "committed"
+        }
+      ]
+    },
+    "live-discovery/run": {
+      "success": false,
+      "applied": false,
+      "lowerCalls": 10,
+      "upperCalls": 0,
+      "workers": 4,
+      "concurrency": 2,
+      "maxActiveWorkers": 2,
+      "actualWorkers": 4,
+      "observedTokens": 8671,
+      "unknownUsageCalls": 0,
+      "activeReservations": 0,
+      "errors": [
+        "pending-work",
+        "blocking-claims",
+        "command exited with code 1: /opt/homebrew/Cellar/node/26.0.0/bin/node check.mjs"
+      ],
+      "resultSha256": "0adcdd7d36c97fa8917f0fb12f1f79643538d60bf4d926714ea664bec5aaef7c",
+      "requestedModel": "deepseek-flash",
+      "effectiveEvidence": [
+        "deepseek-flash"
+      ],
+      "contextBytes": {
+        "total": 6810,
+        "p95": 771,
+        "max": 771
+      },
+      "callOutcomes": [
+        {
+          "id": "call-1",
+          "target": "pricing.mjs",
+          "outcome": "worker-error"
+        },
+        {
+          "id": "call-2",
+          "target": "label.mjs",
+          "outcome": "worker-error"
+        },
+        {
+          "id": "call-3",
+          "target": "pricing.mjs",
+          "outcome": "worker-error"
+        },
+        {
+          "id": "call-4",
+          "target": "label.mjs",
+          "outcome": "worker-error"
+        },
+        {
+          "id": "call-5",
+          "target": "pricing.mjs",
+          "outcome": "worker-error"
+        },
+        {
+          "id": "call-6",
+          "target": "label.mjs",
+          "outcome": "worker-error"
+        },
+        {
+          "id": "call-7",
+          "target": "pricing.mjs",
+          "outcome": "worker-error"
+        },
+        {
+          "id": "call-8",
+          "target": "label.mjs",
+          "outcome": "worker-error"
+        },
+        {
+          "id": "call-9",
+          "target": "pricing.mjs",
+          "outcome": "worker-error"
+        },
+        {
+          "id": "call-10",
+          "target": "label.mjs",
+          "outcome": "worker-error"
+        }
+      ],
+      "discovery": {
+        "requests": 0,
+        "uniqueDeliveredDependencies": 0,
+        "scannedFiles": 3,
+        "scannedBytes": 240,
+        "scanDurationMs": 52
+      }
+    },
+    "live-discovery/run-02": {
+      "success": true,
+      "applied": false,
+      "lowerCalls": 5,
+      "upperCalls": 0,
+      "workers": 4,
+      "concurrency": 2,
+      "maxActiveWorkers": 2,
+      "actualWorkers": 4,
+      "observedTokens": 5144,
+      "unknownUsageCalls": 0,
+      "activeReservations": 0,
+      "errors": [],
+      "resultSha256": "ffe464d155d011b75b2df3cb796335c265ba1f83c7dc6e914659b198e112d2e0",
+      "requestedModel": "deepseek-flash",
+      "effectiveEvidence": [
+        "deepseek-flash"
+      ],
+      "contextBytes": {
+        "total": 4310,
+        "p95": 1148,
+        "max": 1148
+      },
+      "callOutcomes": [
+        {
+          "id": "call-1",
+          "target": "pricing.mjs",
+          "outcome": "deferred"
+        },
+        {
+          "id": "call-2",
+          "target": "label.mjs",
+          "outcome": "committed"
+        },
+        {
+          "id": "call-3",
+          "target": "pricing.mjs",
+          "outcome": "worker-error"
+        },
+        {
+          "id": "call-4",
+          "target": "pricing.mjs",
+          "outcome": "committed"
+        },
+        {
+          "id": "call-5",
+          "target": "summary.mjs",
+          "outcome": "committed"
+        }
+      ],
+      "discovery": {
+        "requests": 1,
+        "uniqueDeliveredDependencies": 4,
+        "scannedFiles": 12,
+        "scannedBytes": 1487,
+        "scanDurationMs": 211
+      }
+    }
+  },
+  "authors": {
+    "src/cli-options.ts": {
+      "rawSha256": "5705b2a4a1fa2a5256b48bbb1d34dffc55c04583bac3e1570d7b40f26c0c75df",
+      "currentSha256": "2a87b9173227a559a75144401c1a822a481001d5c59ed8c10898919868d79459",
+      "parentModified": true
+    },
+    "src/cli-profile.ts": {
+      "rawSha256": "a4e1913d3a270cc4e525c3a93864ef5ce322875e4f8d0ac8b6248bfc38e88151",
+      "currentSha256": "c1980fbb1def025b42d4643fb8181dca994a2af1bbf1b9a35beb53153fd33932",
+      "parentModified": true
+    },
+    "src/repo-dependencies.ts": {
+      "rawSha256": "c17643d7a277bf4cec88bed3d0050bbedd907726be432ac5deab5fa157f9aff5",
+      "currentSha256": "11d9437b177222a0dc06000e8d0269a1da11a8e3a34b758dfd40cba17f77ab0b",
+      "parentModified": true
+    },
+    "src/repo-verifier.ts": {
+      "rawSha256": "8082bf530b2f45252a6e8a7e965fcd0c9943a653c6e3931f1375df6bb71a2a2a",
+      "currentSha256": "a173134ad79c7aa9faade1a043959e2fa8934fb8f84240310c6a60ef27e206b3",
+      "parentModified": true
+    },
+    "src/worker-proposal.ts": {
+      "rawSha256": "c9fe2f39a11d96a953480ef5e231800c693b2ff2318ee5616110f2a1c884f74e",
+      "currentSha256": "f6f54ccda3dad7c99fee4edbcc740bf380b7ad86f1976a3f23529863d20d873e",
+      "parentModified": true
+    }
+  },
+  "totalObservedTokens": 222490,
+  "cost": null,
+  "costNote": "No quota or currency inferred; only observed token usage. Parent usage unavailable.",
+  "sourceHashes": {
+    "src/cli-commands.ts": "52a73b2a6bdede4d20224216eadfbf1847cb4bb6676c62ce67310d06ffc61190",
+    "src/cli-options.ts": "2a87b9173227a559a75144401c1a822a481001d5c59ed8c10898919868d79459",
+    "src/cli-profile.ts": "c1980fbb1def025b42d4643fb8181dca994a2af1bbf1b9a35beb53153fd33932",
+    "src/cli.ts": "d4eba27c66c086317b12fb86363e93b7dc55e35570a2b41fe062216871d9cbed",
+    "src/codex-worker.ts": "ed92f2d52305f2eac9ca2df7f26153a38a3e67e8d4448391e2157e4d77983069",
+    "src/compare-cli.ts": "f27e961fddb6f652604c36a7defe521b2ee6667c47de4f02ec61fd903c42cb53",
+    "src/comparison.ts": "961741f4fee3056b1c834e4048a7d1b29e427ac87c1cbc5d0e09da55c476593e",
+    "src/cost-estimate.ts": "b40c4cb1ea35d0dcf4a0af122787a592c6c674460a57e4ced26017b7d7618017",
+    "src/credit-budget.ts": "16ab64ee57e347b45ac069b2314c2d2630936a52bff468d26b916d42b0cb789e",
+    "src/deepseek-worker.ts": "d09d5998608bd17211e7b796df4dd85e5485d23d1629b9a6ea32fbb63bd2cc8d",
+    "src/docker-agent-pilot.ts": "be176ed94eac7e2d1bd190e37a85120181f4084bc6a4deec99637dde00a97716",
+    "src/docker-agent-worker.ts": "fa3d049548da99cebfdb687f09d080256b6ef35c86729d0fdcf82471ba3e2617",
+    "src/docker-fixture-observer.ts": "29d410ac57a4452f34de55398dc308803fa67a671fb5b0f4c44f68cc9ee14266",
+    "src/docker-sandbox-verifier.ts": "162dc0c5f320d4d37c9ce671879b52585d6356a062fb01810a4e3ebc4428fff4",
+    "src/durable-cli.ts": "73771fc47cc4e8c848c57d38ddfd7043054e1d02a92ec7314d1c67778e03d027",
+    "src/durable-run.ts": "4cb777ffa744022d90fe2d6720d19c0da7ff513294eea9e940c2f8edb8d5d845",
+    "src/fixture.ts": "35013cde2109bb44040f0da93c0fbd58fd613ddf31600a49b86d552b02c83dd3",
+    "src/heldout-fixture.ts": "78584f4f366a90ae20535071d310847ee48785276915723584acfa23e889d4d1",
+    "src/journal.ts": "f706e87c675da20742c93679e1082a3bac06c6dff97b1fd25c7f313873c59998",
+    "src/kernel-state.ts": "53aefda100ea6c6ccb1db5ca9ce1018ac733d5f0eee5ba7c9b389cb888d1368c",
+    "src/kernel.ts": "5e8bb070bdc4ea144f657569450018c20b3a9457f33525110e0ae750c1ff805f",
+    "src/mechanism-cli.ts": "902040fb4ddb538c7e3d9a9cb93b645177d153ea54705cf708555d5e4228c6b5",
+    "src/mechanism-fixture.ts": "c8bb8c3078644cdd78da565f4a57af5bb1d53bb6935a091acc7ee3229979ad3a",
+    "src/mechanism-run.ts": "7c12156a044c96c9b0c9a5b9a22c9e415f175f1ca07f200d6c74301bf186af21",
+    "src/model-runtime.ts": "97d1974854dd2eefa69195886f8ef64cd7b92db8e75e7a51263ed83c45eeb9b7",
+    "src/opencode-go-worker.ts": "2e6a4b49ae9f0d7c3e6c8813383518c2dddccbfb24891fa9dc76f67af12795b2",
+    "src/protocol.ts": "e2a180c9a4e4c3097d833d81ca73f990133160393818912e75507bb4b129b399",
+    "src/repo-checks.ts": "2cf54bb396edcef9652676828a123ab27e832968b4a266d28e3f55a9e3576508",
+    "src/repo-cli.ts": "2780c731bfd637aa058d34f19f5e58fa2e9e0569e6196402022b68025509b72e",
+    "src/repo-dependencies.ts": "11d9437b177222a0dc06000e8d0269a1da11a8e3a34b758dfd40cba17f77ab0b",
+    "src/repo-discovery.ts": "48a2485e3fd10251c6272224a14a289dbfd6f83f1e35f9eced8d27e1b9bf3b9c",
+    "src/repo-files.ts": "1ec2d7136ba3eda09b618db67a24101ecf574dc4bdcc961287f59056c732dea4",
+    "src/repo-manifest.ts": "d9e71a3d49b85fbe859e670ae668ff955cbc9980b2d3f0f16925dd1281b98357",
+    "src/repo-run.ts": "4677da9a103db7b33eb4246a58bb28030f2c09f1018116be3a1e02fc8fee4813",
+    "src/repo-types.ts": "ad5742f55fe167dbe734654a8c4599b67b6f0aa49000ba3aebf774e73f85db0a",
+    "src/repo-verifier.ts": "a173134ad79c7aa9faade1a043959e2fa8934fb8f84240310c6a60ef27e206b3",
+    "src/sandbox-ownership.ts": "05a60d6d4a358588c5f7e17018a4cdef83f845a3ec7f95c2461bd76e4a964c8a",
+    "src/sandbox-process.ts": "25662e914383fe41d16227a6dcccfd04ba5e754f91e42cec1b1dd2cf7366353c",
+    "src/sheep-cli.ts": "29f5b3e2c4a66efc7832f42226328c53e8100ac6dadc7c69eebde5a842c33214",
+    "src/swarm.ts": "ab3472f459735acd1219eaa07ff9119ec1bff8ed833e576437ba79132199fedc",
+    "src/token-budget.ts": "2967767fbc71c52f40fd3c314ddd39cf3cd4ae0832f1283759a50bf10194c981",
+    "src/worker-pool.ts": "05a0004f61ecd777962253b41e8e8287d7f69c6f8740ad1f29eb6314546ab403",
+    "src/worker-proposal.ts": "f6f54ccda3dad7c99fee4edbcc740bf380b7ad86f1976a3f23529863d20d873e"
+  },
+  "verification": {
+    "fullCheck": {
+      "tests": 465,
+      "passed": 465,
+      "referenceSnapshots": 2
+    },
+    "afterFinalCliBoundaryChange": {
+      "typecheck": "passed",
+      "cliTests": 8,
+      "passed": 8
+    },
+    "independentLiveCandidate": "passed",
+    "sourceRepositoryUnchanged": true
+  }
+}

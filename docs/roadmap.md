@@ -2,6 +2,19 @@
 
 2026-09-09の [現在の方針](current-direction.md) に基づく計画。小さなkernelから実workerへ進み、人数を変えた振る舞いを早く観測する。各段階の状態は実行証拠に合わせる。詳細な進捗は [ExecPlan](execplan.md)、M2の証拠は [4体pilot](results/luna-four-worker-pilot.md) を参照。
 
+## M6: CLI整理と、一般repoでの依存発見 — A–D・初期gate実装済み
+
+2026-09-10の添付議論と、利用者のCLI整理の追加依頼を[精査](discussion-review-20260910.md)した。[ExecPlan](execplan-repository-discovery.md)に従い、1–3と4の初期gateを実装した。[実装・実走記録](results/repository-discovery.md)。
+
+1. **CLIの互換整理。** 共通入口、全commandのhelp、モデルを呼ばない設定表示、option名・call上限の意味・出力・終了コードを整理する。旧入口のdefaultとJSON、durableだけの再開、repoの明示applyを保持する。
+2. **host検証の契約。** 候補・検査・環境の識別、局所/最終の出力境界、基盤障害・cleanupを明示し、既存repo検査を接続する。Docker一般repo接続はこの時点では未対応のまま。
+3. **静的依存と追加読取。** opt-inのtask v2で、許可済みtargetと公開読取範囲の中から依存を発見する。要求と配信済みreadを分け、現版の根拠と未解決事項をkernelへ接続する。
+4. **品質とN/Cの観測。** 反例試験、N=4のLuna疎通、N=16から8/16/32・C固定の対照へ進む。task分解と書込権限は人間が与えた条件として計上する。
+
+初期gateは、465テスト・原資料2snapshot・Go DeepSeekの小規模実走と独立した候補再検査が成功した。Lunaによる新しい疎通、N=8/16/32系列、単独/Manager-localとの一般repo比較は後続段階に残す。
+
+完了条件は、CLIの互換と事前拒否、固定oracleの品質、観測版に基づく依存登録、未解決・不明usage・検証障害での非成功、各個体へ実配信したcontextの計測。実装追加だけで一般repoの有用性や増員効果を完了としない。早期受付制御、全runner統合、並列durability、64体はこの最初の範囲から分ける。過去の実測・凍結series・未実行条件は保持する。
+
 ## M0: リポジトリ初期化 — 完了
 
 - 調査資料と抽出資料を原文のまま保存し、ハッシュで照合する。

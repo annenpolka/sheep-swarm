@@ -131,3 +131,11 @@ Astraの独立レビューで固定した反例も通常gateに含める。混�
 通常gateで実APIは呼ばない。実Go DeepSeekのJavaScript/Python fixture repoは別証拠に保存し、実call・結果・指定ファイル差分・dirty/untracked保存を確認する。実装swarmの失敗と親の補修を分離し、最初の固定テストに加えた境界テストは要求の追加検査として記録する。[結果](results/repository-runner.md)。
 
 `repo-review.test.ts`は独立レビューの回帰ケースとして、正常終了した検査の残留子process、候補から親Gitへの探索、検査コマンドの起動失敗と候補保存先のI/O障害後の呼出し停止、局所stderrと却下案の修復promptへの引継ぎを検査する。通常の不正overlayは検査基盤障害と混同せず、元の受入条件を維持する。[再現記録](results/repository-runner-astra-review.md)。
+
+## M6 CLI / repository discovery
+
+`cli-entry.test.ts`は新旧5入口を実processで起動し、help/dry-run、alias、JSON形状、終了コード、副作用前の不正設定拒否を検査する。durableの元DB/WAL非変更と完了resumeを含む。`cli-profile.test.ts`はruntime・token/creditと設定既定値を比較する。
+
+`repo-discovery.test.ts`はv1互換・v2 manifestとtransportを分け、二段read、未公開本文の非配信、他target指示の非配信、call/bytes上限、旧read版と同bytesの旧evidenceEpochによるcatch-up、未解決claim、unknown usage、host検証後だけの解決を検査する。staticのみの意味read拒否と、新しいimportの未配信先がwriteと同時に先取りされないことも含む。上位へ渡すmodel-claimは未確認のまま扱う。
+
+`repo-discovery-fixture.test.ts`は固定したbaseline失敗・基準解成功・意味変異拒否を確認する。`next-components.test.ts`は独立に固定した生成部品の受入と追加境界検査で、parserの評価不在・公開allowlist・循環、receiptの候補/command/環境/phaseのすり替え・偽pass・入力変異を拒否する。通常gateはAPI・認証を使わない。実Go swarmの失敗と成功、親の補修、独立候補再検査は[結果](results/repository-discovery.md)へ分離する。
