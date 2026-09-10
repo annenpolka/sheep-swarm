@@ -154,3 +154,9 @@ Status: active
 ## Evidence Notes
 
 原文snapshotとSHA-256はdocs/references/manifest.jsonに保持。2026-09-09の現在の方針はdocs/current-direction.md、検証対象はdocs/testing-policy.md、実装の進捗はdocs/roadmap.mdを参照。このbriefはプロジェクト共通の判断を保持し、個別runのイベントログにはしない。
+
+### 機構実験のsandbox内readを版付きcontextへ閉じる
+
+Evidence: Stated / implementation; 利用者の継続指示により、`mechanism`のDocker tool経路を実装。読取要求は次の有料callで配信し、未配信の選択をverifierの自動確定に使わない。registryを読む前にpolicy所有先を明かさず、必要な現版policyが揃うまで可視ケース・値を含むフィードバック・編集採用を解禁しない。
+
+既存oracleの期待値と最終stage barrierを保持する。可視観測VMはそのcontextだけ、最終観測VMは全候補を受け取り、期待値はhostで比較する。旧Codex凍結系列の予算・結果をDocker条件へ流用せず、単独Lunaと上位のguidance権限を保つ。[検証](../docs/results/docker-agent-mechanism.md)

@@ -48,6 +48,7 @@ interface RawMeasurement {
   readonly transferredBytes: number;
 }
 export interface Invocation {
+  readonly pipeline?: Readonly<Record<"ingest" | "window" | "aggregate" | "persist" | "cache" | "report", string>>;
   readonly id: string;
   readonly method: string;
   readonly args: readonly unknown[];

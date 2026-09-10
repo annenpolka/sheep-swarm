@@ -1,7 +1,10 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { callCodex, CodexWorkerError, type CodexCallOptions, type CodexCallResult } from "./codex-worker.ts";
+import { callCodex, CodexWorkerError, type CodexCallResult } from "./codex-worker.ts";
+import { callDockerAgent, dockerWorkspaceWrites, SANDBOX_TEMPLATE, type DockerAgentOptions, type DockerTranscript } from "./docker-agent-worker.ts";
+import { createDockerFixtureObserver } from "./docker-fixture-observer.ts";
+import type { FixtureObserver } from "./fixture.ts";
 import { CreditBudget } from "./credit-budget.ts";
 import { parseRateCard, type RateCard } from "./cost-estimate.ts";
 import { createMechanismFixture } from "./mechanism-fixture.ts";
@@ -12,8 +15,9 @@ export const MECHANISM_METHODS = ["sheep", "single-luna", "single-astra", "no-me
 export type MechanismMethod = typeof MECHANISM_METHODS[number];
 export type MechanismFamily = "static" | "semantic" | "staged";
 export interface MechanismResponse { writes: { id: string; content: string }[]; readRequests: string[]; note: string }
-export type MechanismCaller = (options: CodexCallOptions) => Promise<CodexCallResult<MechanismResponse>>;
+export type MechanismCaller = (options: DockerAgentOptions) => Promise<CodexCallResult<MechanismResponse>>;
 export interface MechanismOptions {
+  runtime?: "codex" | "docker-agent"; workerTools?: "none" | "local"; maxTokensPerCall?: number;
   method?: MechanismMethod; family: MechanismFamily; groups?: number; workers?: number; concurrency?: number;
   outputDirectory: string; rateCard?: RateCard; maxCredits?: number; lunaReservation?: number; astraReservation?: number;
   maxCalls?: number; timeoutMs?: number; maxAttempts?: number; maxReadCalls?: number; maxMetaCalls?: number;
@@ -53,13 +57,33 @@ function response(value: unknown): MechanismResponse {
   if (parsed.writes.length && parsed.readRequests.length) throw new Error("request reads before proposing writes, in a separate call");
   return parsed;
 }
-function toolEvents(receipt: unknown): string[] {
-  const events = (receipt as { transcript?: { events?: unknown[] } } | null)?.transcript?.events;
+export function mechanismToolEvents(receipt: unknown, local = false): string[] {
+  const transcript = (receipt as { transcript?: { events?: unknown[]; runtime?: string } } | null)?.transcript;
+  const events = transcript?.events;
   if (!Array.isArray(events)) return [];
   const violations: string[] = [];
+  const permitted = new Set(["read_file", "read_multiple_files", "list_directory", "search_files_content", "write_file", "edit_file", "check_local", "__structured_output__"]);
+  const complete = new Map<string, string>();
+  if (local) for (const raw of events) {
+    const event = raw as { type?: string; tool_call?: { id?: string; function?: { name?: string } }; tool_definition?: { name?: string } } | null;
+    if (event?.type !== "tool_call") continue;
+    const id = event.tool_call?.id, name = event.tool_call?.function?.name;
+    if (!id || !name || !permitted.has(name) || event.tool_definition?.name !== name || complete.has(id)) violations.push("invalid-tool-call");
+    else complete.set(id, name);
+  }
   for (const raw of events) {
     if (!raw || typeof raw !== "object") continue;
     const event = raw as Record<string, unknown>;
+    if (transcript?.runtime === "docker-agent" && event.type === "toolset_info") continue; // Inventory, not execution.
+    if (local && ["partial_tool_call", "tool_call", "tool_call_response", "tool_call_output"].includes(String(event.type))) {
+      const call = event.tool_call as { id?: string; function?: { name?: string } } | undefined;
+      const definition = event.tool_definition as { name?: string } | undefined;
+      const id = call?.id ?? event.tool_call_id;
+      const name = call?.function?.name ?? definition?.name;
+      if (typeof id !== "string" || !name || complete.get(id) !== name
+        || (definition?.name !== undefined && definition.name !== name)) violations.push("unmatched-tool-event");
+      continue;
+    }
     const item = event.item && typeof event.item === "object" ? event.item as Record<string, unknown> : null;
     for (const kind of [event.type, item?.type]) if (typeof kind === "string" && /tool|command_execution|file_change|function_call|web_search|computer_call|image_generation|shell/i.test(kind)) violations.push(kind);
     if (item && typeof item.type === "string" && !["agent_message", "reasoning", "todo_list", "plan", "error"].includes(item.type)
@@ -69,19 +93,24 @@ function toolEvents(receipt: unknown): string[] {
 }
 
 /** Public artifact mechanism pilot. The final oracle is a barrier, never model feedback. */
-export async function runMechanism(options: MechanismOptions, caller: MechanismCaller = callCodex<MechanismResponse>) {
+export async function runMechanism(options: MechanismOptions, caller: MechanismCaller = options.runtime === "docker-agent" ? callDockerAgent<MechanismResponse> : callCodex<MechanismResponse>, observer?: FixtureObserver) {
   const method = options.method ?? "sheep";
   if (!MECHANISM_METHODS.includes(method)) throw new Error("unknown mechanism method");
   if (!["static", "semantic", "staged"].includes(options.family)) throw new Error("unknown mechanism family");
+  if (options.runtime !== undefined && !["codex", "docker-agent"].includes(options.runtime)) throw new Error("unknown runtime");
+  if (options.workerTools !== undefined && !["none", "local"].includes(options.workerTools)) throw new Error("unknown worker tools");
+  if (options.workerTools === "local" && options.runtime !== "docker-agent") throw new Error("Local tools require Docker Agent");
+  if (options.runtime === "docker-agent" && method === "single-astra") throw new Error("Use single-luna for new standalone trials");
   const single = method === "single-luna" || method === "single-astra";
-  const configuration = { method, family: options.family, groups: options.groups ?? 8,
+  const configuration = { runtime: options.runtime ?? "codex", workerTools: options.workerTools ?? "none",
+    maxTokensPerCall: options.maxTokensPerCall ?? 60000, method, family: options.family, groups: options.groups ?? 8,
     workers: single ? 1 : options.workers ?? 16, concurrency: single ? 1 : options.concurrency ?? 8,
     maxCredits: options.maxCredits ?? 30, lunaReservation: options.lunaReservation ?? 0.25,
     astraReservation: options.astraReservation ?? 15, maxCalls: options.maxCalls ?? 400,
     timeoutMs: options.timeoutMs ?? 90_000, maxAttempts: options.maxAttempts ?? 3, maxReadCalls: options.maxReadCalls ?? 2,
     maxMetaCalls: options.maxMetaCalls ?? 3, workerModel: "gpt-5.6-luna", metaModel: "gpt-6-astra",
     memoryLimit: method === "no-memory" ? 0 : 4 };
-  for (const key of ["groups", "workers", "concurrency", "maxCalls", "timeoutMs", "maxAttempts"] as const)
+  for (const key of ["groups", "workers", "concurrency", "maxCalls", "timeoutMs", "maxTokensPerCall", "maxAttempts"] as const)
     if (!Number.isSafeInteger(configuration[key]) || configuration[key] < 1) throw new RangeError(`${key} must be positive`);
   for (const key of ["maxReadCalls", "maxMetaCalls"] as const)
     if (!Number.isSafeInteger(configuration[key]) || configuration[key] < 0) throw new RangeError(`${key} must be nonnegative`);
@@ -89,7 +118,9 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
   const rateCard = options.rateCard ?? parseRateCard(JSON.parse(await readFile(new URL("../pricing/openai-2026-09-10.json", import.meta.url), "utf8")));
   const budget = new CreditBudget({ maxCredits: configuration.maxCredits, rateCard,
     reservations: { "gpt-5.6-luna": configuration.lunaReservation, "gpt-6-astra": configuration.astraReservation } });
-  const fixture = createMechanismFixture({ family: configuration.family, groups: configuration.groups });
+  const sandbox = configuration.runtime === "docker-agent";
+  const fixture = createMechanismFixture({ family: configuration.family, groups: configuration.groups,
+    ...(sandbox ? { observe: observer ?? createDockerFixtureObserver(join(options.outputDirectory, "acceptance")) } : {}) });
   const catalogIds = new Set(fixture.catalog.map(item => item.id));
   const writable = new Set(fixture.writableIds);
   const learned = new Map(fixture.initialDependencies.map(edge => [`${edge.consumer}\0${edge.provider}`, edge]));
@@ -109,7 +140,14 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
   const workspace = join(options.outputDirectory, "model-workspace"); await mkdir(workspace);
   const fingerprint = createHash("sha256").update(JSON.stringify({ task: fixture.task, family: fixture.family,
     groups: configuration.groups, artifacts: fixture.artifacts, stages: fixture.stageCount })).digest("hex");
-  const budgetOkay = () => { const current = budget.snapshot(); return !current.exceeded && current.unknownUsageCalls === 0 && boundaryViolations.length === 0; };
+  const budgetOkay = () => { const current = budget.snapshot(); return !current.exceeded && current.unknownUsageCalls === 0 && boundaryViolations.length === 0 && fatalErrors.length === 0; };
+  const verify: typeof fixture.verify = async (...args) => {
+    const verdict = await fixture.verify(...args);
+    if (sandbox && verdict.executionFailure) {
+      fatalErrors.push("verification-unavailable"); controller.abort(); throw new Error(verdict.errors.join("\n"));
+    }
+    return verdict;
+  };
   const protocol = (state: SwarmKernel) => {
     const s = state.exportState();
     return s.inputClosed && s.events.every(e => e.delivered) && !state.pending().length
@@ -119,7 +157,7 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
   try {
     for (let stage = 0; stage < fixture.stageCount; stage++) {
       const stageStart = performance.now(), firstCall = calls.length, firstIntervention = interventions;
-      const current = new SwarmKernel({ artifacts: { ...contents }, verificationPolicy: `${fixture.task}/stage-${stage}/node-${process.versions.node}` });
+      const current = new SwarmKernel({ artifacts: { ...contents }, verificationPolicy: `${fixture.task}/stage-${stage}/${sandbox ? SANDBOX_TEMPLATE : `node-${process.versions.node}`}` });
       kernel = current;
       for (const edge of learned.values()) current.addDependency(edge.consumer, edge.provider);
       for (const [id, content] of Object.entries(fixture.changesForStage(stage))) current.change(id, content);
@@ -136,10 +174,12 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
         await previous; try { return await fn(); } finally { release(); }
       };
       const targets = () => [...new Set([...claims.keys(), ...current.pending().map(item => item.consumer)])].filter(id => writable.has(id));
-      const contextFor = (agent: string, target: string | null, full = false): Checkout => {
+      const contextFor = (agent: string, target: string | null, full = false, includeRequested = true): Checkout => {
         const ids = new Set(full ? Object.keys(current.contents()) : [fixture.specId, fixture.guidanceId, ...(target ? [target] : [])]);
         if (target) {
-          for (const provider of selectedReads.get(target) ?? []) ids.add(provider);
+          // Selecting a read does not deliver it. Verifier settlement may use
+          // only learned providers until a subsequent paid worker call receives it.
+          if (includeRequested) for (const provider of selectedReads.get(target) ?? []) ids.add(provider);
           for (const work of current.pending()) if (work.consumer === target) ids.add(work.provider);
           for (const id of ids) for (const edge of learned.values()) if (edge.consumer === id) ids.add(edge.provider);
         }
@@ -162,26 +202,38 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
           contextArtifacts: Object.keys(context.reads), contextBytes: Buffer.byteLength(JSON.stringify(context.contents)),
           memoryEntries: memory.length, readRequests: [], writtenIds: [], effectiveModelEvidence: null, credits: null, reservationOverrun: false };
         calls.push(record); active++; maxActiveModelCalls = Math.max(maxActiveModelCalls, active); current.beginWork(id, agent);
+        const localTools = configuration.workerTools === "local" && role !== "meta";
         const instruction = role === "meta"
           ? "Observe repeated visible local verification failures. Workers did not request consultation. Repair only shared guidance when it contradicts normative requirements. Do not write worker files or normative/source artifacts; do not use readRequests."
           : role === "single"
             ? "Complete the current public task using all supplied files. You may return incremental patches to any writable artifact and the shared guidance within its remainingPatchAttempts. readyTargets lists pending work to prioritize, not the complete edit authority. Prefer bounded subsets (for example 1–6 modules per call); a response need not finish the whole task. Preserve pinned normative/source artifacts."
-            : `Implement only ${target}. You can request additional public artifacts by returning readRequests with their catalog IDs and empty writes. After receiving those files, propose a complete replacement for your assigned target only. No upper consultation channel exists.`;
-        const prompt = `${instruction}\nReturn strict JSON {writes:[{id,content}],readRequests:[id],note}. Use either reads or writes in a call, never both. Do not use any tools, shell, browser, file access, or paths outside supplied JSON. Only the provided public contents and catalog may be used. Shared guidance is advisory; current normative specification takes precedence. Private memories are past observations; versions are stage-local and must be reread.\nPUBLIC_INPUT_JSON\n${JSON.stringify({ task: fixture.task, family: fixture.family, stage, target,
+            : `Implement only ${target}. You can request additional public artifacts with readRequests containing their catalog IDs and empty writes. After receiving those files, ${localTools ? "edit your assigned file on disk" : "propose a complete replacement for your assigned target"} only. No upper consultation channel exists.`;
+        const feedback = localTools ? fixture.visibleFeedback(context.contents, stage, target ? [target] : fixture.writableIds) : null;
+        const responseInstruction = localTools
+          ? "Finish by calling the __structured_output__ tool with {writes:[],readRequests:[id],note}. Plain-text JSON does not finish this run. After editing, use readRequests:[]; for additional reads, change no files."
+          : "Return strict JSON {writes:[{id,content}],readRequests:[id],note}.";
+        const toolInstruction = localTools
+          ? "Use the supplied workspace files and check_local for visible feedback. Edit authorized files on disk; actual file deltas are authoritative. Do not copy file bodies into your final tool arguments. Requested files arrive in the next separately charged call. Do not change visible.test.mjs or pinned files."
+          : "Do not use any tools, shell, browser, file access, or paths outside supplied JSON.";
+        const prompt = `${instruction}\n${responseInstruction} Use either reads or writes in a call, never both. ${toolInstruction} Only the provided public contents and catalog may be used. Shared guidance is advisory; current normative specification takes precedence. Private memories are past observations; versions are stage-local and must be reread.\nPUBLIC_INPUT_JSON\n${JSON.stringify({ task: fixture.task, family: fixture.family, stage, target,
           role, context: { contents: context.contents, reads: context.reads }, catalog: fixture.catalog,
           writableIds: role === "worker" ? [target] : role === "meta" ? [fixture.guidanceId] : [...fixture.writableIds, fixture.guidanceId],
-          memory, previousVisibleErrors: target ? failures.get(target) ?? [] : [], ...extra })}`;
+          memory, ...(feedback ? { requiredReads: feedback.requiredReads, locallyCheckableTargets: feedback.readyTargets } : {}), previousVisibleErrors: target ? failures.get(target) ?? [] : [], ...extra })}`;
         const at = performance.now();
         let receipt: unknown = { requestedModel: model, error: "no receipt" };
         let value: MechanismResponse | null = null;
         let transcriptIntegrityFailure: string | null = null;
         try {
           const result = await caller({ model, prompt, schema, cwd: workspace, timeoutMs: configuration.timeoutMs,
-            outputDirectory: join(options.outputDirectory, "transcripts"), signal: controller.signal });
+            outputDirectory: join(options.outputDirectory, "transcripts"), signal: controller.signal,
+            ...(sandbox ? { maxTokens: configuration.maxTokensPerCall } : {}),
+            ...(localTools ? { tools: "local", files: { ...context.contents, "visible.test.mjs": feedback!.source } } : {}) });
           receipt = result; record.effectiveModelEvidence = result.transcript.effectiveModelEvidence;
           if (result.requestedModel !== model || result.transcript.requestedModel !== model
             || (record.effectiveModelEvidence !== null && record.effectiveModelEvidence !== model)) throw new Error("requested model identity mismatch");
-          value = response(result.result); record.outcome = "received";
+          value = response(result.result);
+          if (localTools) value = response({ ...value, writes: Object.entries(dockerWorkspaceWrites(result.transcript)).map(([id, content]) => ({ id, content })) });
+          record.outcome = "received";
         } catch (error) {
           if (error instanceof CodexWorkerError) {
             receipt = { error: error.code, transcript: error.transcript };
@@ -190,13 +242,18 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
           record.outcome = "model-error"; record.errors = [String(error)];
         } finally {
           record.durationMs = performance.now() - at;
-          const tools = [...toolEvents(receipt), ...(transcriptIntegrityFailure ? [`incomplete-transcript:${transcriptIntegrityFailure}`] : [])];
+          const tools = [...mechanismToolEvents(receipt, localTools), ...(transcriptIntegrityFailure ? [`incomplete-transcript:${transcriptIntegrityFailure}`] : [])];
           if (tools.length) { boundaryViolations.push({ callId: id, events: tools }); controller.abort(); record.outcome = "boundary-violation"; value = null; }
+          const transcript = (receipt as { transcript?: Partial<DockerTranscript> }).transcript;
+          if (sandbox && transcript?.cleanupSucceeded !== true) { fatalErrors.push("sandbox-cleanup-unverified"); controller.abort(); value = null; }
           const settled = budget.settle(id, receipt); record.credits = settled.credits; record.reservationOverrun = settled.overrun;
           await writeFile(join(options.outputDirectory, `${id}.json`), JSON.stringify(receipt, null, 2) + "\n");
           active--; current.endWork(id);
         }
-        if (!budgetOkay()) value = null;
+        if (!budgetOkay()) {
+          if (value && record.outcome === "received") record.outcome = "budget-or-boundary-rejected";
+          value = null;
+        }
         return { value, record };
       };
       const apply = async (record: MechanismCall, value: MechanismResponse, context: Checkout, scope: string[], meta = false): Promise<boolean> => serialize(async () => {
@@ -206,6 +263,10 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
         try {
           if (value.writes.some(write => !allowed.includes(write.id))) throw new Error("write exceeds edit authority");
           if (!value.writes.length) throw new Error("empty patch without read request");
+          if (sandbox && !meta) {
+            const feedback = fixture.visibleFeedback(context.contents, stage, scope);
+            if (feedback.readyTargets.length !== scope.length) throw new Error("Request and receive required public files before editing");
+          }
           const obligations = current.pending().filter(item => scope.includes(item.consumer));
           const lease = current.grant(record.agent, allowed, configuration.timeoutMs * 2 + 60_000, meta ? "meta" : "worker");
           const prepared = current.prepare({ id: `stage-${stage}-${record.id}`, agent: record.agent, context: context.id, lease,
@@ -214,7 +275,7 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
           candidate = prepared.id;
           const verdict = await current.validate(candidate, next => meta
             ? { ok: next[fixture.guidanceId]!.trim().length > 0, errors: ["guidance must not be empty"].filter(() => !next[fixture.guidanceId]!.trim()) }
-            : fixture.verify(next, stage, scope, "visible"));
+            : verify(next, stage, scope, "visible", sandbox ? Object.keys(context.contents) : undefined));
           if (!verdict.ok) {
             record.outcome = "semantic-rejected"; record.errors = [...verdict.errors];
             for (const id of scope) failures.set(id, [...verdict.errors]);
@@ -233,14 +294,18 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
         current.deliverAll();
         const check = [...new Set([...claims.keys(), ...current.pending().map(item => item.consumer)])];
         for (const target of check) {
+          if (sandbox && !budgetOkay()) break;
           const state = current.artifact(target), stamp = `${state.version}/${state.evidenceEpoch}`;
           if (inspected.get(target) === stamp && failures.has(target)) continue;
-          const context = contextFor("visible-verifier", target);
+          const context = contextFor("visible-verifier", target, sandbox && single, !sandbox);
+          if (sandbox && !fixture.visibleFeedback(context.contents, stage, [target]).readyTargets.includes(target)) {
+            failures.set(target, ["Request and receive required public files before checking or editing"]); continue;
+          }
           const obligations = current.pending().filter(item => item.consumer === target);
           const lease = current.grant("visible-verifier", [target]);
           const prepared = current.prepare({ id: `stage-${stage}-check-${++serial}`, agent: "visible-verifier", context: context.id,
             lease, writes: {}, obligations: obligations.map(item => item.id) });
-          const verdict = await current.validate(prepared.id, next => fixture.verify(next, stage, [target], "visible"));
+          const verdict = await current.validate(prepared.id, next => verify(next, stage, [target], "visible", sandbox ? Object.keys(context.contents) : undefined));
           if (verdict.ok) { const committed = current.commit(prepared.id); resolveClaim(target, context.id, committed.validation); }
           else { inspected.set(target, stamp); failures.set(target, [...verdict.errors]); current.discard(prepared.id, "current artifact needs visible repair"); }
         }
@@ -338,7 +403,7 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
       }
       if (terminationReason === null && calls.length >= configuration.maxCalls) terminationReason = "call-limit";
       await settleValid();
-      const quality = await fixture.verify(current.contents(), stage, undefined, "final");
+      const quality = fatalErrors.length ? { ok: false, errors: [...fatalErrors] } : await verify(current.contents(), stage, undefined, "final");
       const clean = protocol(current);
       const completion = await current.complete(() => quality);
       const success = quality.ok && completion.ok && budgetOkay() && budget.snapshot().activeReservations === 0;
@@ -373,7 +438,7 @@ export async function runMechanism(options: MechanismOptions, caller: MechanismC
       actualCalls: calls.filter(call => call.agent === worker.id).length,
       committedPatches: calls.filter(call => call.agent === worker.id && call.outcome === "committed").length })),
     durationMs: performance.now() - started,
-    limitations: ["Codex read-only sandbox is not filesystem read isolation. Transcript tool activity is audited after the call and invalidates the run; undisclosed external reads cannot be proven absent.",
+    limitations: [sandbox ? "Worker calls copy only their versioned context into a fresh mountless VM. Visible feedback requires current public dependencies; final verification uses a separate deny-all VM without model credentials." : "Codex read-only sandbox is not filesystem read isolation. Transcript tool activity is audited after the call and invalidates the run; undisclosed external reads cannot be proven absent.",
       "Standard credit rates are conditional estimates. Reservations gate admission; provider billing can exceed a reservation before settlement.",
       "Each stage uses a new kernel and stage-local versions; accepted contents, registered discovery, and private worker histories persist across successful barriers.",
       "The host scheduler allocates work; this pilot does not establish emergent specialization.",

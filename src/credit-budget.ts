@@ -80,6 +80,13 @@ function identity(receipt: unknown, model: string, callId: string): {
       if (!event) continue;
       for (const key of ["effective_model", "effectiveModel", "model", "model_name", "modelName"]) {
         if (!Object.hasOwn(event, key) || event[key] === null) continue;
+        // Docker agent_info describes provider/model configuration. It is not
+        // evidence of the serving model; accept only the pinned alias contract.
+        if (transcript.runtime === "docker-agent" && transcript.runtimeVersion === "v1.137.0"
+          && event.type === "agent_info" && key === "model") {
+          if (event[key] !== model && event[key] !== `chatgpt/${model}`) issues.push("Docker configured model differs from the reservation");
+          continue;
+        }
         if (event[key] === model) emitted = true;
         else issues.push("transcript event: model differs from the reservation or is invalid");
       }

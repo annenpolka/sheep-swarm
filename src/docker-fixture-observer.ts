@@ -8,15 +8,45 @@ import { ownSandbox, recoverBeforeSandboxStart } from "./sandbox-ownership.ts";
 // No oracle expectations enter this runner. Only explicitly supplied modules can
 // be imported. The inner context keeps candidate code away from the output channel;
 // the separate microVM is the host isolation boundary, not node:vm alone.
-export const ISOLATED_FIXTURE_RUNNER = `import vm from 'node:vm';
+export const ISOLATED_FIXTURE_RUNNER = String.raw`import vm from 'node:vm';
 import { posix } from 'node:path';
 let input=''; for await (const chunk of process.stdin) input+=chunk;
 const {files,calls,timeoutMs,imports=[]}=JSON.parse(input);
-const context=vm.createContext({}, {codeGeneration:{strings:false,wasm:false}});
+const context=vm.createContext(Object.create(null), {codeGeneration:{strings:false,wasm:false}});
+// Install realm-owned functions, never host fs/URL constructors or callbacks.
+// This virtual filesystem exposes only the supplied JSON artifacts, as UTF-8.
+function install(jsonFiles){
+ const data=Object.freeze(Object.assign(Object.create(null),jsonFiles));
+ class FixtureURL {
+  constructor(value,base){
+   value=String(value); base=base===undefined?'':String(base);
+   const path=value.startsWith('file:///')?value.slice(7):value.startsWith('/')?value:
+    base.startsWith('file:///')?base.slice(7,base.lastIndexOf('/')+1)+value:'';
+   if(!path||/[?#\\]/.test(path)||/^[a-z]+:/i.test(value)&&!value.startsWith('file:///')) throw new Error('Only fixture file URLs are permitted');
+   const parts=[]; for(const part of path.split('/')){if(part==='..')parts.pop();else if(part&&part!=='.')parts.push(part);}
+   this.href='file:///'+parts.join('/');
+  }
+  toString(){return this.href;}
+ }
+ const readFileSync=(path,encoding)=>{
+  const url=String(path);
+  if(encoding!=='utf8'&&encoding!=='utf-8'&&encoding?.encoding!=='utf8') throw new Error('UTF-8 JSON reads only');
+  const prefix='file:///fixture/';
+  const id=url.startsWith(prefix)?url.slice(prefix.length):'';
+  if(!id.endsWith('.json')||!Object.hasOwn(data,id)) throw new Error('Read outside supplied JSON context');
+  return data[id];
+ };
+ globalThis.URL=FixtureURL;
+ globalThis.__jsonFs={readFileSync,readFile:async(path,encoding)=>readFileSync(path,encoding)};
+}
+vm.runInContext('('+install.toString()+')('+JSON.stringify(Object.fromEntries(Object.entries(files).filter(([id])=>id.endsWith('.json'))))+')',context,{timeout:timeoutMs});
+const fs=context.__jsonFs; delete context.__jsonFs;
+const fsModule=new vm.SyntheticModule(['readFileSync'],function(){this.setExport('readFileSync',fs.readFileSync);},{context,identifier:'node:fs'});
+const fsPromises=new vm.SyntheticModule(['readFile'],function(){this.setExport('readFile',fs.readFile);},{context,identifier:'node:fs/promises'});
 const modules=new Map();
 const invalid=new Set();
 for(const [id,source] of Object.entries(files)) if(id.endsWith('.mjs')){
- try {modules.set(id,new vm.SourceTextModule(source,{context,identifier:id}));}
+ try {modules.set(id,new vm.SourceTextModule(source,{context,identifier:id,initializeImportMeta(meta){meta.url='file:///fixture/'+id;}}));}
  catch {invalid.add(id);}
 }
 let importError='';
@@ -27,6 +57,8 @@ for(const edge of imports){
   importError='missing required import: '+edge.consumer+' -> '+edge.provider;
 }
 const link=(specifier,from)=>{
+ if(specifier==='node:fs') return fsModule;
+ if(specifier==='node:fs/promises') return fsPromises;
  if(!specifier.startsWith('./')&&!specifier.startsWith('../')) throw new Error('Only local fixture imports are permitted');
  const id=posix.normalize(posix.join(posix.dirname(from.identifier),specifier));
  if(!modules.has(id)) throw new Error('Import outside supplied context: '+id);
@@ -36,14 +68,36 @@ const observations=[];
 for(const call of calls){
  if(importError){observations.push({id:call.id,error:importError});continue;}
  try {
-  const mod=modules.get(call.id);
-  if(!mod||invalid.has(call.id)) throw new Error('Invalid fixture module');
-  if(mod.status==='unlinked') await mod.link(link);
-  if(mod.status==='linked') await mod.evaluate({timeout:timeoutMs});
-  context.__invoke=mod.namespace[call.method];
-  // Stringify inside the timed realm, including candidate getters/toJSON.
-  const encoded=vm.runInContext('JSON.stringify(__invoke(...'+JSON.stringify(call.args)+'))',context,{timeout:timeoutMs});
-  observations.push({id:call.id,output:JSON.parse(encoded)});
+  const ids=call.pipeline?Object.values(call.pipeline):[call.id];
+  const functions=vm.runInContext('Object.create(null)',context);
+  for(const id of ids){
+   const mod=modules.get(id);
+   if(!mod||invalid.has(id)) throw new Error('Invalid fixture module');
+   if(mod.status==='unlinked') await mod.link(link);
+   if(mod.status==='linked') await mod.evaluate({timeout:timeoutMs});
+   functions[id]=mod.namespace[call.method];
+  }
+  context.__functions=functions;
+  // Await and stringify entirely inside the realm, including thenables/getters.
+  // No host resolver is passed to candidate code. The CLI timeout also bounds
+  // asynchronous loops that cannot be interrupted by vm's synchronous timeout.
+  function evaluate(call){
+   const funcs=globalThis.__functions; delete globalThis.__functions;
+   globalThis.__done=false; globalThis.__encoded=undefined;
+   (async()=>{
+    if(!call.pipeline)return await funcs[call.id](...call.args);
+    const p=call.pipeline;
+    const events=await Promise.all(call.args[0].map(raw=>funcs[p.ingest](raw)));
+    const windows=await Promise.all(events.map(event=>funcs[p.window](event)));
+    const rows=await funcs[p.aggregate](windows);
+    return {report:await funcs[p.report](rows),stored:await Promise.all(events.map(e=>funcs[p.persist](e))),keys:await Promise.all(events.map(e=>funcs[p.cache](e)))};
+   })().then(value=>{globalThis.__encoded=JSON.stringify(value);globalThis.__done=true;},()=>{globalThis.__done=true;});
+  }
+  vm.runInContext('('+evaluate.toString()+')('+JSON.stringify(call)+')',context,{timeout:timeoutMs});
+  const deadline=Date.now()+timeoutMs;
+  while(!context.__done&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,1));
+  if(!context.__done)throw new Error('Invocation timed out');
+  observations.push({id:call.id,output:JSON.parse(context.__encoded)});
  } catch { observations.push({id:call.id,error:'Isolated fixture invocation failed'}); }
 }
 process.stdout.write(JSON.stringify(observations));

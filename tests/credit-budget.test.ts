@@ -224,3 +224,32 @@ test("arithmetic failure settles as unknown and prevents continued admission", (
   assert.equal(budget.snapshot().unknownUsageCalls, 1);
   assert.equal(budget.canReserve(luna), false);
 });
+
+test("real Docker agent_info configuration aliases are priced without inventing serving-model evidence", () => {
+  const real = JSON.parse(readFileSync(new URL("fixtures/docker-agent-v1.137.0-mechanism-read.json", import.meta.url), "utf8"));
+  const budget = new CreditBudget(options); budget.reserve(luna, "read");
+  const settled = budget.settle("read", real);
+  near(settled.credits!, 2470 * 5 / 1e6 + 59 * 30 / 1e6);
+  assert.equal(budget.snapshot().calls[0]!.modelIdentity, "requested-only");
+  assert.equal(budget.snapshot().unknownUsageCalls, 0);
+  for (const replacement of ["chatgpt/gpt-6-astra", "openai/gpt-5.6-luna", {}, ""]) {
+    const changed = structuredClone(real);
+    changed.transcript.events.find((e: { type: string }) => e.type === "agent_info").model = replacement;
+    const invalid = new CreditBudget(options); invalid.reserve(luna, "read");
+    assert.equal(invalid.settle("read", changed).credits, null);
+    assert.equal(invalid.canReserve(luna), false);
+  }
+  const explicit = structuredClone(real);
+  explicit.transcript.events.push({ type: "metadata", effective_model: astra });
+  const conflicting = new CreditBudget(options); conflicting.reserve(luna, "read");
+  assert.equal(conflicting.settle("read", explicit).credits, null);
+});
+
+test("actual incomplete Docker structured-output run retains its lower bound and locks admission", () => {
+  const real = JSON.parse(readFileSync(new URL("fixtures/docker-agent-v1.137.0-mechanism-incomplete.json", import.meta.url), "utf8"));
+  const budget = new CreditBudget(options); budget.reserve(luna, "incomplete");
+  assert.equal(budget.settle("incomplete", real).credits, null);
+  const state = budget.snapshot();
+  near(state.observedCredits, 0.06347); assert.equal(state.unknownUsageCalls, 1);
+  assert.equal(state.activeReservations, 0); assert.equal(budget.canReserve(luna), false);
+});

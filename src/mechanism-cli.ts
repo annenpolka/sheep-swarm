@@ -5,6 +5,8 @@ import { parseRateCard } from "./cost-estimate.ts";
 import { MECHANISM_METHODS, runMechanism, type MechanismMethod, type MechanismFamily } from "./mechanism-run.ts";
 
 const { values } = parseArgs({ options: {
+  runtime: { type: "string", default: "codex" }, "worker-tools": { type: "string", default: "none" },
+  "max-tokens-per-call": { type: "string", default: "60000" },
   method: { type: "string", default: "sheep" }, family: { type: "string", default: "static" }, output: { type: "string" }, rates: { type: "string" },
   groups: { type: "string", default: "8" }, workers: { type: "string", default: "16" }, concurrency: { type: "string", default: "8" },
   "max-credits": { type: "string", default: "30" }, "luna-reservation": { type: "string", default: "0.25" }, "astra-reservation": { type: "string", default: "15" },
@@ -13,8 +15,11 @@ const { values } = parseArgs({ options: {
 } });
 if (!MECHANISM_METHODS.includes(values.method as MechanismMethod)) throw new Error("unknown method");
 if (!["static", "semantic", "staged"].includes(values.family)) throw new Error("unknown family");
+if (values.runtime !== "codex" && values.runtime !== "docker-agent") throw new Error("unknown runtime");
+if (values["worker-tools"] !== "none" && values["worker-tools"] !== "local") throw new Error("unknown worker tools");
 const outputDirectory = resolve(values.output ?? `.sheep/mechanism-${values.method}-${values.family}-${Date.now()}`);
 const report = await runMechanism({ method: values.method as MechanismMethod, family: values.family as MechanismFamily, outputDirectory,
+  runtime: values.runtime, workerTools: values["worker-tools"], maxTokensPerCall: Number(values["max-tokens-per-call"]),
   groups: Number(values.groups), workers: Number(values.workers), concurrency: Number(values.concurrency),
   maxCredits: Number(values["max-credits"]), lunaReservation: Number(values["luna-reservation"]), astraReservation: Number(values["astra-reservation"]),
   maxCalls: Number(values["max-calls"]), timeoutMs: Number(values["timeout-ms"]), maxAttempts: Number(values["max-attempts"]),

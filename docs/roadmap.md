@@ -85,7 +85,9 @@ DB選定とschemaは、この段階でruntimeの要件とローカルの互換�
 
 追加の既知範囲: `compare`の単独Luna・Manager-local・Sheep-fixed/fullへ共通toolと独立VM受入を追加した。必須importと固定採点値を保持し、単独Astraの新規Docker実行を拒否する。比較系列の共通profileと使用量不明時の停止、Docker usageの費用見積、作成前の所有記録と復帰時のVM回収も実装した。[継続結果](results/docker-agent-comparison-recovery.md)
 
-次の範囲: `mechanism`の課金付きreadRequests・段階別の可視/最終oracleに合わせたtool接続、pool再利用と汚染検査、Node 24+のtemplate、Astra介入を含む実走。機構実験はtoolから未読policyや最終採点値が漏れないfeedback設計と、そのread set・料金・段階境界の検査を先に置く。今回の復帰時回収は常駐watcherやrun再開ではない。一般repo・32 VM並列・費用優位・並列durabilityは本導入の完了条件に含まない。
+`mechanism`への接続も実装した。課金付きreadRequests、未読policyを含まない可視feedback、版付きread set、stageごとの独立VM採点を検査する。通常275検査と実VM oracle 8件は成功。実Lunaは終了tool不履行・usage欠落で停止し、全工程成功は未確認。[実装・停止理由・残る実走](results/docker-agent-mechanism.md)を参照。
+
+次の範囲: pool再利用と汚染検査、Node 24+のtemplate、Astra介入を含む実走、Docker条件での規模・対照実験。今回の復帰時回収は常駐watcherやrun再開ではない。一般repo・32 VM並列・費用優位・並列durabilityは本導入の完了条件に含まない。
 
 ## 再検討する条件
 

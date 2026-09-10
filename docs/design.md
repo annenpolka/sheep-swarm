@@ -90,7 +90,7 @@ runtime schema、capability設定、外部副作用broker、複数snapshotのmer
 
 Docker Agent導入後もworkerの作業VMはkernelの権威を持たない。mountless VMへcheckoutから明示した内容だけを投入し、次のcallにsessionや私有filesystemを暗黙継承しない。`swarm --worker-tools local`は実ファイルの全差分を候補として回収する。最終回答のreplacement文字列や可視テストの自己申告は確定証拠にしない。可視テストの改変も全差分に含め、kernelのscope検査で拒否する。
 
-Docker runtimeの受入では、固定oracleの期待値・比較をhostに置き、候補コードの実行結果だけを別の通信拒否VMから取得する。入力は候補の対象と依存閉包だけで、workerの可視テスト・認証・sessionは引き継がない。VM内で同期`.mjs`を評価し、局所importだけを許す。受入VMの起動・出力・削除に失敗した場合はvalidator-errorとし、新規worker受付と上位介入を止める。モデルusage不明でも既に発行した同時callの回収後に受付を止める。一般repoの実行環境は別途設計する。[導入境界](docker-agent-sandbox.md)
+Docker runtimeの受入では、固定oracleの期待値・比較をhostに置き、候補コードの実行結果だけを別の通信拒否VMから取得する。入力は候補の対象と依存閉包だけで、workerの可視テスト・認証・sessionは引き継がない。VM内で`.mjs`を評価し、同期・Promise戻り値と局所importを扱う。機構fixtureのJSON読取はrealm内の限定APIで、供給済みJSONだけを返す。実filesystemのAPIを候補へ渡さない。受入VMの起動・出力・削除に失敗した場合はvalidator-errorとし、新規worker受付と上位介入を止める。モデルusage不明でも既に発行した同時callの回収後に受付を止める。一般repoの実行環境は別途設計する。[導入境界](docker-agent-sandbox.md)
 
 比較runnerでも同じ隔離境界を使い、必須importの判定だけをVM内の構文情報から返す。単独Lunaは全体を読み、Manager-localとSheepの下位は元の局所checkoutを読む。管理側の不変な広域観測を将来のread dependencyへ変換しない。workerのcleanup失敗は使用量が完全でもrunの失敗とし、新規受付を止める。
 
@@ -110,3 +110,5 @@ M4の実行系はsrc/durable-run.ts。SQLiteの世代比較と短いtransaction�
 
 
 中央管理の計画観測も不変snapshotとして保持する。計画を適用する直前に観測した全体のread stampsを検査し、仕様変更の継続的な依存は仕様/APIの文脈だけへ限定する。読んだ全文・版・入力量はcall receiptへ残し、読み直し費用を隠さない。広く読んだコードを全て仕様の将来の依存へ変換すると、workerの正当な修正が他のworkerの前提まで失効させることを実走で確認した。
+
+`mechanism`のDocker経路では、要求中の追加readと、実callへ渡したreadを区別する。未読registry・policyの値を可視ケースや事前採点エラーから明かさない。必要な現stageの公開依存がcontextへ揃うまで候補採用も保留し、可視観測VMへはそのcontextのIDだけを送る。登録済みedgeから段階更新後の版を読み直し、最終oracleの失敗はstage barrierで止める。固定の期待値・境界値・必須importは従来どおりhostが保有する。

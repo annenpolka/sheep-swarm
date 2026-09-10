@@ -64,9 +64,28 @@ npm run swarm -- --runtime docker-agent --worker-tools local \
 
 `compare`でも同じflagsを使用できる。`single-luna`・`manager-local`・`sheep-fixed`・`sheep-full`の実装callに同じtoolを与え、管理・仕様介入callはtool-lessを保つ。各方式の編集権限と観測範囲は元のprotocolを維持する。単独Lunaは全体context、局所workerはcheckoutの範囲と固定可視検査を受け取り、全差分をそれぞれの権限で検査する。最終採点値・case・必須importは共通である。
 
-`scripts/compare-experiment.mjs --source <固定したsource> --output <新規run> --runtime docker-agent --worker-tools local`で12条件の系列を構成できる。sourceには今回のruntime対応が必要で、そこで`npm run sandbox:install`も準備する。既存の凍結sourceは書き換えない。今回の実機検証は小規模CLI runまでで、12条件の一括実走は行っていない。`mechanism`・`durable`のruntime切替は後続範囲。
+`scripts/compare-experiment.mjs --source <固定したsource> --output <新規run> --runtime docker-agent --worker-tools local`で12条件の系列を構成できる。sourceには今回のruntime対応が必要で、そこで`npm run sandbox:install`も準備する。既存の凍結sourceは書き換えない。今回の実機検証は小規模CLI runまでで、12条件の一括実走は行っていない。`durable`のruntime切替は後続範囲。
 
 `callDockerAgent`は既存のcaller interfaceに接続する。`files`を指定しない場合はcwdをコピーせず、prompt内contextだけで働く。局所道具を使うときは`tools: "local"`と`files`を明示する。JSON形式のYAML例は[configs/docker-agent-local.yaml](../configs/docker-agent-local.yaml)。`permissions`はconfigの最上位に置く。
+
+## 機構実験の追加読取と段階境界
+
+```sh
+npm run sandbox:mechanism-probe
+npm run mechanism -- --runtime docker-agent --worker-tools local \
+  --family semantic --method sheep --groups 1 --workers 4 --concurrency 2 \
+  --max-calls 24 --max-meta-calls 0 --max-credits 3 --luna-reservation 0.5 \
+  --max-tokens-per-call 60000 --timeout-ms 240000 \
+  --output .sheep/my-docker-mechanism
+```
+
+`static`・`semantic`・`staged`、群れ・単独Luna・記憶なし・上位なしに対応する。上位介入はtool-lessで共有guidanceだけを編集する。`single-astra`の新規Docker実行は拒否する。単独Lunaは全体context、局所workerは版付きcheckoutを受け取る。既定runtimeは従来のCodex、道具はnone。既存の`mechanism:experiment`の凍結系列や追加予算をDockerへ自動で移さず、今回のDocker runは個別CLIで記録する。
+
+`readRequests`は公開catalogのIDだけを指定できる。選択だけでは読了にならず、次の別の有料callで内容を渡し、正常な応答を得てから依存edgeを登録する。未読registryからpolicyの所有先を推定しない。読了したregistryで所有先を解決し、現stageの仕様・policy・必要なdecoderがcheckoutへ揃うまで、可視テストにはケースを含めず、採点エラーから値を返さず、編集も採用しない。要求中のファイルを可視verifierが先取りして自動確定することも禁止する。
+
+可視検査VMの入力は同じcheckoutのIDへ限定するため、別domainの未読JSONをruntime importから参照できない。段階を進めると、保持した依存edgeから新しい版をcheckoutし直す。最終検査は全候補を別VMで実行し、成功したstageだけを次へ進める。最終失敗の具体値は結果ファイルだけに保存する。可視テスト成功の自己申告、最終JSONのwrites、選択だけのreadは確定証拠にしない。
+
+`max-credits`は固定価格表によるcredit相当の受付上限、`luna-reservation`はcall予約。追加読取、toolループ内の各推論、再試行、上位を精算する。`max-tokens-per-call`はDocker Agent側のターン間token受付上限で、providerの強制上限ではない。部分usageやcleanup不明、検証基盤障害では後続の受付を止める。実Lunaの機構実験は終了tool不履行とusage欠落で停止しており、全工程成功はまだ確認できていない。[実測と残る検証](results/docker-agent-mechanism.md)を参照。
 
 ## 候補をどう採用するか
 
@@ -86,13 +105,13 @@ pilotと道具付きswarmはモデルが最終回答に書いた`content`より�
 
 道具付きswarmには、版付きcheckoutの全内容と固定生成の`visible.test.mjs`を投入する。テストはfeedback用で、書換えは全差分検査で拒否される。consumerとreportを同じ局所手順で処理し、上位は引き続きtool-lessの仕様介入を担当する。
 
-Docker runtimeのswarm/compare受入では、候補と依存閉包を別の通信拒否VMへ送り、観測値だけをhostへ返す。従来のfixtureの期待値・case・比較式はhostに保持する。workerの可視テストや認証を受入VMにコピーしない。VM内の評価は同期`.mjs`と供給済みの相対importだけに限定し、Node builtin・外部import・汎用shellを候補へ提供しない。比較fixtureでは`SourceTextModule.dependencySpecifiers`で必須importを構文解析し、コメントによる偽装も拒否する。固定Node22とhost Node26の両方で確認した。一般repositoryの実行環境ではない。受入ごとのreceiptはrun内の`acceptance/`へ保存する。
+Docker runtimeのswarm/compare受入では、候補と依存閉包を別の通信拒否VMへ送り、観測値だけをhostへ返す。従来のfixtureの期待値・case・比較式はhostに保持する。workerの可視テストや認証を受入VMにコピーしない。VM内の評価は供給済み`.mjs`の相対importと同期・Promise戻り値に対応する。機構fixtureのため、realm内で生成した`URL`と、供給済みJSONだけをUTF-8文字列として読む`node:fs`の`readFileSync`、`node:fs/promises`の`readFile`を追加した。これは限定した仮想読取で、実guest/hostのfilesystemや一般のNode builtin、外部import、汎用shellは公開しない。比較fixtureでは`SourceTextModule.dependencySpecifiers`で必須importを構文解析し、コメントによる偽装も拒否する。固定Node22とhost Node26の両方で確認した。一般repositoryの実行環境ではない。受入ごとのreceiptはrun内の`acceptance/`へ保存する。
 
 ## 記録と失敗
 
 各呼出しは`.sheep/.../sheep-docker-call-*/receipt.json`に設定、入力ファイル、NDJSON、stderr、版、hash、sandbox名、各lifecycle操作、削除結果を保存する。timeoutでも既に届いたusageを残し、未完了の推論がある場合は`usageCompleteness: partial-or-unknown`とする。総費用0とは扱わない。
 
-swarm/compareはusage不明が出たwaveを回収した後、新しいworkerと上位の呼出しを止める。受入VMの基盤障害とworkerのcleanup失敗も新規受付を止め、仕様の誤りを直すための上位介入を起こさない。既に並列で発行した呼出しの使用量とcleanupも記録する。offline費用見積器はDockerのper-message usageをcache込みで読む。部分usageの金額は下限だけを表示し、上限・総額は不明にする。CreditBudgetでも追加受付をlockする。
+swarm/compare/mechanismはusage不明が出たwaveを回収した後、新しいworkerと上位の呼出しを止める。受入VMの基盤障害とworkerのcleanup失敗も新規受付を止め、仕様の誤りを直すための上位介入を起こさない。既に並列で発行した呼出しの使用量とcleanupも記録する。offline費用見積器はDockerのper-message usageをcache込みで読む。部分usageの金額は下限だけを表示し、上限・総額は不明にする。CreditBudgetでも追加受付をlockする。
 
 `token_usage.usage`は実測とv1.137.0のコードでは直近のcontext snapshot。消費量は各`last_message`のinput・cache read/write・outputから集計する。`budget_usage`を加算せず、同一usage eventの重複も拒否する。`last_message.Model`はruntimeの設定IDに由来するため`configuredModelEvidence`に残し、`effectiveModelEvidence`はnullとする。
 
