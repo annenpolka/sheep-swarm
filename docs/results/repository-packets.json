@@ -1,0 +1,711 @@
+{
+  "format": 1,
+  "kind": "compatibility-smoke",
+  "profileHash": "ae173a9c75ba339976b1ee95722a3d7f8a5c8c3b47c4df67a213d7533b8734ab",
+  "profile": {
+    "format": 1,
+    "purpose": "compatibility smoke, not a granularity performance study",
+    "case": "syn-apportion-v00",
+    "hashes": {
+      "public": "8258fe5f490f1d10de5cdf75fc043e5f514d4261d533e4cc875308f222680c95",
+      "private": "095865f03237e1696ba8e103de5f5186b2516eafa2d45addecc491dd1f83337f"
+    },
+    "model": "opencode-go/deepseek-flash",
+    "thinking": "enabled",
+    "limits": {
+      "maxCalls": 16,
+      "maxTokens": 2000000,
+      "reserveTokensPerCall": 200000,
+      "maxTokensPerCall": 64000,
+      "timeoutMs": 600000
+    },
+    "upperCalls": 0,
+    "taskDeadlineMs": null,
+    "concurrencyCeiling": 4,
+    "legacySheepWorkers": 4,
+    "repeats": 1,
+    "order": [
+      "legacy-single",
+      "packet-all",
+      "packet-2",
+      "packet-1",
+      "legacy-sheep"
+    ],
+    "plans": {
+      "1": {
+        "packets": [
+          {
+            "id": "packet-1",
+            "paths": [
+              "src/rule-0.mjs"
+            ],
+            "dependsOn": [],
+            "oversizeReasons": [],
+            "currentReadPaths": [
+              "src/rule-0.mjs"
+            ]
+          },
+          {
+            "id": "packet-2",
+            "paths": [
+              "src/valid-0.mjs"
+            ],
+            "dependsOn": [
+              "packet-1"
+            ],
+            "oversizeReasons": [],
+            "currentReadPaths": [
+              "src/rule-0.mjs",
+              "src/valid-0.mjs"
+            ]
+          },
+          {
+            "id": "packet-3",
+            "paths": [
+              "src/share-0.mjs"
+            ],
+            "dependsOn": [
+              "packet-2"
+            ],
+            "oversizeReasons": [],
+            "currentReadPaths": [
+              "src/rule-0.mjs",
+              "src/share-0.mjs",
+              "src/valid-0.mjs"
+            ]
+          },
+          {
+            "id": "packet-4",
+            "paths": [
+              "src/audit-0.mjs"
+            ],
+            "dependsOn": [
+              "packet-2",
+              "packet-3"
+            ],
+            "oversizeReasons": [],
+            "currentReadPaths": [
+              "src/audit-0.mjs",
+              "src/rule-0.mjs",
+              "src/share-0.mjs",
+              "src/valid-0.mjs"
+            ]
+          }
+        ],
+        "boundaryEdges": 4,
+        "publicPaths": [
+          "contract.md",
+          "public-check.mjs",
+          "src/audit-0.mjs",
+          "src/rule-0.mjs",
+          "src/share-0.mjs",
+          "src/valid-0.mjs"
+        ],
+        "contextPolicy": "immutable-public-baseline+current-packet-dependency-closure",
+        "initialPublicBytes": 3874,
+        "graphEdges": [
+          {
+            "consumer": "src/valid-0.mjs",
+            "provider": "src/rule-0.mjs"
+          },
+          {
+            "consumer": "src/share-0.mjs",
+            "provider": "src/valid-0.mjs"
+          },
+          {
+            "consumer": "src/audit-0.mjs",
+            "provider": "src/share-0.mjs"
+          },
+          {
+            "consumer": "src/audit-0.mjs",
+            "provider": "src/valid-0.mjs"
+          },
+          {
+            "consumer": "src/audit-0.mjs",
+            "provider": "src/share-0.mjs",
+            "specifier": "./share-0.mjs",
+            "sourceHash": "e609710323e01c666c90500abb1a73c017364f72f9f150971e0c425dd75ab875"
+          },
+          {
+            "consumer": "src/audit-0.mjs",
+            "provider": "src/valid-0.mjs",
+            "specifier": "./valid-0.mjs",
+            "sourceHash": "e609710323e01c666c90500abb1a73c017364f72f9f150971e0c425dd75ab875"
+          },
+          {
+            "consumer": "src/share-0.mjs",
+            "provider": "src/valid-0.mjs",
+            "specifier": "./valid-0.mjs",
+            "sourceHash": "d803ab1a34bc866de8341ffaebdf4f4a46e9f685467a37c7d6ee6835cfc9fdab"
+          },
+          {
+            "consumer": "src/valid-0.mjs",
+            "provider": "src/rule-0.mjs",
+            "specifier": "./rule-0.mjs",
+            "sourceHash": "fba538e30bc40387d58f33421e375ff52eb7ce1600c97bb2eee9730d707e8cf0"
+          }
+        ]
+      },
+      "2": {
+        "packets": [
+          {
+            "id": "packet-1",
+            "paths": [
+              "src/rule-0.mjs",
+              "src/valid-0.mjs"
+            ],
+            "dependsOn": [],
+            "oversizeReasons": [],
+            "currentReadPaths": [
+              "src/rule-0.mjs",
+              "src/valid-0.mjs"
+            ]
+          },
+          {
+            "id": "packet-2",
+            "paths": [
+              "src/audit-0.mjs",
+              "src/share-0.mjs"
+            ],
+            "dependsOn": [
+              "packet-1"
+            ],
+            "oversizeReasons": [],
+            "currentReadPaths": [
+              "src/audit-0.mjs",
+              "src/rule-0.mjs",
+              "src/share-0.mjs",
+              "src/valid-0.mjs"
+            ]
+          }
+        ],
+        "boundaryEdges": 2,
+        "publicPaths": [
+          "contract.md",
+          "public-check.mjs",
+          "src/audit-0.mjs",
+          "src/rule-0.mjs",
+          "src/share-0.mjs",
+          "src/valid-0.mjs"
+        ],
+        "contextPolicy": "immutable-public-baseline+current-packet-dependency-closure",
+        "initialPublicBytes": 3874,
+        "graphEdges": [
+          {
+            "consumer": "src/valid-0.mjs",
+            "provider": "src/rule-0.mjs"
+          },
+          {
+            "consumer": "src/share-0.mjs",
+            "provider": "src/valid-0.mjs"
+          },
+          {
+            "consumer": "src/audit-0.mjs",
+            "provider": "src/share-0.mjs"
+          },
+          {
+            "consumer": "src/audit-0.mjs",
+            "provider": "src/valid-0.mjs"
+          },
+          {
+            "consumer": "src/audit-0.mjs",
+            "provider": "src/share-0.mjs",
+            "specifier": "./share-0.mjs",
+            "sourceHash": "e609710323e01c666c90500abb1a73c017364f72f9f150971e0c425dd75ab875"
+          },
+          {
+            "consumer": "src/audit-0.mjs",
+            "provider": "src/valid-0.mjs",
+            "specifier": "./valid-0.mjs",
+            "sourceHash": "e609710323e01c666c90500abb1a73c017364f72f9f150971e0c425dd75ab875"
+          },
+          {
+            "consumer": "src/share-0.mjs",
+            "provider": "src/valid-0.mjs",
+            "specifier": "./valid-0.mjs",
+            "sourceHash": "d803ab1a34bc866de8341ffaebdf4f4a46e9f685467a37c7d6ee6835cfc9fdab"
+          },
+          {
+            "consumer": "src/valid-0.mjs",
+            "provider": "src/rule-0.mjs",
+            "specifier": "./rule-0.mjs",
+            "sourceHash": "fba538e30bc40387d58f33421e375ff52eb7ce1600c97bb2eee9730d707e8cf0"
+          }
+        ]
+      },
+      "all": {
+        "packets": [
+          {
+            "id": "packet-1",
+            "paths": [
+              "src/audit-0.mjs",
+              "src/rule-0.mjs",
+              "src/share-0.mjs",
+              "src/valid-0.mjs"
+            ],
+            "dependsOn": [],
+            "oversizeReasons": [],
+            "currentReadPaths": [
+              "src/audit-0.mjs",
+              "src/rule-0.mjs",
+              "src/share-0.mjs",
+              "src/valid-0.mjs"
+            ]
+          }
+        ],
+        "boundaryEdges": 0,
+        "publicPaths": [
+          "contract.md",
+          "public-check.mjs",
+          "src/audit-0.mjs",
+          "src/rule-0.mjs",
+          "src/share-0.mjs",
+          "src/valid-0.mjs"
+        ],
+        "contextPolicy": "immutable-public-baseline+current-packet-dependency-closure",
+        "initialPublicBytes": 3874,
+        "graphEdges": [
+          {
+            "consumer": "src/valid-0.mjs",
+            "provider": "src/rule-0.mjs"
+          },
+          {
+            "consumer": "src/share-0.mjs",
+            "provider": "src/valid-0.mjs"
+          },
+          {
+            "consumer": "src/audit-0.mjs",
+            "provider": "src/share-0.mjs"
+          },
+          {
+            "consumer": "src/audit-0.mjs",
+            "provider": "src/valid-0.mjs"
+          },
+          {
+            "consumer": "src/audit-0.mjs",
+            "provider": "src/share-0.mjs",
+            "specifier": "./share-0.mjs",
+            "sourceHash": "e609710323e01c666c90500abb1a73c017364f72f9f150971e0c425dd75ab875"
+          },
+          {
+            "consumer": "src/audit-0.mjs",
+            "provider": "src/valid-0.mjs",
+            "specifier": "./valid-0.mjs",
+            "sourceHash": "e609710323e01c666c90500abb1a73c017364f72f9f150971e0c425dd75ab875"
+          },
+          {
+            "consumer": "src/share-0.mjs",
+            "provider": "src/valid-0.mjs",
+            "specifier": "./valid-0.mjs",
+            "sourceHash": "d803ab1a34bc866de8341ffaebdf4f4a46e9f685467a37c7d6ee6835cfc9fdab"
+          },
+          {
+            "consumer": "src/valid-0.mjs",
+            "provider": "src/rule-0.mjs",
+            "specifier": "./rule-0.mjs",
+            "sourceHash": "fba538e30bc40387d58f33421e375ff52eb7ce1600c97bb2eee9730d707e8cf0"
+          }
+        ]
+      }
+    },
+    "runtimeHashes": {
+      "src/cli-commands.ts": "72d2bf787ae19cf5a2397aa1d79ef35dde467e4187e402a4d7185eac7590da20",
+      "src/cli-options.ts": "5feb13b8e0cd1569601593872e3e96512b441e910482aa9538956f9dfa148c78",
+      "src/cli-profile.ts": "140f9459159b9c440df8d14347725703477cfa35f877723347a87c11c96167ef",
+      "src/cli.ts": "d4eba27c66c086317b12fb86363e93b7dc55e35570a2b41fe062216871d9cbed",
+      "src/codex-worker.ts": "ed92f2d52305f2eac9ca2df7f26153a38a3e67e8d4448391e2157e4d77983069",
+      "src/compare-cli.ts": "f27e961fddb6f652604c36a7defe521b2ee6667c47de4f02ec61fd903c42cb53",
+      "src/comparison.ts": "961741f4fee3056b1c834e4048a7d1b29e427ac87c1cbc5d0e09da55c476593e",
+      "src/cost-estimate.ts": "b40c4cb1ea35d0dcf4a0af122787a592c6c674460a57e4ced26017b7d7618017",
+      "src/credit-budget.ts": "16ab64ee57e347b45ac069b2314c2d2630936a52bff468d26b916d42b0cb789e",
+      "src/deepseek-worker.ts": "d09d5998608bd17211e7b796df4dd85e5485d23d1629b9a6ea32fbb63bd2cc8d",
+      "src/docker-agent-pilot.ts": "be176ed94eac7e2d1bd190e37a85120181f4084bc6a4deec99637dde00a97716",
+      "src/docker-agent-worker.ts": "fa3d049548da99cebfdb687f09d080256b6ef35c86729d0fdcf82471ba3e2617",
+      "src/docker-fixture-observer.ts": "29d410ac57a4452f34de55398dc308803fa67a671fb5b0f4c44f68cc9ee14266",
+      "src/docker-sandbox-verifier.ts": "162dc0c5f320d4d37c9ce671879b52585d6356a062fb01810a4e3ebc4428fff4",
+      "src/durable-cli.ts": "73771fc47cc4e8c848c57d38ddfd7043054e1d02a92ec7314d1c67778e03d027",
+      "src/durable-run.ts": "4cb777ffa744022d90fe2d6720d19c0da7ff513294eea9e940c2f8edb8d5d845",
+      "src/fixture.ts": "b998d5b78ab033daf41f2923493c9417aa9dfd148c90d5675cf1fe025d941fbc",
+      "src/heldout-fixture.ts": "78584f4f366a90ae20535071d310847ee48785276915723584acfa23e889d4d1",
+      "src/journal.ts": "f706e87c675da20742c93679e1082a3bac06c6dff97b1fd25c7f313873c59998",
+      "src/kernel-state.ts": "53aefda100ea6c6ccb1db5ca9ce1018ac733d5f0eee5ba7c9b389cb888d1368c",
+      "src/kernel.ts": "5e8bb070bdc4ea144f657569450018c20b3a9457f33525110e0ae750c1ff805f",
+      "src/mechanism-cli.ts": "902040fb4ddb538c7e3d9a9cb93b645177d153ea54705cf708555d5e4228c6b5",
+      "src/mechanism-fixture.ts": "c8bb8c3078644cdd78da565f4a57af5bb1d53bb6935a091acc7ee3229979ad3a",
+      "src/mechanism-run.ts": "7c12156a044c96c9b0c9a5b9a22c9e415f175f1ca07f200d6c74301bf186af21",
+      "src/model-runtime.ts": "97d1974854dd2eefa69195886f8ef64cd7b92db8e75e7a51263ed83c45eeb9b7",
+      "src/moonbit-manifest.ts": "f4705883d8a6d7e69b9b8ced28998ced3ac5e5303e106e515ede916e0da1f024",
+      "src/opencode-go-worker.ts": "be7897bd5d75f117846094a05167ec22176df0c1bf658c52a46c11b1fce49dc6",
+      "src/protocol.ts": "e2a180c9a4e4c3097d833d81ca73f990133160393818912e75507bb4b129b399",
+      "src/read-selection-audit.ts": "23edee3a7829a5ea38e3334283121f9f12ec15f98b4d107a1e77d7301fcef183",
+      "src/repo-checks.ts": "2cf54bb396edcef9652676828a123ab27e832968b4a266d28e3f55a9e3576508",
+      "src/repo-cli.ts": "2780c731bfd637aa058d34f19f5e58fa2e9e0569e6196402022b68025509b72e",
+      "src/repo-dependencies.ts": "2fc815fbbb9d72e4b7d0ae89177304dc6d5f3d441ee761cbf47e2ce23d44dee0",
+      "src/repo-discovery.ts": "b01967facb6d610107dc4bab3dd8cde338eb99c7c7c34e4d6e46bb47118060f9",
+      "src/repo-files.ts": "1ec2d7136ba3eda09b618db67a24101ecf574dc4bdcc961287f59056c732dea4",
+      "src/repo-impact-input.ts": "9e4e979e1a7a05bcff5da9eaa31a0cd9caeba655185ddb4f1b101600ed2bddde",
+      "src/repo-impact-types.ts": "ac8fb974ac0e46b6291d21fc1365d9d6a41a77f9bcf783e9a60ea9e1e8a16475",
+      "src/repo-impact.ts": "2425506d58cfd1ea96e21942ca6131fd1b9cf5792719a114aa96deea89f8661f",
+      "src/repo-manifest.ts": "f347060dbbd26173895014ef06b6a96e1192f200201783668d70a469527f5c32",
+      "src/repo-moonbit.ts": "e57bc5d7e1b5ec84324b7ef94fd4c9e062ecb0041200b359c0ea46d934b759dd",
+      "src/repo-packet-response.ts": "790fc248fc8c8866aa6e1640bc731f496ad26469746df53880a97448a468dfc9",
+      "src/repo-packet-run.ts": "15430a4367cb1c23aaa08a6f5e16adabacad59cdbca0c2bea671c5fa2d7076bd",
+      "src/repo-packets.ts": "a20fbcfab27b2b444b9330b8277186a10858b94fbf77be3a3f40303bdf316153",
+      "src/repo-probe-admission.ts": "821c6e6d53a1c3695e783af9467c1d12852200f80c932fe234d037c414449a55",
+      "src/repo-recovery-selection.ts": "72d2c0ec3c5400e8c19cc125af2ab6c61965e6e949758ab15549bd6e6b8ca618",
+      "src/repo-run.ts": "f6bb56c4e47651e2fe249eddbdda3205cbd43bc115db5ef95edbb1913a62c46b",
+      "src/repo-types.ts": "8d140784081f752cd82c92b43f0811cbe7c4871ca487ef238c64e5e4dc3c08a6",
+      "src/repo-verifier.ts": "a173134ad79c7aa9faade1a043959e2fa8934fb8f84240310c6a60ef27e206b3",
+      "src/sandbox-ownership.ts": "05a60d6d4a358588c5f7e17018a4cdef83f845a3ec7f95c2461bd76e4a964c8a",
+      "src/sandbox-process.ts": "25662e914383fe41d16227a6dcccfd04ba5e754f91e42cec1b1dd2cf7366353c",
+      "src/sheep-cli.ts": "29f5b3e2c4a66efc7832f42226328c53e8100ac6dadc7c69eebde5a842c33214",
+      "src/swarm.ts": "aa304e90d75acb0548f77871a2ccacf633e6f7a9db5720425b7c1d4d7ca9ab1f",
+      "src/token-budget.ts": "2967767fbc71c52f40fd3c314ddd39cf3cd4ae0832f1283759a50bf10194c981",
+      "src/worker-pool.ts": "05a0004f61ecd777962253b41e8e8287d7f69c6f8740ad1f29eb6314546ab403",
+      "src/worker-proposal.ts": "e136fda8e242df0efc955a684666adc057658208288c41a01e59ac6b07cd6107",
+      "experiments/synthetic-corpus/common.ts": "0c1589d9f97db9ccf79a4d37b04b707c8440faa6c26a464f53e04d198052b052",
+      "experiments/synthetic-corpus/families/f1-scalars.ts": "e4834473c90449bef8d99c1d358dae19d561bf146de05d8b001d6e452ac53f43",
+      "experiments/synthetic-corpus/families/f2-collections.ts": "3eb364b105db53edfa19634e31b58fbce4dbf1e69f9ddcfbae88c5b2c5063187",
+      "experiments/synthetic-corpus/families/f3-text.ts": "076cd6cd576dd7c93598454dc56307ec2cd763b3c8d6ce805904146213a10e9b",
+      "experiments/synthetic-corpus/families/f4-state.ts": "4299e422d35373f2c8829819eb8862b12060cd6e37dd95d498cd3d33612c4a22",
+      "experiments/synthetic-corpus/index.ts": "8f10d73bde009c13b0dc28b9135df6f80ed30ebabccbad3370ccbf18e965eb1d",
+      "experiments/repository-single.ts": "0cc62a1beaa102cfd66d25ee2c9e82596d5bf30b62a7eea5c5734baec1e8fe1d",
+      "experiments/repository-patch.ts": "bb2059a42ca7f5c8fc2a25f33c5928373f6f963d93062f359e0401aafa88481f",
+      "scripts/packet-smoke.mjs": "bff5d209d7e532cec892c2dd4e7c8549d3160e4f673b81a8957eea2f4e9e463c",
+      "scripts/synthetic-corpus.ts": "d45a562781b031c33292ece3b026f24e8059ee9455e6cb33a51a4835da69cbde",
+      "package.json": "d9f954ef2b8060f2f67ce87f71e117b7dfc55c9bff4bee3bb9ba070359f99688",
+      "package-lock.json": "df65b657a516d338ead84eb59d3db48144d622be3db3deccc864707e9eba80b8"
+    }
+  },
+  "rows": [
+    {
+      "method": "legacy-single",
+      "success": true,
+      "runnerSuccess": true,
+      "auditPass": true,
+      "sourceUnchanged": true,
+      "elapsedMs": 5806.83525,
+      "completionMs": 5806.83525,
+      "knownTokens": 3090,
+      "totalTokens": 3090,
+      "calls": 1,
+      "upperCalls": 0,
+      "maxConcurrentModelCalls": 1,
+      "termination": "accepted",
+      "budget": {
+        "unit": "tokens",
+        "maxTokens": 2000000,
+        "observedTokens": 3090,
+        "reservedTokens": 0,
+        "unknownUsageCalls": 0,
+        "exceeded": false,
+        "admissionDenied": false,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "settledCalls": 1,
+        "locked": false,
+        "calls": [
+          {
+            "callId": "call-1",
+            "model": "deepseek-flash",
+            "reservedTokens": 200000,
+            "status": "settled",
+            "tokens": 3090,
+            "knownTokensLower": 3090,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          }
+        ]
+      },
+      "usage": {
+        "inputTokens": 1953,
+        "outputTokens": 1137,
+        "reasoningTokens": 458,
+        "cachedInputTokens": 0,
+        "tokens": 3090
+      }
+    },
+    {
+      "method": "packet-all",
+      "success": true,
+      "runnerSuccess": true,
+      "auditPass": true,
+      "sourceUnchanged": true,
+      "elapsedMs": 23877.264333,
+      "completionMs": 23877.264333,
+      "knownTokens": 7709,
+      "totalTokens": 7709,
+      "calls": 1,
+      "upperCalls": 0,
+      "maxConcurrentModelCalls": 1,
+      "termination": "accepted",
+      "budget": {
+        "unit": "tokens",
+        "maxTokens": 2000000,
+        "observedTokens": 7709,
+        "reservedTokens": 0,
+        "unknownUsageCalls": 0,
+        "exceeded": false,
+        "admissionDenied": false,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "settledCalls": 1,
+        "locked": false,
+        "calls": [
+          {
+            "callId": "call-1",
+            "model": "deepseek-flash",
+            "reservedTokens": 200000,
+            "status": "settled",
+            "tokens": 7709,
+            "knownTokensLower": 7709,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          }
+        ]
+      },
+      "usage": {
+        "inputTokens": 2506,
+        "outputTokens": 5203,
+        "tokens": 7709
+      }
+    },
+    {
+      "method": "packet-2",
+      "success": true,
+      "runnerSuccess": true,
+      "auditPass": true,
+      "sourceUnchanged": true,
+      "elapsedMs": 26034.539792,
+      "completionMs": 26034.539792,
+      "knownTokens": 10329,
+      "totalTokens": 10329,
+      "calls": 2,
+      "upperCalls": 0,
+      "maxConcurrentModelCalls": 1,
+      "termination": "accepted",
+      "budget": {
+        "unit": "tokens",
+        "maxTokens": 2000000,
+        "observedTokens": 10329,
+        "reservedTokens": 0,
+        "unknownUsageCalls": 0,
+        "exceeded": false,
+        "admissionDenied": false,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "settledCalls": 2,
+        "locked": false,
+        "calls": [
+          {
+            "callId": "call-1",
+            "model": "deepseek-flash",
+            "reservedTokens": 200000,
+            "status": "settled",
+            "tokens": 2537,
+            "knownTokensLower": 2537,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "call-2",
+            "model": "deepseek-flash",
+            "reservedTokens": 200000,
+            "status": "settled",
+            "tokens": 7792,
+            "knownTokensLower": 7792,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          }
+        ]
+      },
+      "usage": {
+        "inputTokens": 4573,
+        "outputTokens": 5756,
+        "tokens": 10329
+      }
+    },
+    {
+      "method": "packet-1",
+      "success": true,
+      "runnerSuccess": true,
+      "auditPass": true,
+      "sourceUnchanged": true,
+      "elapsedMs": 41225.3635,
+      "completionMs": 41225.3635,
+      "knownTokens": 16851,
+      "totalTokens": 16851,
+      "calls": 4,
+      "upperCalls": 0,
+      "maxConcurrentModelCalls": 1,
+      "termination": "accepted",
+      "budget": {
+        "unit": "tokens",
+        "maxTokens": 2000000,
+        "observedTokens": 16851,
+        "reservedTokens": 0,
+        "unknownUsageCalls": 0,
+        "exceeded": false,
+        "admissionDenied": false,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "settledCalls": 4,
+        "locked": false,
+        "calls": [
+          {
+            "callId": "call-1",
+            "model": "deepseek-flash",
+            "reservedTokens": 200000,
+            "status": "settled",
+            "tokens": 2098,
+            "knownTokensLower": 2098,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "call-2",
+            "model": "deepseek-flash",
+            "reservedTokens": 200000,
+            "status": "settled",
+            "tokens": 4005,
+            "knownTokensLower": 4005,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "call-3",
+            "model": "deepseek-flash",
+            "reservedTokens": 200000,
+            "status": "settled",
+            "tokens": 4669,
+            "knownTokensLower": 4669,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "call-4",
+            "model": "deepseek-flash",
+            "reservedTokens": 200000,
+            "status": "settled",
+            "tokens": 6079,
+            "knownTokensLower": 6079,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          }
+        ]
+      },
+      "usage": {
+        "inputTokens": 8751,
+        "outputTokens": 8100,
+        "tokens": 16851
+      }
+    },
+    {
+      "method": "legacy-sheep",
+      "success": true,
+      "runnerSuccess": true,
+      "auditPass": true,
+      "sourceUnchanged": true,
+      "elapsedMs": 52834.247541000004,
+      "completionMs": 52834.247541000004,
+      "knownTokens": 19957,
+      "totalTokens": 19957,
+      "calls": 4,
+      "upperCalls": 0,
+      "maxConcurrentModelCalls": 1,
+      "termination": "accepted",
+      "budget": {
+        "unit": "tokens",
+        "maxTokens": 2000000,
+        "observedTokens": 19957,
+        "reservedTokens": 0,
+        "unknownUsageCalls": 0,
+        "exceeded": false,
+        "admissionDenied": false,
+        "reservationOverruns": 0,
+        "activeReservations": 0,
+        "settledCalls": 4,
+        "locked": false,
+        "calls": [
+          {
+            "callId": "call-1",
+            "model": "deepseek-flash",
+            "reservedTokens": 200000,
+            "status": "settled",
+            "tokens": 1900,
+            "knownTokensLower": 1900,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "call-2",
+            "model": "deepseek-flash",
+            "reservedTokens": 200000,
+            "status": "settled",
+            "tokens": 4096,
+            "knownTokensLower": 4096,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "call-3",
+            "model": "deepseek-flash",
+            "reservedTokens": 200000,
+            "status": "settled",
+            "tokens": 7023,
+            "knownTokensLower": 7023,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          },
+          {
+            "callId": "call-4",
+            "model": "deepseek-flash",
+            "reservedTokens": 200000,
+            "status": "settled",
+            "tokens": 6938,
+            "knownTokensLower": 6938,
+            "overrun": false,
+            "issues": [
+              "Cache write input token count is unknown"
+            ]
+          }
+        ]
+      },
+      "usage": {
+        "inputTokens": 8203,
+        "outputTokens": 11754,
+        "reasoningTokens": 10932,
+        "cachedInputTokens": 0,
+        "tokens": 19957
+      }
+    }
+  ],
+  "complete": true,
+  "totalCalls": 12,
+  "upperCalls": 0,
+  "totalTokens": 57936,
+  "actualCost": null,
+  "limitation": "one dev task, one trial per method; not a causal granularity comparison; frozen solver runtime precedes a later output-overlap guard"
+}

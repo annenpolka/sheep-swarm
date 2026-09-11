@@ -181,3 +181,10 @@ Astraの独立レビューで固定した反例も通常gateに含める。混�
 対応比較の`synthetic-paired.test.ts`は、256課題の凍結hash、dev限定・先攻均衡の固定順序、失敗や欠測を速度比へ混ぜない集計、不完全usage/非公開contextの拒否、中断系列の再送拒否を検査する。実測は`synthetic-paired-benchmark.mjs audit`でreceipt・候補hash・元repo・独立受入・系列順を再照合する。
 
 HTTP障害など証拠が不足するrunは品質・速度の対応比較から除外し、消費したcallと既知token下限を資源集計へ残す。公開reportのsummaryはこの有効runだけを使う。個別runの成功時だけのcompletion、片側結果のみの課題、未実行課題を混同しない。
+
+
+## Repository work packets
+
+`repo-packets.test.ts`は3nodeの全64有向graphを4粒度で調べ、coverage、SCCの不可分性、縮約graphの非循環、入力順不変、scope検査を確認する。kernelの複数writeは旧read・失効lease・候補コピー改変で検証する。`repo-packet-run.test.ts`は同一executorのall/1/複数target、公開失敗時の全件却下、旧案のfeedback、providerの現在版、静的循環、並列call、未知usage時の発行済みpeer精算、検証基盤障害、source drift、静的graph変更拒否、CLI dry-runを確認する。
+
+実APIの`node scripts/packet-smoke.mjs NEW_OUTPUT_DIRECTORY`はdevの固定1件・5条件を呼ぶ有料疎通対照。呼出し前にpreflight・公開/非公開hash・runtime copy・条件順を固定し、各候補を独立検査する。通常gateへ含めない。旧Single/Sheepとpacketではcontext・check・retryの粒度が異なり、1回の疎通時間差を粒度の因果効果にしない。

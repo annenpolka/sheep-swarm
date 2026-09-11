@@ -61,6 +61,8 @@ export interface RepoVerification {
   readonly errors: readonly string[];
 }
 export interface RepoRunOptions {
+  /** Opt-in shared multi-target executor; omission preserves the legacy runner. */
+  readonly packetSize?: number | 'all';
   readonly repository: string;
   readonly task: unknown;
   readonly outputDirectory: string;

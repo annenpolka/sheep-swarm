@@ -292,6 +292,7 @@ export async function runRepository(
   options: RepoRunOptions,
   caller?: RepoCaller,
 ): Promise<RepoRunReport> {
+  if (options.packetSize !== undefined) throw new Error('use runPacketRepository for packetSize');
   // ---- Preflight: manifest, runtime, limits, output path, capture (no model calls). ----
   const task = parseRepoTask(options.task);
 

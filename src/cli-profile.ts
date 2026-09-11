@@ -69,6 +69,7 @@ export type CliRunnerOptions =
 
 /** Fully resolved command profile. */
 export interface ResolvedCliProfile {
+  readonly packetPlan?: Awaited<ReturnType<typeof import('./repo-packet-run.ts').prepareRepositoryPackets>>['plan'];
   readonly command: CommandName;
   readonly options: SwarmOptions | RepoRunOptions | ComparisonOptions | DurableOptions | MechanismOptions;
   readonly configuration: ResolvedConfiguration;
@@ -208,6 +209,28 @@ async function resolveRepo(values: CliValues, cwd: string, runtimes: ResolvedRol
   const taskFile = resolve(cwd, taskPath);
   const raw = JSON.parse(await readFile(taskFile, "utf8"));
   const task: RepoTask = parseRepoTask(raw);
+
+  const packetRaw = readString(values, 'packet-size');
+  if (packetRaw !== undefined) {
+    if (values['workers'] !== undefined || values['max-rounds'] !== undefined) throw new Error('packet workers derive from the plan; use concurrency and max-calls');
+    const packetSize = packetRaw === 'all' ? 'all' : numberOption(values, 'packet-size', 1, 1);
+    const options: RepoRunOptions = {
+      repository, task, outputDirectory: resolve(cwd, readString(values,'output') ?? `.sheep/packets-${Date.now()}`),
+      packetSize, runtime:runtimes.runtime, workerModel:runtimes.workerModel,
+      concurrency:positiveInt(values,'concurrency',4),maxCalls:positiveInt(values,'max-calls',128),
+      maxMetaCalls:nonNegativeInt(values,'max-meta-calls',0),timeoutMs:positiveInt(values,'timeout-ms',600000),
+      maxTokens:positiveInt(values,'max-tokens',2000000),reserveTokensPerCall:positiveInt(values,'reserve-tokens',200000),
+      maxTokensPerCall:positiveInt(values,'max-tokens-per-call',64000),apply:readBoolean(values,'apply')??false,
+      goThinking:(readString(values,'go-thinking')??'enabled') as 'enabled',
+    };
+    const {prepareRepositoryPackets}=await import('./repo-packet-run.ts');
+    const {plan,config}=await prepareRepositoryPackets(options);
+    return {command:'repo',options,packetPlan:plan,outputDirectory:options.outputDirectory,
+      configuration:configurationFor({...runtimes,maxTokensPerCall:config.maxTokensPerCall},plan.packets.length,config.concurrency,config.timeoutMs),
+      limits:{workerCalls:config.maxCalls,totalCalls:config.maxCalls,metaCalls:0},
+      budget:{unit:'tokens',maxTokens:config.maxTokens,reserveTokens:config.reserveTokensPerCall},
+      capabilities:{resume:false,apply:true,verification:'host-packet-checks'}};
+  }
 
   if (runtimes.runtime === "docker-agent" || runtimes.metaRuntime === "docker-agent")
     throw new Error("the repository runner does not support the Docker Agent runtime");

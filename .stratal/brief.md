@@ -6,7 +6,7 @@ DeepSeek Flash単体と群れを比較し、分担・依存管理・必要時の
 
 ## Current Working Contract
 
-2026-09-11のPR #9後は[work packet方針](../docs/work-packet-direction.md)を優先する。共通executorで粒度を測り、N=1も正常な選択肢にする。以下の従来範囲は実装の背景として保持する。新しいpacket機能と実測は未着手。
+2026-09-11のPR #9後は[work packet方針](../docs/work-packet-direction.md)を優先する。共通executorで粒度を測り、N=1も正常な選択肢にする。以下の従来範囲は実装の背景として保持する。packet機能はopt-in実装済み。dev全体の粒度実測は未実施。
 
 現在はkernel、Luna4体、8・16・32体の規模比較、C=1の永続化と実process再開を確認済み。別taskで4方式の初期比較も完了し、失敗と実装修正後の追加試行を分けて保存した。公式価格・cacheによる見積器に加え、静的・レジストリ意味依存・3段階変更とcredit相当受付を実装した。新しい主比較はtimeoutの使用量不明で停止し、承認された追加100相当の枠でN16/32を実行した。N8/16/32はC=8で各1回成功したが、増員の明確な利益は未確認。詳細は [実測](../docs/results/mechanism-findings.md) に残す。方針全体は [docs/current-direction.md](../docs/current-direction.md)、実装順序は [docs/roadmap.md](../docs/roadmap.md) を参照。
 
@@ -302,3 +302,12 @@ Working default: file単位全起動の優位を期待する方針から、N=1�
 Next: [決定文書](../docs/work-packet-direction.md)に沿って最小packet実行経路を検証し、新系列profileを固定する。旧停止系列は保全。公開起点のactivation、固定設定でのevaluation、Managerを順に分ける。
 Validation: 品質を落とさないことを先に評価し、両方成功した組の実所要時間と全消費を記録する。分割・検証・retryも計上。未知usageの停止とhidden oracleの境界を維持する。
 Status: active; supersedes earlier immediate N-sweep and dev-pair completion priorities
+
+
+### Packet executorの最小実装
+Authority: Human continuation / implementation judgment (2026-09-11)
+Evidence: 「進めよう」に基づく[実装](../docs/repository-packets.md)。分割と応答validatorの初稿はGo DeepSeek swarm、kernel接続・CLI・独立検証は親が担当。
+Working default: 全公開の変更前baselineは不変artifactとし、packet自身と依存閉包の現在版を別overlayで配信する。全最新targetを毎callのread-setへ載せて独立作業を相互失効させない。これは旧Singleとのcontext差であり、同一policyとは主張しない。allも同じexecutorを通す。
+Validation: SCCと縮約graph、複数writeの原子的却下、read版・lease・候補の拒否、scope逸脱、並列call、未知usage精算、非公開診断の非還流、CLIを独立検証。新規依存追加、activation/recovery、適応選択、並列resumeは未対応。
+Next: 疎通対照を保存し、dev granularity sweepの順序・同値条件・反復・予算を新profileに固定する。
+Status: active

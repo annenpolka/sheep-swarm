@@ -8,7 +8,7 @@
 
 現在の主仮説は、DeepSeek Flashが単体で手戻りするrepo変更を、分担・依存管理・必要時の上位介入によって正しく早く完了できること。品質と受入完了までの実所要時間を主指標とし、低費用モデルの採用による費用面の利点をさらに削ることは優先しない。固定時間内成功率は使わず、失敗・中断のelapsedと成功時だけのcompletionを分ける。
 
-直近は[work packetの粒度比較](work-packet-direction.md)を優先する。PR #9の有効39組ではSingle 38/39・Sheep 37/39成功、両方成功37組中32組でSingleが速かった。file単位の全起動を既定の有用性仮説から下げ、N=1を正常な選択肢にする。共通executorでall/8/4/2/1target packetを比較し、まず全起動・公開context・C4を固定する。packet対応と適応的選択は未実装である。
+直近は[work packetの粒度比較](work-packet-direction.md)を優先する。PR #9の有効39組ではSingle 38/39・Sheep 37/39成功、両方成功37組中32組でSingleが速かった。file単位の全起動を既定の有用性仮説から下げ、N=1を正常な選択肢にする。共通executorでall/8/4/2/1target packetを比較し、まず全起動・公開context・C4を固定する。[packet executorとCLI](repository-packets.md)をopt-inで実装した。適応的選択とdev全体の比較は未実施である。共通の変更前baselineと、現在版のpacket依存閉包を分離して配信する。
 
 元の[対応比較](execplan-synthetic-paired.md)はHTTP 500・usage不明で停止した証拠として維持する。未実行176runの消化より粒度検証を優先し、新系列のprofileを実走前に固定する。公開変更起点によるactivationは別課題で粒度を固定して比較する。設定選択後にevaluation、次にManager。devのchain不在とevaluationの構造差、既に観測したevaluation 8件を明記する。
 
