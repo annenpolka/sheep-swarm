@@ -2,11 +2,13 @@
 
 2026-09-09の [現在の方針](current-direction.md) に基づく計画。小さなkernelから実workerへ進み、人数を変えた振る舞いを早く観測する。各段階の状態は実行証拠に合わせる。詳細な進捗は [ExecPlan](execplan.md)、M2の証拠は [4体pilot](results/luna-four-worker-pilot.md) を参照。
 
-## Work packetの粒度比較 — 共通executor実装、全体比較は未実施
+## Work packetの粒度比較 — 共通executor実装、dev比較は基盤障害で途中停止
 
 [決定と検証順序](work-packet-direction.md)。最初に複数targetを原子的に提案・検証できる共通executorとCLI dry-runを実装する。独立fixtureでscope・read版・packet間通知・循環・usage不明停止を確認後、凍結devでall/8/4/2/1target packetを全起動・同じ公開context・C4で比較する。品質と両方成功した組の完了時間を主指標とし、N=1も採用候補にする。変更起点を公開したactivation比較は粒度を固定した別課題へ分ける。自動選択・evaluation・Managerは設定を選んだ後へ置く。
 
 実装: [repo --packet-size](repository-packets.md)でall/1/複数targetを共通経路へ接続した。公開graphのSCC分割、複数writeの原子的commit、変更前baselineと現在依存版の分離、packet内通知の公開再検証、旧版/権限/usageの拒否を含む。単体・循環・並列・scope・失敗・CLIの13追加テストを含む568テストと参照2件が成功。実APIの小規模対照は[別記録](results/repository-packets.md)。dev 128件の粒度比較、適応器、activation比較は次の範囲。
+
+[dev粒度比較の固定計画](packet-sweep-plan.md)を644実runとして開始したが、3完了・1中断で停止。[通知不整合と修正の記録](results/packet-sweep-host-fault.md)。完了条件は新しいread policy/runtimeを固定した系列での測定であり、修正後のstub成功を性能結果に数えない。
 
 以下の旧系列と完了記録は保持する。PR #9の停止系列の残りを埋めることは、次の最優先作業にはしない。
 

@@ -188,3 +188,8 @@ HTTP障害など証拠が不足するrunは品質・速度の対応比較から�
 `repo-packets.test.ts`は3nodeの全64有向graphを4粒度で調べ、coverage、SCCの不可分性、縮約graphの非循環、入力順不変、scope検査を確認する。kernelの複数writeは旧read・失効lease・候補コピー改変で検証する。`repo-packet-run.test.ts`は同一executorのall/1/複数target、公開失敗時の全件却下、旧案のfeedback、providerの現在版、静的循環、並列call、未知usage時の発行済みpeer精算、検証基盤障害、source drift、静的graph変更拒否、CLI dry-runを確認する。
 
 実APIの`node scripts/packet-smoke.mjs NEW_OUTPUT_DIRECTORY`はdevの固定1件・5条件を呼ぶ有料疎通対照。呼出し前にpreflight・公開/非公開hash・runtime copy・条件順を固定し、各候補を独立検査する。通常gateへ含めない。旧Single/Sheepとpacketではcontext・check・retryの粒度が異なり、1回の疎通時間差を粒度の因果効果にしない。
+
+
+`packet-sweep.test.ts`は、同値packetの重複実行防止、実方式の順序回転、evaluation排除、共有観測を勝敗に数えない集計、失敗/証拠不備の時間比からの除外、停止/inFlight系列の再送拒否を検証する。実系列ではpacketReceiptAuditが生usage・model/thinking・公開baselineと現在版overlay・kernel checkoutの版・候補内容を照合する。既存smokeの3粒度でも同監査をモデルなしで確認した。
+
+packet同居関係によって静的source edge外へ伝わる通知は、独立した4ファイルfixtureで修正前の失敗を確認してから修正する。kernel異常の注入ではモデル再試行を止め、発行済みpeerの使用量を精算する。外部停止の監査は、古いbudget checkpointと後着receiptを区別し、未知usageをnullのまま保持する。`check-packet-host.mjs`は凍結系列と修正版へ正解を返すoffline stub対照であり、通常モデル評価には混ぜない。

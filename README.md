@@ -4,7 +4,9 @@
 
 下位モデルの群れが局所作業を進め、上位モデルが群れを観測して必要時に介入する。下位から上位への相談経路は設けない。個体数を増やしたときの分業、情報伝播、混雑、収束を、品質・費用とともに確かめる。既存製品から設計を借り、小さなprotocolから始める。
 
-現在の方針は [docs/current-direction.md](docs/current-direction.md) にまとめている。次は[一匹へ渡す仕事の粒度](docs/work-packet-direction.md)を検証する。N=1も正常な選択肢とし、共通executorでall/8/4/2/1target packetを比較する計画。[packet対応](docs/repository-packets.md)をopt-inで実装した。自動粒度選択とdev全体の比較は未実施。過去の8・16・32体の実測は保持する。
+現在の方針は [docs/current-direction.md](docs/current-direction.md) にまとめている。次は[一匹へ渡す仕事の粒度](docs/work-packet-direction.md)を検証する。N=1も正常な選択肢とし、共通executorでall/8/4/2/1target packetを比較する計画。[packet対応](docs/repository-packets.md)をopt-inで実装した。自動粒度選択は未実装。dev比較は基盤障害で途中停止し、全件比較は未完了。過去の8・16・32体の実測は保持する。
+
+[dev 128件の粒度比較](docs/packet-sweep-plan.md)は最初の1課題・3条件完了後、packet-4のhost通知不整合で停止した。[実測・消費と修正](docs/results/packet-sweep-host-fault.md)を保存。基盤修正は正解stubで確認済み、修正後の実API系列は未実行。
 
 [合成repository課題集](docs/synthetic-corpus.md)は16系統×16variantの256課題を生成する。Devin（SWE-2 Max）に課題生成を委譲し、呼出し側で補修・独立検査した。`node scripts/synthetic-corpus.ts list`で一覧、`materialize ID NEW_DIRECTORY`で書出し、`preflight --all`でモデルなしの全件検査を行える。課題生成とsolverの実測を分ける。[DeepSeek初回pilot](docs/results/synthetic-corpus-deepseek.md)は16課題中14成功、成功時の中央値34.63秒（N4/C2、thinking enabled）。
 

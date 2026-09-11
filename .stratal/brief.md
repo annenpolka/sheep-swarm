@@ -6,7 +6,7 @@ DeepSeek Flash単体と群れを比較し、分担・依存管理・必要時の
 
 ## Current Working Contract
 
-2026-09-11のPR #9後は[work packet方針](../docs/work-packet-direction.md)を優先する。共通executorで粒度を測り、N=1も正常な選択肢にする。以下の従来範囲は実装の背景として保持する。packet機能はopt-in実装済み。dev全体の粒度実測は未実施。
+2026-09-11のPR #9後は[work packet方針](../docs/work-packet-direction.md)を優先する。共通executorで粒度を測り、N=1も正常な選択肢にする。以下の従来範囲は実装の背景として保持する。packet機能はopt-in実装済み。dev全体の粒度実測は初回系列が基盤障害で途中停止。
 
 現在はkernel、Luna4体、8・16・32体の規模比較、C=1の永続化と実process再開を確認済み。別taskで4方式の初期比較も完了し、失敗と実装修正後の追加試行を分けて保存した。公式価格・cacheによる見積器に加え、静的・レジストリ意味依存・3段階変更とcredit相当受付を実装した。新しい主比較はtimeoutの使用量不明で停止し、承認された追加100相当の枠でN16/32を実行した。N8/16/32はC=8で各1回成功したが、増員の明確な利益は未確認。詳細は [実測](../docs/results/mechanism-findings.md) に残す。方針全体は [docs/current-direction.md](../docs/current-direction.md)、実装順序は [docs/roadmap.md](../docs/roadmap.md) を参照。
 
@@ -311,3 +311,19 @@ Working default: 全公開の変更前baselineは不変artifactとし、packet�
 Validation: SCCと縮約graph、複数writeの原子的却下、read版・lease・候補の拒否、scope逸脱、並列call、未知usage精算、非公開診断の非還流、CLIを独立検証。新規依存追加、activation/recovery、適応選択、並列resumeは未対応。
 Next: 疎通対照を保存し、dev granularity sweepの順序・同値条件・反復・予算を新profileに固定する。
 Status: active
+
+
+### dev packet粒度比較の実行
+Authority: Human request (2026-09-11)
+Evidence: 「やってみよう」に基づく[固定計画](../docs/packet-sweep-plan.md)。
+Working default: dev 128件、各方式1回、旧Singleとpacket-all/8/4/2/1。同じ実分割は一度だけ呼び共有観測にする。task間逐次、packet C4、thinking有効、上位0、時間締切なし。全条件を実行前に固定し、途中結果を見てsolverを変えない。
+Validation: 対応比較の参照は旧Singleとpacket-all。共有観測はpaired winsから除外し、物理的な消費を一度だけ計上。品質不合格は保存し続行、証拠や基盤の異常は新規受付停止。
+Status: active
+
+
+### packet groupingの通知閉包と測定停止
+
+Evidence: [初回dev系列のhost障害](../docs/results/packet-sweep-host-fault.md)。正解stubでも旧executorがunobserved-obligationを繰り返し、修正版は同じ固定oracleへ8 stub callで到達。
+Working default: packetの同居targetを含む公開依存閉包を実行前に固定する。kernel異常はモデルへ返さず、発行済みcall精算後に受付停止。
+Validation: 4ファイルの独立反例、kernel fault注入時のpeer精算、32targetの旧/修正版offline対照。元runのkernel/budget/seriesは保持し、中断runのreceipt消費を別監査。
+Next: 修正版の有料系列は未実行。旧系列の3有効runを新runtimeのpaired比較へ再利用しない。

@@ -16,7 +16,7 @@ JSON/textのdry-runに、packetのtarget割当、依存先packet、現在版のr
 
 公開manifestの依存と、v2では公開catalog内の静的依存を使う。readonlyファイル経由のtarget依存も収集する。SCCを分割不能単位にし、providerから順に、現在のpacketとの隣接edgeが多いready SCCを選ぶ。同点はpathの辞書順。容量に収まらなければ次packetへ送り、SCC自体が容量を超える場合は理由を記録して一つに保つ。独立した小componentも同じpacketへまとめられる。結果は入力配列順に依存せず、縮約graphは非循環になる。
 
-全packetに、全公開ファイル・全target指示・goalからなる不変の**変更前baseline**を渡す。さらにpacket自身と公開graphの依存閉包にあるtargetの**現在版overlay**を渡す。baselineはkernel上でも書込不能な別artifactで、現在版の代用とは扱わない。overlayの全配信版をcheckoutへ登録し、前提が古くなれば採用を拒否する。
+全packetに、全公開ファイル・全target指示・goalからなる不変の**変更前baseline**を渡す。さらにpacket自身と、公開graphにpacket同居関係を加えた依存閉包にあるtargetの**現在版overlay**を渡す。baselineはkernel上でも書込不能な別artifactで、現在版の代用とは扱わない。overlayの全配信版をcheckoutへ登録し、前提が古くなれば採用を拒否する。kernelはpacketの全writeへ配信readの依存を記録するため、上流packetの一員だけを読む場合でも、その同居targetと上流を閉包に含める。これは実行前の公開graphと割当から決まり、write scopeは増やさない。
 
 これは全ファイルの最新状態を毎callへ配るpolicyではない。全最新状態をread-setへ登録すると、独立したpacket同士も互いのcommitで古くなるため、変更前の共通情報と変更中の依存を分離した。同じbaseline・同じ閉包計算規則を全粒度へ適用するが、配信する現在版の量はpacketで変わる。PR #9の旧Single/Sheepと同一prompt・同一read policyという主張はしない。未宣言の意味依存の完全性は保証せず、最終oracleでの失敗を保持する。
 
@@ -30,6 +30,8 @@ manifest v1、またはv2のstatic mode・全target起動に対応する。既�
 
 `profile.json`に分割・context policy・予算・baseline hash、`call-*.request.json`に配信内容と版、`call-*.json`に応答/usage、`kernel.json`に候補・lease・検査・通知の履歴を保存する。`result.json`は実同時call、packet別attempt、公開/最終check、source不変、既知token下限、失敗elapsedと成功時completionを分ける。kernel snapshotは監査用であり、並列runのdurable resumeではない。
 
-HTTP障害・usage不明・検証基盤障害では、既に発行したcallの精算後に新規受付を止める。hidden oracleは全packetの処理後に一度だけ実行し、その診断を修復callへ返さない。候補のcheckは既存のhost subprocess境界を使い、OS sandboxを新設したとは扱わない。
+kernelのcheckout/authority/obligation異常はモデルの修正課題にせず、`kernel-infrastructure`として停止する。HTTP障害・usage不明・検証基盤障害では、既に発行したcallの精算後に新規受付を止める。hidden oracleは全packetの処理後に一度だけ実行し、その診断を修復callへ返さない。候補のcheckは既存のhost subprocess境界を使い、OS sandboxを新設したとは扱わない。
 
 [部品生成・実API疎通の記録](results/repository-packets.md)。粒度の性能比較は[次の方針](work-packet-direction.md)に従い、別の実行profileで固定する。
+
+初回dev sweepは旧read閉包の通知不整合で停止した。[結果と修正の検証](results/packet-sweep-host-fault.md)。修正後のread配信量は変わるため、旧profileの結果へ混ぜない。

@@ -103,3 +103,36 @@ test('packet output cannot occupy a newly declared target and successful apply u
  const accepted=await runPacketRepository({...config,apply:true,packetSize:'all',repository:root,task:spec,outputDirectory:join(root,'apply')},response);
  assert.equal(accepted.success,true);assert.equal(accepted.applied,true);assert.equal(await readFile(join(root,'b.mjs'),'utf8'),'export const value=43;');
 });
+
+test('packet grouping closes reads over co-members of upstream packets before calls',async t=>{
+ const paths=['a.mjs','b.mjs','c.mjs','d.mjs'];
+ const root=await repository(Object.fromEntries([...paths.map(p=>[p,'export const value=0;']),['check.mjs',"import assert from 'node:assert/strict'; for (const p of ['a','b','c','d']) assert.equal((await import('./'+p+'.mjs')).value,42);"]]));
+ t.after(()=>rm(root,{recursive:true,force:true}));
+ // a is independent; b -> c -> d. Packing a with b makes a's changes
+ // transitively observable by c/d through the kernel's delivered-read edges.
+ const task={version:1,goal:'each value=42',files:paths.map((path,i)=>({path,instructions:'value=42',dependsOn:i>=2?[paths[i-1]!]:[]})),protected:['check.mjs'],checks:[{argv:[process.execPath,'check.mjs']}]};
+ const run=await runPacketRepository({...config,maxCalls:3,packetSize:2,repository:root,task,outputDirectory:join(root,'grouped')},async o=>{
+  const r=await response(o),f=(r.result as {files:Record<string,string>}).files;
+  for(const p of Object.keys(f))f[p]='export const value=42;';return r;
+ });
+ assert.equal(run.success,true,JSON.stringify({termination:run.termination,calls:run.calls}));
+ assert.equal(run.lowerCalls,2);assert.deepEqual(run.plan.packets.map(p=>p.paths),[['a.mjs','b.mjs'],['c.mjs','d.mjs']]);
+ assert.deepEqual(run.plan.packets[1]!.currentReadPaths,paths);
+ const request=JSON.parse(await readFile(join(root,'grouped','call-2.request.json'),'utf8'));
+ const overlay=JSON.parse(request.prompt.split('\n').find((s:string)=>s.startsWith('Current packet/dependency files: ')).slice('Current packet/dependency files: '.length));
+ assert.equal(overlay['a.mjs'],'export const value=42;');
+ const kernel=JSON.parse(await readFile(join(root,'grouped','kernel.json'),'utf8'));
+ assert.ok(kernel.obligations.every((o:{state:string})=>o.state==='handled'));
+});
+
+test('host kernel faults drain issued calls and stop without model repair attempts',async t=>{
+ const {SwarmKernel,KernelError}=await import('../src/kernel.ts');
+ const root=await repository(files);t.after(()=>rm(root,{recursive:true,force:true}));
+ t.mock.method(SwarmKernel.prototype,'prepare',()=>{throw new KernelError('unobserved-obligation');});
+ let calls=0;
+ const run=await runPacketRepository({...config,packetSize:1,repository:root,task:spec,outputDirectory:join(root,'kernel-fault')},async o=>{calls++;return response(o);});
+ assert.equal(calls,2);assert.equal(run.termination,'kernel-infrastructure');assert.equal(run.infrastructureFailure,true);assert.equal(run.success,false);
+ assert.equal(run.budget.activeReservations,0);assert.equal(run.budget.unknownUsageCalls,0);assert.equal(run.budget.observedTokens,60);
+ assert.deepEqual(run.changedPaths,[]);assert.equal(run.verifications.length,0);assert.equal(run.calls[0]!.errors[0],'unobserved-obligation');
+ assert.ok(run.calls.every(c=>c.outcome==='kernel-infrastructure'));
+});

@@ -70,8 +70,14 @@ export async function prepareRepositoryPackets(options:RepoRunOptions) {
   return {path,dependsOn:[...dependencies].sort()};
  });
  const partition=planPackets(nodes,config.packetSize);
+ // The kernel records every delivered read for every written member. Grouping
+ // a and b therefore couples their consumers even when a/b have no source edge.
+ // Close over co-members before dispatch so transitive notifications always
+ // have a current provider in the checkout. This adds reads, never authority.
+ for(const packet of partition.packets)for(const consumer of packet.paths)for(const provider of packet.paths)
+  if(consumer!==provider)graph.get(consumer)!.add(provider);
  const packets=partition.packets.map(p=>({...p,currentReadPaths:closure(p.paths).filter(path=>targets.includes(path))}));
- const plan={...partition,packets,publicPaths,contextPolicy:'immutable-public-baseline+current-packet-dependency-closure',
+ const plan={...partition,packets,publicPaths,contextPolicy:'immutable-public-baseline+upstream-packet-closure',
   initialPublicBytes:Object.values(initial).reduce((n,s)=>n+Buffer.byteLength(s),0),graphEdges:edges};
  if(task.discovery&&plan.initialPublicBytes>task.discovery.maxDeliveredBytes)throw new Error('packet public baseline exceeds maxDeliveredBytes');
  return {snapshot,initial,plan,config};
@@ -198,7 +204,12 @@ export async function runPacketRepository(options:RepoRunOptions,caller:PacketCa
     } catch(error) {
      if(candidateId)kernel.discard(candidateId,'packet rejected');
      const message=error instanceof KernelError?error.code:String(error);
-     call.outcome='rejected';call.errors.push(message);feedback.set(packet.id,message);
+     call.errors.push(message);
+     if(error instanceof KernelError) {
+      // Host-owned scope, checkout and obligation errors cannot be repaired by
+      // asking the model to rewrite the same source. Drain this wave and stop.
+      fail('kernel-infrastructure');call.outcome=termination;
+     } else {call.outcome='rejected';feedback.set(packet.id,message);}
     } finally {kernel.revoke(lease.id);}
    }
    await saveState();
