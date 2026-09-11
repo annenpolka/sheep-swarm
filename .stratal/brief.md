@@ -326,4 +326,13 @@ Status: active
 Evidence: [初回dev系列のhost障害](../docs/results/packet-sweep-host-fault.md)。正解stubでも旧executorがunobserved-obligationを繰り返し、修正版は同じ固定oracleへ8 stub callで到達。
 Working default: packetの同居targetを含む公開依存閉包を実行前に固定する。kernel異常はモデルへ返さず、発行済みcall精算後に受付停止。
 Validation: 4ファイルの独立反例、kernel fault注入時のpeer精算、32targetの旧/修正版offline対照。元runのkernel/budget/seriesは保持し、中断runのreceipt消費を別監査。
-Next: 修正版の有料系列は未実行。旧系列の3有効runを新runtimeのpaired比較へ再利用しない。
+Next: 旧系列の3有効runを新runtimeのpaired比較へ再利用しない。修正版の実測は次項。
+
+
+### 修正版dev-v2の実測
+
+Authority: Human request (2026-09-11「修正し、やり直して」)
+Evidence: [再実行結果](../docs/results/packet-sweep-rerun.md)。通知不具合は再発せず、有効90run成功。91run目のHTTP 500で1callのusage不明が生じ、受付停止。
+Working default: solverは実行中に変更せず、旧結果を流用しない。品質・速度は有効観測のみ、526callと既知token下限6,459,555は基盤障害も含める。未知usageは0へ置換しない。
+Validation: 18課題・6familyを観測、17課題の全条件が揃った。終了後のraw receipt監査も一致。packet-allは共通executor内の分割より速い組が多いが、全件結果や適応器の証拠へ拡張しない。
+Next: 残り553実runは未開始。停止系列を保全し、全dev比較は未完了として扱う。

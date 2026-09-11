@@ -1,12 +1,12 @@
 import {writeFile} from 'node:fs/promises';
 import {audit} from './packet-sweep.mjs';
-const [root,prefix]=process.argv.slice(2);if(!root||!prefix)throw new Error('Usage: node scripts/report-packet-sweep.mjs RUN_DIRECTORY OUTPUT_PREFIX');
+const [root,prefix,planLink='../packet-sweep-plan.md']=process.argv.slice(2);if(!root||!prefix)throw new Error('Usage: node scripts/report-packet-sweep.mjs RUN_DIRECTORY OUTPUT_PREFIX [PLAN_LINK]');
 const r=await audit(root),valid=r.rows.filter(x=>!x.evidenceErrors.length),physicalCalls=r.rows.reduce((n,x)=>n+x.calls,0)+(r.interrupted?.calls??0),unknownCalls=r.inFlight&&!r.interrupted?null:r.rows.reduce((n,x)=>n+x.unknownUsageCalls,0)+(r.interrupted?.unknownCalls.length??0);
 const report={...r,profile:{...r.profile,cases:r.profile.cases.map(({packetPlans,...c})=>c)},accounting:{startedRuns:r.rows.length+(r.inFlight?1:0),completedRuns:r.rows.length,interruptedRuns:r.interrupted?1:0,validRuns:valid.length,physicalCalls,knownTokens:r.knownTokens,totalTokens:r.totalTokens,unknownUsageCalls:unknownCalls,upperCalls:0,actualCost:null},
  summaryDefinition:'Aliases share one observation; never sum per-strategy consumption. Equivalent observations excluded from paired wins. Evidence-invalid observations excluded from quality/time; resources retained.'};
 await writeFile(prefix+'.json',JSON.stringify(report,null,2)+'\n');
 const f=n=>n===null?'—':Number(n).toFixed(2),s=r.summary.overall;
-let md=`# devのpacket粒度比較\n\n状態: **${r.complete?'完了':'途中停止/未完了'}**。${r.completedRuns}/${r.plannedRuns}実run完了、${r.inFlight?1:0}run未完了、証拠が揃ったrunは${valid.length}。停止理由: ${r.stopReason??'なし'}。\n\n[事前固定条件](../packet-sweep-plan.md)。DeepSeek Flash thinking有効、上位0、packet C4上限、task締切なし。旧Singleとpacket-all/8/4/2/1をdev128件で各1回。実際の分割が同じ条件は共有観測として一度だけ実行する。\n\n| 方式 | 観測課題 | 成功 | 成功時中央値 秒 | 既知tokens（共有観測を含む） |\n| --- | ---: | ---: | ---: | ---: |\n`;
+let md=`# devのpacket粒度比較\n\n状態: **${r.complete?'完了':'途中停止/未完了'}**。${r.completedRuns}/${r.plannedRuns}実runの終了記録、最終reportなし${r.inFlight?1:0}run、証拠が揃ったrunは${valid.length}。停止理由: ${r.stopReason??'なし'}。\n\n[事前固定条件](${planLink})。DeepSeek Flash thinking有効、上位0、packet C4上限、task締切なし。旧Singleとpacket-all/8/4/2/1をdev128件で各1回。実際の分割が同じ条件は共有観測として一度だけ実行する。\n\n| 方式 | 観測課題 | 成功 | 成功時中央値 秒 | 既知tokens（共有観測を含む） |\n| --- | ---: | ---: | ---: | ---: |\n`;
 for(const [method,m] of Object.entries(s.methods))md+=`| ${method} | ${m.cases}/128 | ${m.successes}/${m.cases} | ${f(m.medianCompletionMs===null?null:m.medianCompletionMs/1000)} | ${m.knownTokens} |\n`;
 md+='\n方式別の成功集合は異なる。上の中央値同士を速度差にしない。共有観測の消費を合計して系列消費へ二重計上しない。\n';
 for(const [reference,pairs] of Object.entries(s.pairs)) {
