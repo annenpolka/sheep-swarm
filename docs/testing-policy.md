@@ -196,3 +196,6 @@ packet同居関係によって静的source edge外へ伝わる通知は、独立
 
 
 通信再試行controllerはHTTP 500を注入する実repo試験で、baselineからの回復と旧receipt保持、未知usageを含む受付控除、元repo不変を確認する。通常gateは実APIを呼ばない。品質・時間の観測とusageの完全性を分離し、回復しても総tokensを既知へ変えない。認証・取消・検証基盤障害は自動再送しない。上限を跨ぐ試行の共有会計を検査する。継続系列のauditは旧系列と新controller・保存solverのhash、各row・result・receipt・候補・固定fixtureを照合する。[継続計画](packet-sweep-retry-plan.md)。
+
+
+`report-packet-sweep-retry.mjs`は全条件終了・pendingなしを確認してから655試行を監査し、stateが監査中に変わっていないことを照合する。measurement-notesの追加時間除外も反映し、品質と資源は除外しない。新しいmodel callは発行しない。[完了結果](results/packet-sweep-dev-complete.md)。

@@ -342,3 +342,9 @@ Next: 残り553実runは未開始。停止系列を保全し、全dev比較は�
 Authority: Human stated (2026-09-11)
 
 「失敗したときは単にやり直して続ける」を進行中のdev packet比較へ適用する。HTTP 500等の一時的な通信障害は条件全体を元のbaselineから最大3回再実行し、継続失敗なら利用不能として次へ進む。未知usageは保持し、受付上は予約額を控除する。全試行でcall/token枠を共有する。品質失敗は再抽選せず、kernel・検証基盤の異常や不確定なin-flight再送は停止する。過去の停止記録と一般CLIのbudget lockを変更しない。[計画](../docs/packet-sweep-retry-plan.md)。
+
+
+### dev packet粒度比較の完了
+Authority: User-authorized experiment / measured agent judgment (2026-09-12)
+
+全644条件・655試行を完了し監査した。all/8/4/2は128/128、旧Singleとpacket-1は127/128成功。allに対する時間比中央値は8/4/2/1が約1.66/1.70/1.98/2.33倍。通信障害9条件は全回復し、不明usage13callを保持する。devではallを基準候補にする。evaluation条件は未固定・未実走、Managerとactivationは別仮説として保持する。[結果と限界](../docs/results/packet-sweep-findings.md)。

@@ -37,7 +37,8 @@ cbar.ax.set_yticklabels(['0.25x', '0.5x', '1x', '2x', '4x'])
 cbar.set_label('Reference time / packet time (color clipped at 0.25x and 4x)')
 status = 'COMPLETE' if report['complete'] else 'PARTIAL'
 fig.suptitle(f'DeepSeek Flash thinking | dev packet sweep | {status}\n'
-             f'{report["completedRuns"]}/{report["plannedRuns"]} physical runs; one trial per condition', fontsize=14)
+             f'{report["completedRuns"]}/{report["plannedRuns"]} {report.get("plotRunUnit", "physical runs")}; '
+             f'{report.get("trialDescription", "one trial per condition")}', fontsize=14)
 fig.supxlabel('Both accepted pairs only. Red: reference faster; blue: packet faster. '
               'Gray: no distinct accepted pair.\nEquivalent aliases excluded. n is paired tasks; family variants are correlated. No task deadline.', fontsize=9)
 for suffix in ['png', 'svg']:

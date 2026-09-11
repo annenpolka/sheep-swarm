@@ -8,7 +8,7 @@
 
 現在の主仮説は、DeepSeek Flashが単体で手戻りするrepo変更を、分担・依存管理・必要時の上位介入によって正しく早く完了できること。品質と受入完了までの実所要時間を主指標とし、低費用モデルの採用による費用面の利点をさらに削ることは優先しない。固定時間内成功率は使わず、失敗・中断のelapsedと成功時だけのcompletionを分ける。
 
-直近は[work packetの粒度比較](work-packet-direction.md)を優先する。PR #9の有効39組ではSingle 38/39・Sheep 37/39成功、両方成功37組中32組でSingleが速かった。file単位の全起動を既定の有用性仮説から下げ、N=1を正常な選択肢にする。共通executorでall/8/4/2/1target packetを比較し、まず全起動・公開context・C4を固定する。[packet executorとCLI](repository-packets.md)をopt-inで実装した。適応的選択は未実装。dev比較の初回は[host通知不整合](results/packet-sweep-host-fault.md)で停止した。修正版の[再実行](results/packet-sweep-rerun.md)は有効90runが成功し、別のHTTP 500・usage不明で停止した。全件比較は未完了。共通の変更前baselineと、現在版のpacket依存閉包を分離して配信する。
+直近は[work packetの粒度比較](work-packet-direction.md)を優先する。PR #9の有効39組ではSingle 38/39・Sheep 37/39成功、両方成功37組中32組でSingleが速かった。file単位の全起動を既定の有用性仮説から下げ、N=1を正常な選択肢にする。共通executorでall/8/4/2/1target packetを比較し、まず全起動・公開context・C4を固定する。[packet executorとCLI](repository-packets.md)をopt-inで実装した。適応的選択は未実装。dev比較の初回は[host通知不整合](results/packet-sweep-host-fault.md)で停止した。修正版の[再実行](results/packet-sweep-rerun.md)は有効90runが成功し、別のHTTP 500・usage不明で停止した。通信再試行を追加して[全644条件を完了・監査](results/packet-sweep-findings.md)した。all/8/4/2は128/128、旧Singleとpacket-1は127/128成功。細分化は一括処理より遅く、devの基準候補をallとする。evaluation用条件の固定と実走は次の段階。共通の変更前baselineと、現在版のpacket依存閉包を分離して配信する。
 
 2026-09-11の追加指示により、進行中のdev比較は[通信障害の再試行](packet-sweep-retry-plan.md)を採用する。HTTP 500等は失敗条件を元のbaselineから最大3回やり直し、継続不能な条件は未評価として次へ進む。未知usageを0へ変えず、再試行の時間・call・既知下限を含める。品質失敗は再抽選せず、kernelや検証基盤の異常は停止する。
 
