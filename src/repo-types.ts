@@ -25,8 +25,8 @@ export interface RepoDiscoveryOptions {
   readonly maxDeliveredBytes: number;
 }
 export type RepoTask = RepoTaskBase & (
-  | {readonly version: 1; readonly discovery?: never; readonly activation?: never}
-  | {readonly version: 2; readonly discovery: RepoDiscoveryOptions; readonly activation?: {readonly changedPaths: readonly string[]}}
+  | {readonly version: 1; readonly discovery?: never; readonly activation?: never; readonly recovery?: never}
+  | {readonly version: 2; readonly recovery?: {readonly maxUpstreamRechecks: number}; readonly discovery: RepoDiscoveryOptions; readonly activation?: {readonly changedPaths: readonly string[]}}
 );
 export interface RepoEntry { readonly bytes: Buffer; readonly mode: number }
 export interface RepoSnapshot {

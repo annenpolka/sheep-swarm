@@ -14,10 +14,16 @@ export type FixtureContents = Readonly<Record<string, string>>;
 /** Observations only: expected values and comparison remain in the trusted caller. */
 export type FixtureObserver = (files: FixtureContents, calls: readonly Invocation[], timeoutMs: number,
   imports?: readonly { consumer: string; provider: string }[]) => Promise<unknown>;
+/** Public local check observation, supplied by the trusted host verifier only. */
+export interface PublicCheckFailure {
+  readonly commands: readonly (readonly string[])[];
+  readonly diagnostic: string;
+}
 export interface FixtureResult {
   readonly ok: boolean;
   readonly errors: readonly string[];
   readonly executionFailure?: true;
+  readonly publicFailure?: PublicCheckFailure;
 }
 export interface CodeFixture {
   readonly artifacts: FixtureContents;

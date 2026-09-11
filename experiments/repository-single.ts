@@ -46,7 +46,7 @@ export async function runSingleRepository(options:SingleOptions,caller:SingleCal
  const calls:{id:string;outcome:string;durationMs:number;promptBytes:number;errors:string[];effectiveModelEvidence:string|null}[]=[];
  const verifications:RepoVerification[]=[];
  const sessionId=`single-${randomUUID()}`;
- await save(join(output,'task.json'),task);await save(join(output,'profile.json'),{...options,task:undefined,runtime:'opencode-go',model:'deepseek-flash',thinking:'disabled',responseFormat,taskDeadlineMs:null});
+ await save(join(output,'task.json'),task);await save(join(output,'profile.json'),{...options,task:undefined,runtime:'opencode-go',model:'deepseek-flash',thinking:'enabled',responseFormat,taskDeadlineMs:null});
  await save(join(output,'budget.json'),budget.snapshot());
  for(let attempt=0;attempt<options.maxCalls;attempt++) {
   const id=`call-${attempt+1}`;
@@ -56,7 +56,7 @@ export async function runSingleRepository(options:SingleOptions,caller:SingleCal
   await save(join(output,`${id}.request.json`),{prompt,schema});
   let receipt:CodexCallResult<unknown>|undefined,failure:unknown;
   const callStarted=performance.now();
-  try{receipt=await caller({model:'deepseek-flash',prompt,schema,cwd:snapshot.root,timeoutMs:options.timeoutMs,maxTokens:options.maxTokensPerCall,thinking:'disabled',sessionId,callId:id,outputDirectory:output});}catch(error){failure=error;}
+  try{receipt=await caller({model:'deepseek-flash',prompt,schema,cwd:snapshot.root,timeoutMs:options.timeoutMs,maxTokens:options.maxTokensPerCall,thinking:'enabled',sessionId,callId:id,outputDirectory:output});}catch(error){failure=error;}
   const err=failure instanceof CodexWorkerError?failure:undefined;
   const metered=receipt??{requestedModel:'deepseek-flash',error:err?.code??'unknown',transcript:err?.transcript};
   const settlement=budget.settle(id,metered);

@@ -3,6 +3,8 @@ import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import type {Checkout, SwarmKernel} from './kernel.ts';
 import type {RepoSnapshot} from './repo-types.ts';
+import type {PublicCheckFailure} from './fixture.ts';
+import {selectUpstreamRechecks} from './repo-recovery-selection.ts';
 import type {SwarmTaskControl} from './swarm.ts';
 import {discoverRepoDependencies, type RepoDependencyScan} from './repo-dependencies.ts';
 import {REPO_WORKER_SCHEMA, parseWorkerResponse} from './worker-proposal.ts';
@@ -11,6 +13,7 @@ import {validateMoonBitCatalog} from './repo-moonbit.ts';
 
 export const REPO_GOAL='.sheep-internal/goal.md';
 export const REPO_GUIDANCE='.sheep-internal/guidance.md';
+const RECOVERY_PREFIX='.sheep-internal/recovery/';
 const hash=(s:string)=>createHash('sha256').update(s).digest('hex');
 type Stamp={version:number;evidenceEpoch:number};
 interface Evidence {consumer:string;provider:string;source:'static-import'|'delivered-read';evidenceId:string;consumerStamp:Stamp;providerStamp:Stamp|null;sourceHash:string}
@@ -37,6 +40,10 @@ export class RepositoryDiscovery implements SwarmTaskControl {
   readonly #requests:{callId:string;target:string;paths:readonly string[];accepted:boolean;reason:string|null}[]=[];
   readonly #uncertainties:Uncertainty[]=[];
   readonly #pendingScans=new Map<string,RepoDependencyScan>();
+  readonly #recoveryArtifacts=new Map<string,string>();
+  readonly #feedbackReads=new Map<string,Set<string>>();
+  readonly #rechecked=new Set<string>();
+  readonly #recoveries:{callId:string;target:string;context:string;selected:string[];reason:string;validations:string[]}[]=[];
   #scan:RepoDependencyScan;
 
   private constructor(snapshot:RepoSnapshot,scan:RepoDependencyScan) {
@@ -55,6 +62,13 @@ export class RepositoryDiscovery implements SwarmTaskControl {
     for(const path of this.#public)this.artifacts[path]=snapshot.initialTargets[path]??snapshot.entries.get(path)!.bytes.toString('utf8');
     snapshot.task.files.forEach((file,i)=>{
       const instruction=`.sheep-internal/instructions/${i}.md`;
+      if(snapshot.task.recovery){
+        const feedback=`${RECOVERY_PREFIX}${i}.json`;
+        this.#recoveryArtifacts.set(file.path,feedback);
+        this.artifacts[feedback]='No upstream recheck requested.';
+        this.#feedbackReads.set(file.path,new Set([feedback]));
+        this.edge(file.path,feedback);
+      }
       this.instructions.set(file.path,instruction);this.artifacts[instruction]=file.instructions;
       const selected=this.closure([file.path,...snapshot.task.context,...file.dependsOn]);selected.delete(file.path);
       this.#selected.set(file.path,selected);
@@ -89,11 +103,13 @@ export class RepositoryDiscovery implements SwarmTaskControl {
     return ids;
   }
   dependencies():readonly {consumer:string;provider:string}[]{return [...this.#edges.values()];}
-  contextIds(_kernel:SwarmKernel,target:string):readonly string[] {
+  contextIds(kernel:SwarmKernel,target:string):readonly string[] {
     if(this.#targets.has(target)){
       const selected=this.closure([target,...(this.#selected.get(target)??[])]);selected.delete(target);this.#selected.set(target,selected);
     }
-    return [...new Set([target,REPO_GOAL,REPO_GUIDANCE,...(this.instructions.has(target)?[this.instructions.get(target)!]:[]),...(this.#selected.get(target)??[])])];
+    for(const work of kernel.pending())if(work.consumer===target && work.provider.startsWith(RECOVERY_PREFIX))
+      this.#feedbackReads.get(target)?.add(work.provider);
+    return [...new Set([target,REPO_GOAL,REPO_GUIDANCE,...(this.#feedbackReads.get(target)??[]),...(this.instructions.has(target)?[this.instructions.get(target)!]:[]),...(this.#selected.get(target)??[])])];
   }
   instruction(_target:string):string {
     return `Choose one action: kind="write" to replace your assigned file, kind="read" to request public paths in a separate call, or kind="uncertain" to record missing information. Return all fields {kind,content,paths,observed,missing,hypothesis,note}; unused strings must be "" and unused arrays []. A read request changes no files; requested contents arrive in the NEXT separately metered call. Exact wire shapes by action:
@@ -103,7 +119,7 @@ UNCERTAIN: {"kind":"uncertain","content":"","paths":[],"observed":["<observation
 A write MUST NOT put its target in paths. On write/read, observed and missing MUST be [] and hypothesis MUST be "". Put explanatory prose only in note. Current Local files are already delivered. A read request may name at most ${this.#snapshot.task.discovery!.maxPathsPerRead} paths; do not request the whole catalog when it exceeds that limit. Never claim a requested file was read before delivery. Public catalog (names only): ${JSON.stringify([...this.#public])}. No tools or upper consultation. ${this.#snapshot.task.discovery!.mode==='static'?'Additional model read requests are disabled in static mode.':''}`;
   }
   private additionalBytes(target:string,context:Checkout):number {
-    return [...(this.#selected.get(target)??[])].filter(p=>!this.#snapshot.task.context.includes(p)).reduce((n,p)=>n+Buffer.byteLength(context.contents[p]!),0);
+    return [...(this.#selected.get(target)??[]),...(this.#feedbackReads.get(target)??[])].filter(p=>!this.#snapshot.task.context.includes(p)).reduce((n,p)=>n+Buffer.byteLength(context.contents[p]!),0);
   }
   beforeCall(target:string,context:Checkout):void {
     if((this.#deliveredBytes.get(target)??0)+this.additionalBytes(target,context)>this.#snapshot.task.discovery!.maxDeliveredBytes){
@@ -114,7 +130,7 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
   delivered(kernel:SwarmKernel,target:string,context:Checkout,callId:string):void {
     if(!this.#targets.has(target))return;
     this.#deliveredBytes.set(target,(this.#deliveredBytes.get(target)??0)+this.additionalBytes(target,context));
-    for(const path of this.#selected.get(target)??[]) {
+    for(const path of [...(this.#selected.get(target)??[]),...(this.#feedbackReads.get(target)??[])]) {
       const stamp=context.reads[path]!;
       this.#deliveries.push({callId,target,path,stamp,sha256:hash(context.contents[path]!),bytes:Buffer.byteLength(context.contents[path]!)});
       this.#evidence.push({consumer:target,provider:path,source:'delivered-read',evidenceId:callId,consumerStamp:context.reads[target]!,providerStamp:stamp,sourceHash:hash(context.contents[path]!)});
@@ -177,12 +193,51 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
     // Future reads of accepted target contents still come from the kernel.
     for(const path of this.#selected.get(target)??[])if(context.contents[path]!==undefined)this.artifacts[path]=context.contents[path]!;
   }
+  /** A failed public consumer check is suspicion, never proof that its providers are wrong. */
+  async rejected(kernel:SwarmKernel,target:string,context:Checkout,callId:string,
+    failure:PublicCheckFailure,eligible:readonly string[]):Promise<void> {
+    const limit=this.#snapshot.task.recovery?.maxUpstreamRechecks;
+    if(limit===undefined)return;
+    this.#pendingScans.delete(target);
+    const entry={callId,target,context:context.id,selected:[] as string[],reason:'no-eligible-upstream',validations:[] as string[]};
+    this.#recoveries.push(entry);
+    // The failed candidate was evaluated against these delivered versions. An
+    // obsolete observation must not invalidate newer provider work.
+    if(Object.entries(context.reads).some(([id,stamp])=>{
+      const current=kernel.artifact(id);
+      return current.version!==stamp.version||current.evidenceEpoch!==stamp.evidenceEpoch;
+    })){entry.reason='stale-observation';return;}
+    const selected=selectUpstreamRechecks({target,targets:[...this.#targets],edges:this.dependencies(),
+      delivered:Object.keys(context.reads),eligible,rechecked:[...this.#rechecked],limit:limit-this.#rechecked.size});
+    if(!selected.length)return;
+    entry.selected=selected;entry.reason='public-local-check-failure';
+    // All observations are checked before the first mutation; this method runs
+    // in the scheduler's serialized commit lane. Frozen observations are JSON,
+    // not reverse dependencies from providers to the failed consumer.
+    for(const provider of selected){
+      const id=this.#recoveryArtifacts.get(provider)!;
+      const content=JSON.stringify({source:'public-local-check-failure',target,provider,callId,context:context.id,
+        reads:context.reads,commands:failure.commands,diagnostic:failure.diagnostic.slice(0,8192),
+        instruction:'A downstream PUBLIC local check failed. Recheck your assigned provider against its original contract using this observation. The fault may be in the consumer or another provider. Fix only your assigned file if needed, otherwise return its unchanged contents. Preserve acceptance requirements. This is an immutable historical observation, not a current dependency on the consumer.'});
+      const agent='host-upstream-recovery';
+      const checkout=kernel.checkout(agent,[id]);
+      const lease=kernel.grant(agent,[id],60000,'meta');
+      const candidate=kernel.prepare({id:`upstream-${callId}-${provider}`,agent,context:checkout.id,lease,
+        writes:{[id]:content},kind:'intervention',reason:`Public local check from ${target}, ${callId}`});
+      const verdict=await kernel.validate(candidate.id,contents=>({ok:contents[id]===content,errors:[]}));
+      if(!verdict.ok)throw new Error('host recovery artifact validation failed');
+      entry.validations.push(kernel.commit(candidate.id).validation);
+      this.#rechecked.add(provider);
+    }
+    kernel.deliverAll();
+  }
   observations():unknown {
     return this.#uncertainties.filter(u=>u.open).slice(-6).map(u=>({...u,observed:u.observed.slice(0,3),missing:u.missing.slice(0,3)}));
   }
   metrics(calls:readonly {role:string;target:string;contextBytes:number}[]) {
     const workers=calls.filter(c=>c.role==='worker');const sizes=workers.map(c=>c.contextBytes).sort((a,b)=>a-b);
     return {selectedTargets:this.#targets.size,activatedTargets:new Set(workers.map(c=>c.target)).size,initiallyActivatedTargets:this.activation.activeTargets.length,
+      upstreamRechecks:this.#rechecked.size,recoveryObservations:this.#recoveries.length,
       scanCount:this.scans.length,scannedFiles:this.scans.reduce((n,s)=>n+s.filesRead,0),scannedBytes:this.scans.reduce((n,s)=>n+s.bytesRead,0),scanDurationMs:this.scans.reduce((n,s)=>n+s.durationMs,0),
       contextBytes:{total:sizes.reduce((n,b)=>n+b,0),p95:sizes[Math.max(0,Math.ceil(sizes.length*0.95)-1)]??0,max:sizes.at(-1)??0},
       uniqueDeliveredDependencies:new Set(this.#deliveries.map(d=>d.path)).size,readRequests:this.#requests.length,
@@ -190,6 +245,7 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
       additionalDeliveredBytes:[...this.#deliveredBytes.values()].reduce((n,b)=>n+b,0)};
   }
   async save(directory:string):Promise<void> {
+    await writeFile(join(directory,'upstream-recovery.json'),JSON.stringify({format:1,enabled:!!this.#snapshot.task.recovery,maxUpstreamRechecks:this.#snapshot.task.recovery?.maxUpstreamRechecks??0,rechecked:[...this.#rechecked],observations:this.#recoveries},null,2)+'\n');
     await writeFile(join(directory,'activation.json'),JSON.stringify({format:1,...this.activation,limitations:['static-and-declared-context-impact-only','changed-paths-are-host-declared','final-oracle-still-covers-all-targets']},null,2)+'\n');
     await writeFile(join(directory,'dependency-evidence.json'),JSON.stringify({format:1,edges:this.dependencies(),evidence:this.#evidence,scans:this.scans},null,2)+'\n');
     await writeFile(join(directory,'read-deliveries.json'),JSON.stringify({format:1,requests:this.#requests,deliveries:this.#deliveries,additionalBytesByTarget:Object.fromEntries(this.#deliveredBytes)},null,2)+'\n');

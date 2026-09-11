@@ -62,3 +62,6 @@ Goの使用量は`runtime: opencode-go`とAPI形式を付けて記録する。Me
 mechanismのGo実行にはtoken予算が必須。Go subscriptionの枠をCodex creditやDeepSeek直接APIの価格へ換算しない。金銭の実請求額やGoの残り利用枠はtoken集計からはわからない。Go console側の追加残高利用設定も、この実装から変更しない。
 
 通常の`npm run check`は注入fetch/callerと固定fixtureを使い、実key・実課金を必要としない。実APIではGo経由のLunaで4条件・13callが成功した。[実行記録と未確認範囲](results/opencode-go.md)を参照。
+
+
+Go DeepSeekのthinkingは既定で`enabled`。repo CLIは`--go-thinking disabled`で過去条件を明示再現できる。Go adapterのtranscript.thinkingには送信した設定を保存する。Go以外の直接DeepSeek adapterにはこの既定変更を適用しない。過去の保存済みprofile・結果は変更しない。

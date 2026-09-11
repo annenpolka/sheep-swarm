@@ -32,6 +32,8 @@ test('repository dry profile reads the manifest but never executes checks or cre
   const p=await resolveCliProfile('repo',{repo:'.',task:'task.json',output:'run',runtime:'opencode-go','worker-model':'deepseek-flash','go-thinking':'disabled','max-calls':'12'},cwd);
   assert.equal(p.options.workerModel,'deepseek-flash');assert.equal(p.options.goThinking,'disabled');assert.equal(p.options.apply,false);
   assert.equal(p.limits.workerCalls,12);assert.equal(p.limits.metaCalls,2);assert.equal(p.outputDirectory,join(cwd,'run'));
+  const defaults=await resolveCliProfile('repo',{repo:'.',task:'task.json',runtime:'opencode-go','worker-model':'deepseek-flash'},cwd);
+  assert.equal(defaults.options.goThinking,'enabled');
   assert.deepEqual(await readdir(cwd),['task.json']);
   await assert.rejects(resolveCliProfile('repo',{repo:'.',task:'task.json',runtime:'docker-agent'},cwd));
 });

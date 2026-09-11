@@ -11,7 +11,7 @@ const files={'b.mjs':'export const value=0;', 'public.txt':'PUBLIC','check.mjs':
 const response=(value=42):SingleCaller=>async o=>({result:{files:[{path:'a.mjs',content:`export const value=${value};`},{path:'b.mjs',content:'export const value=43;'}],note:''},requestedModel:o.model,usage:[{event:{},inputTokens:20,outputTokens:10}],transcript:{events:[],usage:[{event:{},inputTokens:20,outputTokens:10}],usageCompleteness:'complete',requestedModel:o.model,effectiveModelEvidence:o.model,stdout:'',stderr:'',exitCode:0,signal:null,timedOut:false,cancelled:false,durationMs:1}});
 test('single baseline edits multiple files atomically without leaking hidden oracle and keeps source intact',async t=>{
  const root=await repository(files);t.after(()=>rm(root,{recursive:true,force:true}));let calls=0;
- const run=await runSingleRepository({...config,repository:root,task:spec,outputDirectory:join(root,'run')},async o=>{calls++;assert.ok(!o.prompt.includes('HIDDEN_MARKER'));assert.match(o.prompt,/PUBLIC/);return response()(o);});
+ const run=await runSingleRepository({...config,repository:root,task:spec,outputDirectory:join(root,'run')},async o=>{calls++;assert.equal(o.thinking,'enabled');assert.ok(!o.prompt.includes('HIDDEN_MARKER'));assert.match(o.prompt,/PUBLIC/);return response()(o);});
  assert.equal(run.success,true);assert.equal(calls,1);assert.equal(run.termination,'accepted');assert.ok(run.completionMs!>0);assert.equal(await readFile(join(root,'b.mjs'),'utf8'),files['b.mjs']);
 });
 test('single baseline never retries hidden quality failures and never scores them as completion',async t=>{

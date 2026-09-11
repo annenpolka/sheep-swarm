@@ -174,3 +174,8 @@ CLIの選択、runtimeと予算、保存証拠の確認、durable再開、truste
 並列runのresume、任意の依存探索、ファイル削除/rename、悪意あるcodeのOS隔離、大規模repoの実用性と費用比較は未対応・未実証。新repo経路はskillへ反映したが、既存5ラウンドのempirical評価を新版のblank-slate評価として流用しない。
 
 PR #4の独立レビューでは、実processと注入callerで4件の不具合を再現し、検査終了時のgroup回収・親Git探索の停止・検査基盤障害での受付停止・局所診断の引継ぎを修正した。元の実走証拠と429検査の記録は変更せず、[追加検証](results/repository-runner-astra-review.md)へ分離した。
+
+
+2026-09-11の追加指示に従い、主モデルopencode-go/deepseek-flashのthinkingは今後有効にする。比較は単体とSheepを同じ設定に揃え、過去のdisabled系列とは分ける。上流再検査はtask v2のopt-inとして実装し、公開local checkの失敗と配信済み版だけを起動根拠にする。再検査はproviderごと1回・総数上限内で、試行予算をリセットしない。完了条件は反例の回復、健全な上流・非公開失敗・古い証拠・上限の検証、thinking有効の実走と使用量保存。[詳細](execplan-upstream-recovery.md)。
+
+計測優先の追加指示により、今後の比較は1call出力64,000 tokens、1条件総1,000,000 tokens、予約100,000 tokensとする。通信timeoutは600秒に広げ、task全体の時間締切や固定時間採点は設けない。旧上限の実測は別条件として保持する。

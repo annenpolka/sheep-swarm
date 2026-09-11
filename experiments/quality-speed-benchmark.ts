@@ -14,7 +14,7 @@ import {prepareQualitySpeedFixture} from '../scripts/quality-speed-fixture.mjs';
 import {referenceContents} from '../scripts/quality-speed-reference.mjs';
 const save=async(p:string,v:unknown)=>writeFile(p,JSON.stringify(v,null,2)+'\n');
 const hash=(s:Uint8Array|string)=>createHash('sha256').update(s).digest('hex');
-const limits={maxCalls:12,maxTokens:120000,reserveTokensPerCall:20000,maxTokensPerCall:8000,timeoutMs:120000};
+const limits={maxCalls:12,maxTokens:1000000,reserveTokensPerCall:100000,maxTokensPerCall:64000,timeoutMs:600000};
 
 export async function runQualitySpeedBenchmark(directory:string,priorSeriesPath?:string) {
  const root=resolve(directory);await mkdir(root,{recursive:false});
@@ -24,7 +24,7 @@ export async function runQualitySpeedBenchmark(directory:string,priorSeriesPath?
  const runtimePaths=[...(await readdir('src')).filter(p=>p.endsWith('.ts')).map(p=>`src/${p}`),'experiments/repository-patch.ts','experiments/repository-single.ts','experiments/quality-speed-benchmark.ts','scripts/quality-speed-fixture.mjs','scripts/quality-speed-reference.mjs','scripts/quality-speed-benchmark.ts','package.json','package-lock.json'];
  const runtimeHashes=Object.fromEntries(await Promise.all(runtimePaths.map(async p=>[p,hash(await readFile(p))])));
  const assertRuntime=async()=>{for(const [p,h] of Object.entries(runtimeHashes))if(hash(await readFile(p))!==h)throw new Error(`runtime drift: ${p}`);};
- const profile={format:1,runtime:'opencode-go',model:'deepseek-flash',thinking:'disabled',upperCalls:0,limits,taskDeadlineMs:null,scoring:'quality and elapsed duration, no fixed-time score',single:{workers:1,concurrency:1,atomicMultiFile:true,responseFormat:'named'},sheep:{workers:4,concurrency:2,activation:'all',readPolicy:'existing static+reads'},priorObservedTokens,priorSeriesPath:priorSeriesPath??null,priorSeriesHash:priorSeriesPath?hash(await readFile(priorSeriesPath)):null,totalTokenAdmissionCap:1440000,fixtures:['independent-0','independent-1','independent-2','propagation-0','propagation-1','propagation-2'],order:'alternate single-first and sheep-first per fixture',baseCommit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),runtimeHashes};
+ const profile={format:1,runtime:'opencode-go',model:'deepseek-flash',thinking:'enabled',upperCalls:0,limits,taskDeadlineMs:null,scoring:'quality and elapsed duration, no fixed-time score',single:{workers:1,concurrency:1,atomicMultiFile:true,responseFormat:'named'},sheep:{workers:4,concurrency:2,activation:'all',readPolicy:'existing static+reads'},priorObservedTokens,priorSeriesPath:priorSeriesPath??null,priorSeriesHash:priorSeriesPath?hash(await readFile(priorSeriesPath)):null,totalTokenAdmissionCap:12000000,fixtures:['independent-0','independent-1','independent-2','propagation-0','propagation-1','propagation-2'],order:'alternate single-first and sheep-first per fixture',baseCommit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),runtimeHashes};
  await save(join(root,'profile.json'),profile);
  const prepared=[];const prepStarted=performance.now();
  for(const family of ['independent','propagation'])for(const variant of [0,1,2]) {
@@ -52,7 +52,7 @@ export async function runQualitySpeedBenchmark(directory:string,priorSeriesPath?
   const outputDirectory=join(root,`${fixture.name}-${method}`),startedAt=new Date().toISOString(),started=performance.now();
   try {
    const snapshot=await captureRepository(fixture.repository,fixture.task);
-   const run=method==='single'?await runSingleRepository({...limits,repository:fixture.repository,task:fixture.task,outputDirectory}):await runRepository({...limits,repository:fixture.repository,task:fixture.task,outputDirectory,runtime:'opencode-go',workerModel:'deepseek-flash',goThinking:'disabled',workers:4,concurrency:2,maxMetaCalls:0,maxRounds:24});
+   const run=method==='single'?await runSingleRepository({...limits,repository:fixture.repository,task:fixture.task,outputDirectory}):await runRepository({...limits,repository:fixture.repository,task:fixture.task,outputDirectory,runtime:'opencode-go',workerModel:'deepseek-flash',goThinking:'enabled',workers:4,concurrency:2,maxMetaCalls:0,maxRounds:24});
    const artifacts=JSON.parse(await readFile(join(outputDirectory,'artifacts.json'),'utf8')) as Record<string,string>;
    const independent=await runRepoChecks(snapshot,artifacts,[...fixture.task.files.flatMap(f=>f.checks),...fixture.task.checks],join(root,`${fixture.name}-${method}-independent`));
    const sourceStatus=execFileSync('git',['status','--porcelain'],{cwd:fixture.repository,encoding:'utf8'});

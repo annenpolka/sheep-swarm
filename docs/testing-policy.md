@@ -163,3 +163,6 @@ Astraの独立レビューで固定した反例も通常gateに含める。混�
 `repository-patch.test.ts`と`quality-speed-*.test.ts`は複数file原子的提案、書込scope、未知usage停止、hidden oracleの非フィードバック、固定fixtureのbaseline/reference/変異を検査する。実Go呼出しは通常gateの外で行う。
 
 `quality-speed-upstream-failure.test.ts`は、公開局所検査を通った誤providerが再起動されず、正しいconsumer候補を5回返しても失敗する現行限界を固定する。単体/Sheepの[実結果](results/deepseek-quality-speed.md)とは別の注入試験である。後続の回復実装でこの反例を解消する際も、公開検査とhidden oracleの境界を保持する。
+
+
+上流再検査では従来の反例を回復無効のまま保持する。有効時の回復、直らないprovider、健全なproviderのnoop、未起動provider、古い証拠、回数上限、非公開final失敗と基盤障害での再起動抑止を確認する。実モデル比較のfixture/公開check/final oracle/runtimeを実行前にhashで固定し、thinking有効のprofileとreceipt、実所要時間、失敗時completionMs=nullを保存する。既存のdisabled結果を新しい設定の結果に読み替えない。

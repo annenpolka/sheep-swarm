@@ -135,3 +135,12 @@ task v2のactivation.changedPathsはhost入力。既知graphの逆向きclosure�
 ## MoonBit repository discovery
 
 `moonbit-manifest.ts`が新旧設定の宣言的subsetを純粋解析し、`repo-moonbit.ts`がmodule/source directoryとpackage importをpublic catalog内で解決する。`.mbt` consumerからmodule/package設定・import先sourceへのedgeを張り、書換targetだけが同一packageのreadonly companionsへedgeを持つ。複数writableを同一packageへ置く場合は拒否する。これによりpackageの相互可視性をkernelの循環writeへ変換しない。test/wbtest importも保守的に合併する。新形式を優先し、snapshot内の該当package全sourceとmetadataがpublic範囲にあることを事前確認する。Moonやbuild scriptは探索中に実行しない。外部依存・生成・条件付き等は未対応issue、意味・構文・型の受入はhost checkが担う。[詳細](moonbit-repositories.md)。
+
+
+## 公開失敗による上流再検査
+
+task v2の`recovery.maxUpstreamRechecks`（1..64、省略で無効）は、局所checkが通常終了で不合格となったときに、配信済みの上流targetを再検査するopt-in。selectorは依存先から順に選び、未配信・readonly・pending・試行上限済み・再検査済みtargetを除く。全runの総数と各provider 1回までの上限を併用し、通常のattempt/call/token/read byte上限をリセットしない。
+
+hostはfailed callのcheckout stampを再確認し、call/context/read版/公開command/診断をJSONの観測として保存する。各provider専用の内部artifactへ、hostの限定lease・prepare・validate・commitを通して記録する。host checkoutはその内部artifactだけを読むので、上流から下流への逆依存を作らない。対象providerと通常の下流へkernelの変更通知を流し、古い作業の証拠を失効させる。consumerは必要な内部artifactも配信してobligationを解消する。診断は過去の観測でありproviderの不良確定ではない。workerは元の担当fileだけを直すか、そのまま返す。
+
+最終oracle、model claim、transport失敗、古いcheckout、check基盤障害・timeout・signal、候補の構造変更はこの起動理由にならない。公開検査に表れない誤りは引き続きfinalで失敗し、その診断を修復へ戻さない。現時点は根本原因の判定器ではなく、有限の再検査policyである。上位モデルは呼ばず、hostによる条件更新の件数と上位call数は別に記録する。

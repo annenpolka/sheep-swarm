@@ -239,3 +239,8 @@ Authority: Human stated (2026-09-11)
 「低費用はモデル選択である程度達成。品質と速度が問題」「主ベンチマークはdeepseek-flash」「固定時間はやめ、どれだけかかるか測る」を採用した。PR #6を基準に、まず独立3targetと依存連鎖3targetで単体/現行Sheepを比較する。完了はhidden oracleと独立再検査、時間は実行開始から元repo不変確認まで。準備・親レビューは別会計。詳細は[計画](../docs/execplan-quality-speed.md)。
 
 Validation: 初回の形式負担を保全し、対象名固定系列は単体5/6・Sheep4/6成功。固定時間採点なし、非成功のcompletionはnull。496テストと全24runのreceipt/候補/元repoを監査した。次は公開下流失敗から受理済み上流を再検査する経路を固定反例で検証する。[証拠](../docs/results/deepseek-quality-speed.md)。
+
+
+2026-09-11の追加指示に従い、主モデルopencode-go/deepseek-flashのthinkingは今後有効にする。比較は単体とSheepを同じ設定に揃え、過去のdisabled系列とは分ける。上流再検査はtask v2のopt-inとして実装し、公開local checkの失敗と配信済み版だけを起動根拠にする。再検査はproviderごと1回・総数上限内で、試行予算をリセットしない。完了条件は反例の回復、健全な上流・非公開失敗・古い証拠・上限の検証、thinking有効の実走と使用量保存。[詳細](../docs/execplan-upstream-recovery.md)。
+
+計測優先の追加指示により、今後の比較は1call出力64,000 tokens、1条件総1,000,000 tokens、予約100,000 tokensとする。通信timeoutは600秒に広げ、task全体の時間締切や固定時間採点は設けない。旧上限の実測は別条件として保持する。

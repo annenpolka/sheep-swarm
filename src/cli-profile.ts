@@ -249,7 +249,7 @@ async function resolveRepo(values: CliValues, cwd: string, runtimes: ResolvedRol
     workers, concurrency, maxCalls, maxMetaCalls, maxRounds, timeoutMs,
     maxTokensPerCall, maxTokens, reserveTokensPerCall,
     runtime: runtimes.runtime, metaRuntime: runtimes.metaRuntime, workerModel: runtimes.workerModel, metaModel: runtimes.metaModel,
-    ...(goThinkingRaw === undefined ? {} : { goThinking: goThinkingRaw as "enabled" | "disabled" }),
+    ...(goThinkingRaw === undefined ? (runtimes.runtime === "opencode-go" && runtimes.workerModel.startsWith("deepseek-") ? { goThinking: "enabled" as const } : {}) : { goThinking: goThinkingRaw as "enabled" | "disabled" }),
   };
   return {
     command: "repo",

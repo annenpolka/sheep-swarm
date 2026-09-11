@@ -13,7 +13,7 @@ export interface OpenCodeGoOptions extends CodexCallOptions {
   readonly baseUrl?: string;
   readonly maxTokens?: number;
   readonly fetch?: typeof globalThis.fetch;
-  /** Explicit DeepSeek thinking control; omission keeps the provider default. */
+  /** Explicit DeepSeek thinking control; omission enables thinking for Go DeepSeek. */
   readonly thinking?: "enabled" | "disabled";
 }
 export interface OpenCodeGoTranscript extends CodexTranscript {
@@ -24,6 +24,7 @@ export interface OpenCodeGoTranscript extends CodexTranscript {
   usageCompleteness: "complete" | "partial-or-unknown";
   rawUsage: unknown;
   sessionId: string;
+  thinking: "enabled" | "disabled" | null;
 }
 export type OpenCodeGoResult<T = unknown> = CodexCallResult<T> & { transcript: OpenCodeGoTranscript };
 
@@ -87,6 +88,7 @@ export async function callOpenCodeGo<T = unknown>(options: OpenCodeGoOptions): P
   if (options.thinking !== undefined &&
     ((options.thinking !== "enabled" && options.thinking !== "disabled") || !options.model.startsWith("deepseek-")))
     throw new RangeError("thinking must be enabled or disabled and requires an OpenCode Go DeepSeek model");
+  const thinking = options.thinking ?? (options.model.startsWith("deepseek-") ? "enabled" : undefined);
   const format = CATALOG[options.model]!;
   const base = resolveBase(options.baseUrl);
   const apiKey = options.apiKey ?? process.env.OPENCODE_GO_API_KEY;
@@ -105,7 +107,7 @@ export async function callOpenCodeGo<T = unknown>(options: OpenCodeGoOptions): P
   let usage: CodexUsage[] = [];
   let complete = false, bodyText = "", timedOut = false, cancelled = false;
   const transcript = (): OpenCodeGoTranscript => ({
-    runtime: "opencode-go", apiFormat: format, httpStatus: status, responseModel,
+    runtime: "opencode-go", apiFormat: format, httpStatus: status, responseModel, thinking: thinking ?? null,
     usageCompleteness: complete ? "complete" : "partial-or-unknown",
     rawUsage: safeValue(rawUsage, apiKey), sessionId, events: [], usage,
     requestedModel: options.model, effectiveModelEvidence: responseModel,
@@ -127,7 +129,7 @@ export async function callOpenCodeGo<T = unknown>(options: OpenCodeGoOptions): P
       payload = { model: options.model, messages: [
         { role: "system", content: instruction }, { role: "user", content: options.prompt },
       ], response_format: { type: "json_object" }, stream: false, max_tokens: options.maxTokens,
-      ...(options.thinking === undefined ? {} : { thinking: { type: options.thinking } }) };
+      ...(thinking === undefined ? {} : { thinking: { type: thinking } }) };
     } else if (format === "responses") {
       payload = { model: options.model, input: [
         { role: "system", content: [{ type: "input_text", text: instruction }] },

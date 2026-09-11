@@ -147,7 +147,7 @@ function parseFileTask(value: unknown, where: string): RepoFileTask {
 
 export function parseRepoTask(value: unknown): RepoTask {
   if (!isPlainObject(value)) throw new Error('repository task must be an object');
-  rejectUnknownKeys(value, ['version', 'goal', 'files', 'context', 'protected', 'checks', ...(value.version === 2 ? ['discovery','activation'] : [])], 'repository task');
+  rejectUnknownKeys(value, ['version', 'goal', 'files', 'context', 'protected', 'checks', ...(value.version === 2 ? ['discovery','activation','recovery'] : [])], 'repository task');
   if (!Object.prototype.hasOwnProperty.call(value, 'version')) throw new Error('repository task.version is required');
   if (value.version !== 1 && value.version !== 2) throw new Error('repository task.version must be 1 or 2');
   if (!Object.prototype.hasOwnProperty.call(value, 'goal')) throw new Error('repository task.goal is required');
@@ -227,6 +227,15 @@ export function parseRepoTask(value: unknown): RepoTask {
     for(const path of changedPaths)if(!publicPaths.has(path))throw new Error('activation path is outside public scope: '+path);
     activation={changedPaths};
   }
-  return {version:2,...base,...(activation?{activation}:{}),discovery:{mode:d.mode,readable,maxPathsPerRead,
+  let recovery: {maxUpstreamRechecks: number} | undefined;
+  if (value.recovery !== undefined) {
+    if (!isPlainObject(value.recovery)) throw new Error('recovery must be an object');
+    rejectUnknownKeys(value.recovery, ['maxUpstreamRechecks'], 'recovery');
+    const limit = value.recovery.maxUpstreamRechecks;
+    if (typeof limit !== 'number' || !Number.isSafeInteger(limit) || limit < 1 || limit > MAX_TARGETS)
+      throw new Error('recovery.maxUpstreamRechecks must be from 1 to 64');
+    recovery = {maxUpstreamRechecks: limit};
+  }
+  return {version:2,...base,...(recovery?{recovery}:{}),...(activation?{activation}:{}),discovery:{mode:d.mode,readable,maxPathsPerRead,
     maxReadCalls:bounded(d.maxReadCalls,2,32),maxDeliveredBytes:bounded(d.maxDeliveredBytes,65536,2*1024*1024)}};
 }

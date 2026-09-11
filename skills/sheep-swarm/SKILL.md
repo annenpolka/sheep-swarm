@@ -29,13 +29,13 @@ Use the separate `repo` entry point for real coding work. Read the target reposi
 
 ```sh
 npm run repo -- --repo /absolute/project --task /absolute/task.json \
-  --runtime opencode-go --worker-model deepseek-flash --go-thinking disabled \
+  --runtime opencode-go --worker-model deepseek-flash --go-thinking enabled \
   --workers 4 --concurrency 2 --max-calls 12 --max-meta-calls 0 \
   --max-tokens 200000 --reserve-tokens 30000 --max-tokens-per-call 16000 \
   --output .sheep/new-repository-run
 ```
 
-This profile keeps upper calls off for the explicitly selected Go swarm. For normal upper intervention, configure its runtime/model and cap explicitly. `--go-thinking` controls the Go DeepSeek worker only; omission leaves the provider default. It is a `repo` flag, not a flag on the experiment CLIs. No credential-store auto-import: use an already configured `OPENCODE_GO_API_KEY` or explicitly authorized in-memory loading; never print or persist the key.
+This profile keeps upper calls off for the explicitly selected Go swarm. For normal upper intervention, configure its runtime/model and cap explicitly. `--go-thinking` controls the Go DeepSeek worker only; omission enables thinking for Go DeepSeek. It is a `repo` flag, not a flag on the experiment CLIs. No credential-store auto-import: use an already configured `OPENCODE_GO_API_KEY` or explicitly authorized in-memory loading; never print or persist the key.
 
 The command runs from the sheep-swarm checkout. From another directory invoke `node /absolute/sheep-swarm/src/repo-cli.ts` with the same flags. `--help` makes no calls. Candidate-only is the default; add `--apply` when the requested coding task authorizes writing accepted changes. This applies only after final acceptance, settled known usage, and source drift checks. Do not restart a completed candidate run just to apply it; review its selected artifacts against the unchanged source and use the authorized edit workflow.
 

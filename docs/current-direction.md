@@ -156,3 +156,8 @@ activationはhostのchangedPathsと既知の静的/明示依存に限定する�
 PR #6のf04b191を基準版に固定し、最初はDeepSeek Flash単体と現行Sheepを同じrepo課題で比較する。[計画](execplan-quality-speed.md)。単体は全targetを1callで変更可能。公開検査だけを修復へ返し、非公開oracleは最後の採点に限定する。独立課題と依存伝播課題の小規模対照から、手戻りと待ちの原因を調べる。現行Sheepのcontext配信・schedulerを含む方式全体の比較であり、activation単独の効果とは区別する。Manager/上位介入、progressive activation、read wideningはこの基準値の後へ置く。
 
 初期の[品質・実所要時間比較](results/deepseek-quality-speed.md)を完了した。対象名固定系列は単体5/6・Sheep4/6成功で、一般的なSheep優位は確認できていない。公開下流テストが上流の誤りを示しても、下流だけ5回修復する固定反例が得られた。次の実装は公開証拠に基づく上流再検査・再起動を優先し、その後にManager/上位介入の比較へ進む。
+
+
+2026-09-11の追加指示に従い、主モデルopencode-go/deepseek-flashのthinkingは今後有効にする。比較は単体とSheepを同じ設定に揃え、過去のdisabled系列とは分ける。上流再検査はtask v2のopt-inとして実装し、公開local checkの失敗と配信済み版だけを起動根拠にする。再検査はproviderごと1回・総数上限内で、試行予算をリセットしない。完了条件は反例の回復、健全な上流・非公開失敗・古い証拠・上限の検証、thinking有効の実走と使用量保存。[詳細](execplan-upstream-recovery.md)。
+
+計測優先の追加指示により、今後の比較は1call出力64,000 tokens、1条件総1,000,000 tokens、予約100,000 tokensとする。通信timeoutは600秒に広げ、task全体の時間締切や固定時間採点は設けない。旧上限の実測は別条件として保持する。

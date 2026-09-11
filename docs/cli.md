@@ -33,3 +33,6 @@ repo/compareはtoken予算、mechanismは明示したcreditsまたはtokens、sw
 `durable --resume --dry-run`は、元DBとWALの安定したbytesを一時directoryへコピーしてjournalを検証し、コピーを削除する。元DBを開いてWAL/SHMを作ることはなく、古い`result.json`から設定を推定しない。`resumeState`は保存済み世代・usage lockを表示する。実行時にもrunnerが設定一致を再検査する。稼働中のDBの原子的なlive backupは保証せず、読取中にbytesが変われば再試行を要求する。
 
 補助実験・sandbox・費用見積は従来のnpm scriptに残る。CLIの整理によって、一般repoにDocker隔離や並列resumeが追加されたわけではない。
+
+
+repoの`--go-thinking enabled|disabled`はOpenCode GoのDeepSeek workerに限る。省略時は`enabled`となり、dry-runのoptionsにも明示される。上位のGo DeepSeekはadapter側の既定で有効になる。
