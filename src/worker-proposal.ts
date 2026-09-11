@@ -180,3 +180,11 @@ export function parseWorkerResponse(value:unknown): RepoWorkerProposal {
   }
   throw new Error('invalid worker action');
 }
+
+/** Opt-in transport: a model selects a host-authored probe, never supplies executable code. */
+export function parseProbeResponse(value:unknown):{kind:'diagnose';id:string;note:string}|RepoWorkerProposal {
+  if(!isPlainObject(value)||value.kind!=='diagnose')return parseWorkerResponse(value);
+  const action=parseWorkerResponse({...value,kind:'read'});
+  if(action.kind!=='read'||action.paths.length!==1||!/^[a-zA-Z0-9_-]{1,64}$/.test(action.paths[0]!))throw new Error('diagnose requires one public probe id');
+  return {kind:'diagnose',id:action.paths[0]!,note:action.note};
+}

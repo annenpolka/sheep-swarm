@@ -1,4 +1,4 @@
-import type { RepoCommand, RepoFileTask, RepoTask } from './repo-types.ts';
+import type { RepoCommand, RepoFileTask, RepoTask, RepoPublicProbes } from './repo-types.ts';
 
 const MAX_TARGETS = 64;
 const MAX_PATHS = 256;
@@ -227,16 +227,41 @@ export function parseRepoTask(value: unknown): RepoTask {
     for(const path of changedPaths)if(!publicPaths.has(path))throw new Error('activation path is outside public scope: '+path);
     activation={changedPaths};
   }
-  let recovery: {maxUpstreamRechecks: number; review: 'focused' | 'contract'} | undefined;
+  let recovery: {maxUpstreamRechecks: number; review: 'focused' | 'contract'; publicProbes?:RepoPublicProbes} | undefined;
   if (value.recovery !== undefined) {
     if (!isPlainObject(value.recovery)) throw new Error('recovery must be an object');
-    rejectUnknownKeys(value.recovery, ['maxUpstreamRechecks','review'], 'recovery');
+    rejectUnknownKeys(value.recovery, ['maxUpstreamRechecks','review','publicProbes'], 'recovery');
     const limit = value.recovery.maxUpstreamRechecks;
     if (typeof limit !== 'number' || !Number.isSafeInteger(limit) || limit < 1 || limit > MAX_TARGETS)
       throw new Error('recovery.maxUpstreamRechecks must be from 1 to 64');
     const review = value.recovery.review === undefined ? 'focused' : value.recovery.review;
     if (review !== 'focused' && review !== 'contract') throw new Error('recovery.review must be focused or contract');
-    recovery = {maxUpstreamRechecks: limit, review};
+    let publicProbes:RepoPublicProbes|undefined;
+    if(value.recovery.publicProbes!==undefined){
+      const p=value.recovery.publicProbes;
+      if(!isPlainObject(p))throw new Error('publicProbes must be an object');
+      rejectUnknownKeys(p,['maxRequests','maxRechecks','catalog'],'publicProbes');
+      for(const key of ['maxRequests','maxRechecks'] as const)
+        if(typeof p[key]!=='number'||!Number.isSafeInteger(p[key])||p[key]<0||p[key]>64)throw new Error('invalid publicProbes limit');
+      const catalog=requireBoundedArray(p.catalog,'publicProbes.catalog',16),ids=new Set<string>();
+      if(!catalog.length)throw new Error('publicProbes.catalog must not be empty');
+      const publicPaths=new Set([...context,...readable]);
+      const probes=catalog.map(raw=>{
+        if(!isPlainObject(raw))throw new Error('invalid public probe');
+        rejectUnknownKeys(raw,['id','provider','description','paths','check'],'public probe');
+        const id=requireString(raw.id,'probe.id',64);
+        if(!/^[a-zA-Z0-9_-]+$/.test(id)||ids.has(id))throw new Error('invalid or duplicate probe id');
+        ids.add(id);
+        const provider=safeRepoPath(raw.provider);
+        if(!targetPaths.has(provider))throw new Error('probe provider must be a target');
+        const paths=parsePathList(raw.paths,'probe.paths');
+        if(!paths.includes(provider))throw new Error('probe paths must include provider');
+        for(const path of paths)if(path!==provider&&(targetPaths.has(path)||!publicPaths.has(path)))throw new Error('probe inputs must be readonly public paths');
+        return {id,provider,description:requireString(raw.description,'probe.description',4096),paths,check:parseCommand(raw.check,'probe.check')};
+      });
+      publicProbes={maxRequests:p.maxRequests as number,maxRechecks:p.maxRechecks as number,catalog:probes};
+    }
+    recovery = {maxUpstreamRechecks: limit, review,...(publicProbes?{publicProbes}:{})};
   }
   return {version:2,...base,...(recovery?{recovery}:{}),...(activation?{activation}:{}),discovery:{mode:d.mode,readable,maxPathsPerRead,
     maxReadCalls:bounded(d.maxReadCalls,2,32),maxDeliveredBytes:bounded(d.maxDeliveredBytes,65536,2*1024*1024)}};

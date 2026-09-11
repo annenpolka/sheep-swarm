@@ -17,6 +17,13 @@ interface RepoTaskBase {
   readonly protected: readonly string[];
   readonly checks: readonly RepoCommand[];
 }
+export interface RepoPublicProbe {
+  readonly id:string; readonly provider:string; readonly description:string;
+  readonly paths:readonly string[]; readonly check:RepoCommand;
+}
+export interface RepoPublicProbes {
+  readonly maxRequests:number; readonly maxRechecks:number; readonly catalog:readonly RepoPublicProbe[];
+}
 export interface RepoDiscoveryOptions {
   readonly mode: 'static' | 'static+reads';
   readonly readable: readonly string[];
@@ -26,7 +33,7 @@ export interface RepoDiscoveryOptions {
 }
 export type RepoTask = RepoTaskBase & (
   | {readonly version: 1; readonly discovery?: never; readonly activation?: never; readonly recovery?: never}
-  | {readonly version: 2; readonly recovery?: {readonly maxUpstreamRechecks: number; readonly review?: 'focused' | 'contract'}; readonly discovery: RepoDiscoveryOptions; readonly activation?: {readonly changedPaths: readonly string[]}}
+  | {readonly version: 2; readonly recovery?: {readonly maxUpstreamRechecks: number; readonly review?: 'focused' | 'contract'; readonly publicProbes?: RepoPublicProbes}; readonly discovery: RepoDiscoveryOptions; readonly activation?: {readonly changedPaths: readonly string[]}}
 );
 export interface RepoEntry { readonly bytes: Buffer; readonly mode: number }
 export interface RepoSnapshot {

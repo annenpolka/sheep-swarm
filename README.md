@@ -156,3 +156,6 @@ npm run mechanism:experiment -- --budget-mode tokens --runtime deepseek --worker
 ## License
 
 [MIT](LICENSE)
+
+
+task v2に、workerが公開probeのIDを選び、hostで失敗を再現して上流へ渡すopt-in経路を追加した。通常再検査後の追加回復、誤診・古い版・重複・検査障害の拒否を検証した。[使い方と境界](docs/public-probes.md)、[9条件の実測](docs/results/public-probes.md)。各方式3/3成功だが品質・速度の改善は確認できず、既定では有効化しない。

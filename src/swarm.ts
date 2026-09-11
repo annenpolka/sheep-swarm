@@ -36,8 +36,8 @@ export interface SwarmTaskControl {
   beforeCall(target:string,context:Checkout):void;
   observations():unknown;
   delivered(kernel: SwarmKernel, target: string, context: Checkout, callId: string): void;
-  propose(kernel: SwarmKernel, target: string, context: Checkout, callId: string, value: unknown): Promise<
-    {writes: Record<string,string>} | {deferred: string; blocked: boolean}>;
+  propose(kernel: SwarmKernel, target: string, context: Checkout, callId: string, value: unknown, eligible?: readonly string[]): Promise<
+    {writes: Record<string,string>} | {deferred: string; blocked: boolean; executionFailure?: true}>;
   committed(target: string, context: Checkout, validation: string): void;
   rejected?(kernel: SwarmKernel, target: string, context: Checkout, callId: string,
     failure: PublicCheckFailure, eligible: readonly string[]): Promise<void>;
@@ -258,8 +258,12 @@ export async function runSwarm(options: SwarmOptions,
       const queuedAt = Date.now();
       await serialize(async () => {
         record.commitWaitMs = Date.now() - queuedAt;
-        const action = task?.control ? await task.control.propose(kernel,target,context,record.id,response) : {writes};
+        const pendingTargets = new Set(kernel.pending().map(item => item.consumer));
+        const eligible = !unknownModelUsage && !verificationUnavailable && !runtimeCleanupFailed
+          ? fixture.writableIds.filter(id => !pendingTargets.has(id) && (attempts.get(id) ?? 0) < (task?.control?.maxAttempts ?? 3)) : [];
+        const action = task?.control ? await task.control.propose(kernel,target,context,record.id,response,eligible) : {writes};
         if ('deferred' in action) {
+          if(action.executionFailure) verificationUnavailable = true;
           record.outcome=action.blocked?'read-blocked':'deferred';record.errors=[action.deferred];
           recordFailure(target,record.errors);
           if(action.blocked) attempts.set(target,task!.control!.maxAttempts);

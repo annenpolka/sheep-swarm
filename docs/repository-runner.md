@@ -130,3 +130,6 @@ task v2に`"recovery":{"maxUpstreamRechecks":2}`を追加すると、公開local
 `swarm/upstream-recovery.json`が起動理由・対象・検証receiptを保存し、内部artifactに公開command・診断・観測版が残る。候補のコード権限や非公開final検査は変わらない。公開checkを通る誤りにはこの方法だけでは対応できない。[検証・実走](results/upstream-recovery.md)。
 
 `recovery.review`は`focused`（省略時）または`contract`。後者は上流を再検査する同じcall内で、公開された元仕様を要件ごとに見直すよう指示する。追加のテスト情報・別モデル・追加callを与える方式ではない。write権限、再起動上限、非公開oracleの隔離は共通。
+
+
+公開反例を選ぶ `recovery.publicProbes` と `diagnose` actionを追加した。host作成の固定検査を配信版で実行し、所定の失敗印を確認した場合だけ有限の追加上流再検査を行う。省略時は従来通り。[設定・wire形式・制限](public-probes.md)。

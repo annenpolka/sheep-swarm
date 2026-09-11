@@ -146,3 +146,6 @@ hostはfailed callのcheckout stampを再確認し、call/context/read版/公開
 最終oracle、model claim、transport失敗、古いcheckout、check基盤障害・timeout・signal、候補の構造変更はこの起動理由にならない。公開検査に表れない誤りは引き続きfinalで失敗し、その診断を修復へ戻さない。現時点は根本原因の判定器ではなく、有限の再検査policyである。上位モデルは呼ばず、hostによる条件更新の件数と上位call数は別に記録する。
 
 上流再検査の`review:contract`は公開仕様全体を同じcallで見直す指示を加える。要件の確認をモデルに求めても、その自己申告を検証証拠とはしない。focusedとの比較では公開仕様・check・oracle・再起動範囲を固定し、実際の最終受入で品質を測る。指示の選択を別の新規課題へ使う場合は、選択規則を実測前に固定し、同じ失敗課題へ非公開診断を戻す修復と区別する。
+
+
+公開probeによる追加再検査は、model claimをhostの検査証拠に変換するopt-in経路である。実行はprovider一つとreadonly公開入力のコピーに限定し、配信版全体のfreshness、試行可能性、probe/入力版の重複、要求数と追加再起動数の上限を照合する。kernelで検証・確定した回復artifactだけを更新し、逆依存やwrite capabilityを増やさない。固定検査の反例印とexit 1がない失敗は検査不能として受付停止する。[詳細](public-probes.md)。

@@ -345,8 +345,19 @@ export async function runRepository(
     originalHashes[file.path] = hashContent(originalContent(snapshot, file.path));
   }
 
-  const discovery=task.version===2?await RepositoryDiscovery.create(snapshot):undefined;
   const verifier=createHostRepoVerifier();
+  const verifications: RepoVerification[] = [];
+  const discovery=task.version===2?await RepositoryDiscovery.create(snapshot,async(probe,contents)=>{
+    // A newly created provider has no entry in the original snapshot; the overlay supplies it.
+    const entries=new Map(probe.paths.filter(p=>snapshot.entries.has(p)).map(p=>[p,snapshot.entries.get(p)!]));
+    const scoped:RepoSnapshot={...snapshot,entries,initialTargets:{[probe.provider]:snapshot.initialTargets[probe.provider]!},
+      task:{version:1,goal:'Host-authored public counterexample',files:snapshot.task.files.filter(f=>f.path===probe.provider),
+        context:probe.paths.filter(p=>p!==probe.provider),protected:probe.paths.filter(p=>p!==probe.provider),checks:[probe.check]}};
+    const request={snapshot:scoped,overlay:{[probe.provider]:contents[probe.provider]!},commands:[probe.check],outputRoot:checksDirectory,phase:'local' as const};
+    const receipt=await verifier.verify(request);
+    assertVerificationReceipt(request,receipt,verifier.environmentId);
+    verifications.push(receipt);return receipt;
+  }):undefined;
   const goalArtifact = buildGoalArtifact(snapshot);
   const guidanceArtifact = buildGuidanceArtifact(snapshot);
 
@@ -428,7 +439,6 @@ export async function runRepository(
     return receipt!;
   };
 
-  const verifications: RepoVerification[] = [];
   const finalChecks: {value?: RepoVerification} = {};
   const swarmTask = makeTask(snapshot, goalArtifact, guidanceArtifact, checksDirectory, verifications, finalChecks, verifier, discovery);
 

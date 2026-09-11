@@ -168,3 +168,6 @@ Astraの独立レビューで固定した反例も通常gateに含める。混�
 上流再検査では従来の反例を回復無効のまま保持する。有効時の回復、直らないprovider、健全なproviderのnoop、未起動provider、古い証拠、回数上限、非公開final失敗と基盤障害での再起動抑止を確認する。実モデル比較のfixture/公開check/final oracle/runtimeを実行前にhashで固定し、thinking有効のprofileとreceipt、実所要時間、失敗時completionMs=nullを保存する。既存のdisabled結果を新しい設定の結果に読み替えない。
 
 公開仕様の再確認を比較するときは、focused/contractの指示以外の入力・受入・上限を揃えて反復する。品質条件の観測後に別の単体対照へ方式を選ぶ場合は、選択規則を先に固定し、元の非公開診断を新しいpromptに写さない。並列・activation比較ではN、C、実同時数、初期起動数、全体品質を別々に記録し、成功した同一課題・同一反復の組だけで完了時間を比較する。失敗のelapsedは別指標として保持する。
+
+
+公開probeは元の失敗候補ではなく、配信済みproviderとreadonly公開入力で検査する。repo-public-probes.test.tsは通常再検査後の回復、健全上流、検証のみ、要求上限、stale/未配信/無関係/依存scope外、検査中の版変更、timeout・signal・改変・未存在command・印なしexit・異なるprobe ID・unknown usageの拒否、新規providerの検査と元repoへの非書込を検査する。repo-probe-admission.test.tsは受付順序・重複・epoch・上限を固定する。実比較では公開probe本文を全条件に渡し、baseline/検証のみ/証拠配信を分ける。追加再起動枠の違いと通常試行の消費を明記する。

@@ -253,3 +253,12 @@ Working default: contract指示はfocusedと同じ8/9成功でcallと時間が�
 Next: workerの診断をhostで検証できる公開反例・対象版に結び付けて上流へ渡す品質仮説を優先する。noteの自己申告だけを起動・権限・完了の根拠にしない。上位介入、progressive activation、read wideningは別の比較として残す。
 Validation: 38runのreceipt・使用量・候補・元source・独立受入を照合、521テストと参照hash成功。thinking有効、緩いtoken上限、時間締切なしを継続。旧系列を保存する。
 Status: active
+
+
+### 公開反例の検証と上流配信
+Authority: Human continuation / measured agent judgment (2026-09-11)
+Evidence: 「進めて」に従い、host作成の公開probeをworkerがIDで選び、配信版に対する検証後だけ上流へ渡す経路を実装した。[結果](../docs/results/public-probes.md)。
+Working default: publicProbesはopt-in。従来・検証のみ・配信が各3/3成功、中央値43.61/65.36/62.97秒で優位を確認できず、通常のfocused設定を維持する。全条件で同じ新規公開probe本文を与えたため、以前の成功率と直接比較しない。
+Validation: 実Goの58call/366006tokensと全9runの独立受入を監査。probe検査4回・証拠付き再起動2回。部品生成1call/10398tokensは別計上。通常gate541テスト、参照2件。新規providerの修正は実測後に分離して記録した。
+Next: 従来方式が同じ誤りを繰り返し残す新規課題と、必要時だけ診断する条件を固定する。hostが公開probeを用意する手間も測る。noteだけで期待値・依存・権限を承認しない。
+Status: active
