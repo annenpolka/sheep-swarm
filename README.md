@@ -6,6 +6,8 @@
 
 現在の方針は [docs/current-direction.md](docs/current-direction.md) にまとめている。下位4体の動作確認から16体へ進み、8・16・32体の初期比較を実行した。64体は次の探索候補で、最適人数や成功の境目はまだ示していない。
 
+[合成repository課題集](docs/synthetic-corpus.md)は16系統×16variantの256課題を生成する。Devin（SWE-2 Max）に課題生成を委譲し、呼出し側で補修・独立検査した。`node scripts/synthetic-corpus.ts list`で一覧、`materialize ID NEW_DIRECTORY`で書出し、`preflight --all`でモデルなしの全件検査を行える。課題生成とsolverの実測を分ける。[DeepSeek初回pilot](docs/results/synthetic-corpus-deepseek.md)は16課題中14成功、成功時の中央値34.63秒（N4/C2、thinking enabled）。
+
 主ベンチマークは`opencode-go/deepseek-flash`へ移し、品質と受入完了までの実所要時間を測る。固定時間内成功率は使わない。単体の複数file修正と現行Sheepの小規模対照を実行し、対象名固定系列は単体5/6・Sheep4/6成功だった。[全結果・時間・限界](docs/results/deepseek-quality-speed.md)、[計画](docs/execplan-quality-speed.md)。
 
 Go DeepSeekの今後の呼出しはthinking有効を既定にする。単体・Sheepの品質/所要時間ベンチマークも同じ設定。過去のdisabled系列は保持する。task v2の`recovery.maxUpstreamRechecks`で、公開された下流checkの失敗から、配信済みの上流targetを有限回再検査できる。[計画](docs/execplan-upstream-recovery.md)、[検証と実走](docs/results/upstream-recovery.md)。

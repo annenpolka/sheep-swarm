@@ -2,6 +2,10 @@
 
 2026-09-09の [現在の方針](current-direction.md) に基づく計画。小さなkernelから実workerへ進み、人数を変えた振る舞いを早く観測する。各段階の状態は実行証拠に合わせる。詳細な進捗は [ExecPlan](execplan.md)、M2の証拠は [4体pilot](results/luna-four-worker-pilot.md) を参照。
 
+## 合成課題集 — 256課題の生成・全件検査済み
+
+利用者指定のDevin（SWE-2 Max）で16系統・256課題を作成し、呼出し側で補修・検証した。[使い方](synthetic-corpus.md)、[証拠](results/synthetic-corpus.md)。完了条件は全件の元コード失敗・基準解成功・意味変異拒否、family単位のdev/evaluation分離、公開/非公開hash、既存repo runnerへの接続、CLIの再現性。[DeepSeek初回pilot](results/synthetic-corpus-deepseek.md)は16系統の4target課題を各1回実行し、14/16成功・中央値34.63秒。次は残りvariantと規模・方式の対照。課題数を独立した問題系統数と混同しない。
+
 ## DeepSeek Flashの品質・実所要時間比較 — 初期実走済み
 
 利用者の2026-09-11指定により主比較をopencode-go/deepseek-flashへ移し、固定時間による採点は採用しない。単体は全targetを1callで修正できるbaselineを追加し、2family×3variant×2方式を実行した。初回の配列応答形式による却下を保全し、対象名固定schemaの別12runも同じoracleで測定した。[結果](results/deepseek-quality-speed.md)。後者は単体5/6、Sheep4/6成功。496テスト・型検査・原資料照合・全receipt監査が成功した。

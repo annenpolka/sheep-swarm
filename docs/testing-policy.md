@@ -171,3 +171,8 @@ Astraの独立レビューで固定した反例も通常gateに含める。混�
 
 
 公開probeは元の失敗候補ではなく、配信済みproviderとreadonly公開入力で検査する。repo-public-probes.test.tsは通常再検査後の回復、健全上流、検証のみ、要求上限、stale/未配信/無関係/依存scope外、検査中の版変更、timeout・signal・改変・未存在command・印なしexit・異なるprobe ID・unknown usageの拒否、新規providerの検査と元repoへの非書込を検査する。repo-probe-admission.test.tsは受付順序・重複・epoch・上限を固定する。実比較では公開probe本文を全条件に渡し、baseline/検証のみ/証拠配信を分ける。追加再起動枠の違いと通常試行の消費を明記する。
+
+
+## 合成課題集
+
+`synthetic-corpus-cli.test.ts`は独立した手書きfixtureで、上書き拒否、公開/非公開scope、構文エラーと意味変異の区別、oracleを生き残る変異の拒否を確認する。`synthetic-corpus.test.ts`は256課題の決定性・hash・系統分割、系統ごとの代表課題、独立した契約境界を検査する。通常gateでLLMを呼ばない。生成器変更後は`node scripts/synthetic-corpus.ts preflight --all`も実行して全variantを検査する。[全件検査の記録](results/synthetic-corpus.md)。

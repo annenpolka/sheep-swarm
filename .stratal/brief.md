@@ -262,3 +262,21 @@ Working default: publicProbesはopt-in。従来・検証のみ・配信が各3/3
 Validation: 実Goの58call/366006tokensと全9runの独立受入を監査。probe検査4回・証拠付き再起動2回。部品生成1call/10398tokensは別計上。通常gate541テスト、参照2件。新規providerの修正は実測後に分離して記録した。
 Next: 従来方式が同じ誤りを繰り返し残す新規課題と、必要時だけ診断する条件を固定する。hostが公開probeを用意する手間も測る。noteだけで期待値・依存・権限を承認しない。
 Status: active
+
+
+### Devinによる合成課題の拡充
+Authority: Human request (2026-09-11)
+Evidence: 「devin-delegateに大量の合成課題を作らせて」に基づく。[仕様](../docs/synthetic-corpus.md)、[生成と検査の記録](../docs/results/synthetic-corpus.md)。
+Working default: 16系統×16variant、Node .mjsの修正課題。SWE-2 Maxで生成し、親が基準解・誤実装・公開scopeを実行検査する。初期生成の失敗と親の補修を記録する。
+Validation: 256/256課題でbaseline失敗・reference成功、784意味変異を検出（公開check通過365）。既存repo runnerを16系統で検証し、通常gate551テスト成功。構文不正・process障害を意味変異の検出に数えず、公開check通過は予測と実測を分ける。
+Next: 課題を凍結し、Go DeepSeek thinking有効・緩いtoken上限で品質と完了時間を比較する。今回の生成・検査では解答モデルを呼ばない。
+Status: active
+
+
+### 合成課題でのDeepSeek初回pilot
+Authority: Human request (2026-09-11)
+Evidence: 「Deepseekで回してみて」に基づき、16系統のvariant 0、各4targetを固定して実走。[記録](../docs/results/synthetic-corpus-deepseek.md)。
+Validation: N4/C2、上位0、thinking enabled、14/16成功、成功時中央値34.63秒、64call/300036tokens。全receipt・独立受入・元repo不変を監査。permissions/ledgerは疎配列の扱いで最終不合格。通常gate551件。
+Working default: 最終oracleを途中で返さず、失敗した候補・採点条件を保存する。4targetの1試行を256課題や一般repositoryへ一般化しない。
+Next: 残りvariantと規模比較、同じ公開情報を与えた単体対照を別条件で測る。疎配列の契約を明文化するなら別hashで扱い、今回の成績を書き換えない。
+Status: active
