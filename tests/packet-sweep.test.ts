@@ -51,3 +51,14 @@ test('external interruption accounts receipt-complete calls beyond a stale check
  await writeFile(join(root,'call-2.json'),JSON.stringify({transcript:{...tr,usageCompleteness:'partial'}}));
  assert.equal((await interruptedPacketAudit(root)).totalTokens,null);
 });
+
+test('accepted recovery keeps quality and timing observable when total usage remains unknown',()=>{
+ const rows:SweepRow[]=[
+  {id:'case-0',method:'packet-all',aliases:['packet-all'],success:true,elapsedMs:30,tokens:null,knownTokens:80,calls:2,evidenceErrors:[]},
+  {id:'case-0',method:'legacy-single',aliases:['legacy-single'],success:true,elapsedMs:10,tokens:40,calls:1,evidenceErrors:[]}
+ ];
+ const s=summarizeSweep(cases,rows).overall;
+ assert.equal(s.methods['packet-all']!.successes,1);assert.equal(s.methods['packet-all']!.knownTokens,80);assert.equal(s.methods['packet-all']!.totalTokens,null);
+ assert.equal(s.pairs['legacy-single']!['packet-all']!.bothSuccess,1);
+ assert.equal(s.pairs['legacy-single']!['packet-all']!.medianReferenceOverMethod,1/3);
+});

@@ -22,7 +22,7 @@ export function sweepPlan(cases:readonly SweepCase[]) {
   const offset=rank%ordered.length;return [...ordered.slice(offset),...ordered.slice(0,offset)];
  });
 }
-export interface SweepRow {id:string;method:Strategy;aliases:Strategy[];success:boolean;elapsedMs:number;tokens:number|null;calls:number;evidenceErrors:string[]}
+export interface SweepRow {id:string;method:Strategy;aliases:Strategy[];success:boolean;elapsedMs:number;tokens:number|null;knownTokens?:number;calls:number;evidenceErrors:string[]}
 const median=(xs:number[])=>{if(!xs.length)return null;const s=[...xs].sort((a,b)=>a-b),i=Math.floor(s.length/2);return s.length%2?s[i]!:(s[i-1]!+s[i]!)/2;};
 export function summarizeSweep(cases:readonly Pick<SweepCase,'id'|'family'|'targetCount'|'topology'|'dependencyDepth'>[],rows:readonly SweepRow[]) {
  const data=new Map(cases.map(c=>[c.id,new Map<Strategy,SweepRow>()]));
@@ -31,7 +31,7 @@ export function summarizeSweep(cases:readonly Pick<SweepCase,'id'|'family'|'targ
  }
  function group(selected:typeof cases) {
   const valid=(id:string,m:Strategy)=>{const r=data.get(id)?.get(m);return r&&!r.evidenceErrors.length?r:undefined;};
-  const methods=Object.fromEntries(STRATEGIES.map(method=>{const rs=selected.flatMap(c=>{const r=valid(c.id,method);return r?[r]:[];});return [method,{cases:rs.length,successes:rs.filter(r=>r.success).length,medianCompletionMs:median(rs.filter(r=>r.success).map(r=>r.elapsedMs)),knownTokens:rs.reduce((n,r)=>n+(r.tokens??0),0),totalTokens:rs.some(r=>r.tokens===null)?null:rs.reduce((n,r)=>n+r.tokens!,0)}];}));
+  const methods=Object.fromEntries(STRATEGIES.map(method=>{const rs=selected.flatMap(c=>{const r=valid(c.id,method);return r?[r]:[];});return [method,{cases:rs.length,successes:rs.filter(r=>r.success).length,medianCompletionMs:median(rs.filter(r=>r.success).map(r=>r.elapsedMs)),knownTokens:rs.reduce((n,r)=>n+(r.knownTokens??r.tokens??0),0),totalTokens:rs.some(r=>r.tokens===null)?null:rs.reduce((n,r)=>n+r.tokens!,0)}];}));
   const pairs=Object.fromEntries((['packet-all','legacy-single'] as const).map(reference=>[reference,Object.fromEntries(STRATEGIES.filter(m=>m!==reference).map(method=>{
    let complete=0,equivalent=0,both=0,referenceOnly=0,methodOnly=0,neither=0,referenceFaster=0,methodFaster=0;const ratios:number[]=[];
    for(const c of selected){const a=valid(c.id,reference),b=valid(c.id,method);if(!a||!b)continue;if(a===b){equivalent++;continue;}complete++;

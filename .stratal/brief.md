@@ -336,3 +336,9 @@ Evidence: [再実行結果](../docs/results/packet-sweep-rerun.md)。通知不�
 Working default: solverは実行中に変更せず、旧結果を流用しない。品質・速度は有効観測のみ、526callと既知token下限6,459,555は基盤障害も含める。未知usageは0へ置換しない。
 Validation: 18課題・6familyを観測、17課題の全条件が揃った。終了後のraw receipt監査も一致。packet-allは共通executor内の分割より速い組が多いが、全件結果や適応器の証拠へ拡張しない。
 Next: 残り553実runは未開始。停止系列を保全し、全dev比較は未完了として扱う。
+
+
+### 通信失敗時の再試行と継続
+Authority: Human stated (2026-09-11)
+
+「失敗したときは単にやり直して続ける」を進行中のdev packet比較へ適用する。HTTP 500等の一時的な通信障害は条件全体を元のbaselineから最大3回再実行し、継続失敗なら利用不能として次へ進む。未知usageは保持し、受付上は予約額を控除する。全試行でcall/token枠を共有する。品質失敗は再抽選せず、kernel・検証基盤の異常や不確定なin-flight再送は停止する。過去の停止記録と一般CLIのbudget lockを変更しない。[計画](../docs/packet-sweep-retry-plan.md)。

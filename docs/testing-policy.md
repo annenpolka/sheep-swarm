@@ -193,3 +193,6 @@ HTTP障害など証拠が不足するrunは品質・速度の対応比較から�
 `packet-sweep.test.ts`は、同値packetの重複実行防止、実方式の順序回転、evaluation排除、共有観測を勝敗に数えない集計、失敗/証拠不備の時間比からの除外、停止/inFlight系列の再送拒否を検証する。実系列ではpacketReceiptAuditが生usage・model/thinking・公開baselineと現在版overlay・kernel checkoutの版・候補内容を照合する。既存smokeの3粒度でも同監査をモデルなしで確認した。
 
 packet同居関係によって静的source edge外へ伝わる通知は、独立した4ファイルfixtureで修正前の失敗を確認してから修正する。kernel異常の注入ではモデル再試行を止め、発行済みpeerの使用量を精算する。外部停止の監査は、古いbudget checkpointと後着receiptを区別し、未知usageをnullのまま保持する。`check-packet-host.mjs`は凍結系列と修正版へ正解を返すoffline stub対照であり、通常モデル評価には混ぜない。
+
+
+通信再試行controllerはHTTP 500を注入する実repo試験で、baselineからの回復と旧receipt保持、未知usageを含む受付控除、元repo不変を確認する。通常gateは実APIを呼ばない。品質・時間の観測とusageの完全性を分離し、回復しても総tokensを既知へ変えない。認証・取消・検証基盤障害は自動再送しない。上限を跨ぐ試行の共有会計を検査する。継続系列のauditは旧系列と新controller・保存solverのhash、各row・result・receipt・候補・固定fixtureを照合する。[継続計画](packet-sweep-retry-plan.md)。
