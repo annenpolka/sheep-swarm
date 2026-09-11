@@ -176,3 +176,8 @@ Astraの独立レビューで固定した反例も通常gateに含める。混�
 ## 合成課題集
 
 `synthetic-corpus-cli.test.ts`は独立した手書きfixtureで、上書き拒否、公開/非公開scope、構文エラーと意味変異の区別、oracleを生き残る変異の拒否を確認する。`synthetic-corpus.test.ts`は256課題の決定性・hash・系統分割、系統ごとの代表課題、独立した契約境界を検査する。通常gateでLLMを呼ばない。生成器変更後は`node scripts/synthetic-corpus.ts preflight --all`も実行して全variantを検査する。[全件検査の記録](results/synthetic-corpus.md)。
+
+
+対応比較の`synthetic-paired.test.ts`は、256課題の凍結hash、dev限定・先攻均衡の固定順序、失敗や欠測を速度比へ混ぜない集計、不完全usage/非公開contextの拒否、中断系列の再送拒否を検査する。実測は`synthetic-paired-benchmark.mjs audit`でreceipt・候補hash・元repo・独立受入・系列順を再照合する。
+
+HTTP障害など証拠が不足するrunは品質・速度の対応比較から除外し、消費したcallと既知token下限を資源集計へ残す。公開reportのsummaryはこの有効runだけを使う。個別runの成功時だけのcompletion、片側結果のみの課題、未実行課題を混同しない。
