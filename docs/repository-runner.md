@@ -128,3 +128,5 @@ TS targetの局所検査は `node --check` だけに頼らず、実行環境のm
 task v2に`"recovery":{"maxUpstreamRechecks":2}`を追加すると、公開local checkの不合格から配信済みの上流targetを再起動する。各providerはrun内1回、全体で指定数まで。省略すると従来の動作。`activation.changedPaths`で初期起動しなかったproviderも、宣言済みの書込対象なら再検査できる。試行回数・token・追加context bytesの上限は引き継ぐ。内部の診断artifactの再配信も追加bytesに含める。
 
 `swarm/upstream-recovery.json`が起動理由・対象・検証receiptを保存し、内部artifactに公開command・診断・観測版が残る。候補のコード権限や非公開final検査は変わらない。公開checkを通る誤りにはこの方法だけでは対応できない。[検証・実走](results/upstream-recovery.md)。
+
+`recovery.review`は`focused`（省略時）または`contract`。後者は上流を再検査する同じcall内で、公開された元仕様を要件ごとに見直すよう指示する。追加のテスト情報・別モデル・追加callを与える方式ではない。write権限、再起動上限、非公開oracleの隔離は共通。

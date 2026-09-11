@@ -12,8 +12,9 @@ import {buildQualitySpeedFixture} from '../scripts/quality-speed-fixture.mjs';
 
 test('recovery manifest is strict and cannot be enabled on v1',()=>{
  const f=buildQualitySpeedFixture('propagation',1);
- for(const recovery of [{},{maxUpstreamRechecks:0},{maxUpstreamRechecks:65},{maxUpstreamRechecks:1.5},{maxUpstreamRechecks:1,extra:true},null])assert.throws(()=>parseRepoTask({...f.task,recovery}));
- assert.equal(parseRepoTask({...f.task,recovery:{maxUpstreamRechecks:1}}).recovery?.maxUpstreamRechecks,1);
+ for(const recovery of [{},{maxUpstreamRechecks:0},{maxUpstreamRechecks:65},{maxUpstreamRechecks:1.5},{maxUpstreamRechecks:1,extra:true},{maxUpstreamRechecks:1,review:"other"},{maxUpstreamRechecks:1,review:null},null])assert.throws(()=>parseRepoTask({...f.task,recovery}));
+ assert.equal(parseRepoTask({...f.task,recovery:{maxUpstreamRechecks:1}}).recovery?.review,'focused');
+ assert.equal(parseRepoTask({...f.task,recovery:{maxUpstreamRechecks:1,review:'contract'}}).recovery?.review,'contract');
  assert.throws(()=>parseRepoTask({...f.task,version:1,discovery:undefined,recovery:{maxUpstreamRechecks:1}}));
 });
 for(const stale of [false,true])test(`recovery evidence: ${stale?'stale observations cannot reactivate':'root-only evidence avoids reverse dependencies and respects total cap'}`,async t=>{

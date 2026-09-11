@@ -227,14 +227,16 @@ export function parseRepoTask(value: unknown): RepoTask {
     for(const path of changedPaths)if(!publicPaths.has(path))throw new Error('activation path is outside public scope: '+path);
     activation={changedPaths};
   }
-  let recovery: {maxUpstreamRechecks: number} | undefined;
+  let recovery: {maxUpstreamRechecks: number; review: 'focused' | 'contract'} | undefined;
   if (value.recovery !== undefined) {
     if (!isPlainObject(value.recovery)) throw new Error('recovery must be an object');
-    rejectUnknownKeys(value.recovery, ['maxUpstreamRechecks'], 'recovery');
+    rejectUnknownKeys(value.recovery, ['maxUpstreamRechecks','review'], 'recovery');
     const limit = value.recovery.maxUpstreamRechecks;
     if (typeof limit !== 'number' || !Number.isSafeInteger(limit) || limit < 1 || limit > MAX_TARGETS)
       throw new Error('recovery.maxUpstreamRechecks must be from 1 to 64');
-    recovery = {maxUpstreamRechecks: limit};
+    const review = value.recovery.review === undefined ? 'focused' : value.recovery.review;
+    if (review !== 'focused' && review !== 'contract') throw new Error('recovery.review must be focused or contract');
+    recovery = {maxUpstreamRechecks: limit, review};
   }
   return {version:2,...base,...(recovery?{recovery}:{}),...(activation?{activation}:{}),discovery:{mode:d.mode,readable,maxPathsPerRead,
     maxReadCalls:bounded(d.maxReadCalls,2,32),maxDeliveredBytes:bounded(d.maxDeliveredBytes,65536,2*1024*1024)}};

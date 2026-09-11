@@ -244,3 +244,12 @@ Validation: 初回の形式負担を保全し、対象名固定系列は単体5/
 2026-09-11の追加指示に従い、主モデルopencode-go/deepseek-flashのthinkingは今後有効にする。比較は単体とSheepを同じ設定に揃え、過去のdisabled系列とは分ける。上流再検査はtask v2のopt-inとして実装し、公開local checkの失敗と配信済み版だけを起動根拠にする。再検査はproviderごと1回・総数上限内で、試行予算をリセットしない。完了条件は反例の回復、健全な上流・非公開失敗・古い証拠・上限の検証、thinking有効の実走と使用量保存。[詳細](../docs/execplan-upstream-recovery.md)。
 
 計測優先の追加指示により、今後の比較は1call出力64,000 tokens、1条件総1,000,000 tokens、予約100,000 tokensとする。通信timeoutは600秒に広げ、task全体の時間締切や固定時間採点は設けない。旧上限の実測は別条件として保持する。
+
+
+### thinking有効の38条件からの更新
+Authority: Human direction / measured agent judgment (2026-09-11)
+Evidence: 「一通り進めて」に基づき、[再検査指示・単体対照・Cとactivationの実測](../docs/results/contract-quality.md)を完了。
+Working default: contract指示はfocusedと同じ8/9成功でcallと時間が増えたため、focusedを維持する。単体/Sheepは2課題×3反復でともに6/6成功、6組中5組でSheepが速かった。速度8条件は全成功、C増加と関連起動の差を別々に確認した。小規模課題の優位を一般化せず、N・C・実稼働を分ける。
+Next: workerの診断をhostで検証できる公開反例・対象版に結び付けて上流へ渡す品質仮説を優先する。noteの自己申告だけを起動・権限・完了の根拠にしない。上位介入、progressive activation、read wideningは別の比較として残す。
+Validation: 38runのreceipt・使用量・候補・元source・独立受入を照合、521テストと参照hash成功。thinking有効、緩いtoken上限、時間締切なしを継続。旧系列を保存する。
+Status: active

@@ -10,6 +10,8 @@
 
 Go DeepSeekの今後の呼出しはthinking有効を既定にする。単体・Sheepの品質/所要時間ベンチマークも同じ設定。過去のdisabled系列は保持する。task v2の`recovery.maxUpstreamRechecks`で、公開された下流checkの失敗から、配信済みの上流targetを有限回再検査できる。[計画](docs/execplan-upstream-recovery.md)、[検証と実走](docs/results/upstream-recovery.md)。
 
+上流再検査には`recovery.review: "contract"`を追加した。[38条件の実測](docs/results/contract-quality.md)を完了した。指示強化は成功数を増やさず、既定はfocusedを維持する。新規2課題×3反復では単体/Sheepとも6/6成功、6組中5組でSheepが速かった。独立枝の速度8条件は全成功し、並列度と関連起動の効果を分けて確認した。[計画と完了記録](docs/execplan-contract-quality.md)。
+
 ## 現在の状態
 
 **kernel、実Luna worker、選択的な上位介入、8・16・32体の実測、SQLiteからの再開を実装し、別taskで4方式の初期比較まで完了した。**

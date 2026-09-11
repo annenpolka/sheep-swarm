@@ -23,7 +23,7 @@ test('public downstream failure currently retries the consumer without reopening
  assert.equal(result.budget.unknownUsageCalls,0);assert.equal(result.swarm.lowerCalls,7);
 });
 
-for(const scenario of ['repair','still-broken','healthy-provider','hidden-only','inactive-provider','verification-unavailable','timeout','signal','candidate-drift'] as const) test(`upstream recovery: ${scenario}`,async t=>{
+for(const scenario of ['repair','still-broken','healthy-provider','hidden-only','inactive-provider','verification-unavailable','timeout','signal','candidate-drift','contract-review'] as const) test(`upstream recovery: ${scenario}`,async t=>{
  const f=buildQualitySpeedFixture('propagation',1),reference=referenceContents('propagation');
  const badAmount=reference['amount.mjs'].replace('const digits=parts[0]',"if(parts[1]===undefined)return Number(parts[0]);const digits=parts[0]");
  if(scenario==='inactive-provider'){f.files['amount.mjs']=badAmount;f.files['cart.mjs']=reference['cart.mjs'];f.task.activation={changedPaths:['invoice.mjs']};}
@@ -33,21 +33,21 @@ for(const scenario of ['repair','still-broken','healthy-provider','hidden-only',
  if(scenario==='candidate-drift')f.task.files.find((f:{path:string})=>f.path==='invoice.mjs').checks=[{argv:[process.execPath,'-e',`require('node:fs').writeFileSync('amount.mjs','changed');process.exit(1)`]}];
  const root=await repository(f.files);t.after(()=>rm(root,{recursive:true,force:true}));
  const seen:Record<string,number>={},prompts:string[]=[];
- const result=await runRepository({repository:root,task:{...f.task,recovery:{maxUpstreamRechecks:2}},outputDirectory:join(root,'run'),runtime:'opencode-go',workerModel:'deepseek-flash',workers:4,concurrency:2,maxCalls:12,maxMetaCalls:0,maxTokens:10000,reserveTokensPerCall:100},async o=>{
+ const result=await runRepository({repository:root,task:{...f.task,recovery:{maxUpstreamRechecks:2,...(scenario==='contract-review'?{review:'contract'}:{})}},outputDirectory:join(root,'run'),runtime:'opencode-go',workerModel:'deepseek-flash',workers:4,concurrency:2,maxCalls:12,maxMetaCalls:0,maxTokens:10000,reserveTokensPerCall:100},async o=>{
   assert.equal((o as typeof o & {thinking?:string}).thinking,'enabled');
   const target=/Update only ([^\s]+\.mjs)/.exec(o.prompt)?.[1];assert.ok(target);seen[target]=(seen[target]??0)+1;prompts.push(o.prompt);
   let content=reference[target];
   if(target==='amount.mjs'){
-   if(scenario==='still-broken'||(scenario==='repair'&&seen[target]===1))content=badAmount;
+   if(scenario==='still-broken'||(['repair','contract-review'].includes(scenario)&&seen[target]===1))content=badAmount;
    if(scenario==='hidden-only')content=content.replace('const n=BigInt(digits);',"if(digits.length>15)return null;const n=BigInt(digits);");
-   if(seen[target]!>1){assert.match(o.prompt,/public-local-check-failure/);assert.match(o.prompt,/diagnostic/);assert.match(o.prompt,/invoice/);}
+   if(seen[target]!>1){if(scenario==='contract-review')assert.match(o.prompt,/EVERY requirement/);assert.match(o.prompt,/public-local-check-failure/);assert.match(o.prompt,/diagnostic/);assert.match(o.prompt,/invoice/);}
   }
   if(target==='invoice.mjs'&&scenario==='healthy-provider'&&seen[target]===1)content=f.files['invoice.mjs'];
   return {requestedModel:o.model,result:{kind:'write',content,paths:[],observed:[],missing:[],hypothesis:'',note:''},usage:[{event:{},inputTokens:10,outputTokens:5}],transcript:{events:[],usage:[{event:{},inputTokens:10,outputTokens:5}],usageCompleteness:'complete',requestedModel:o.model,effectiveModelEvidence:'injected-test',stdout:'',stderr:'',exitCode:0,signal:null,timedOut:false,cancelled:false,durationMs:1}};
  });
  const recovery=JSON.parse(await readFile(join(root,'run/swarm/upstream-recovery.json'),'utf8'));
  assert.equal(result.budget.unknownUsageCalls,0);assert.equal(result.swarm.upperCalls,0);
- assert.equal(result.success,scenario==='repair'||scenario==='healthy-provider'||scenario==='inactive-provider');
+ assert.equal(result.success,scenario==='repair'||scenario==='healthy-provider'||scenario==='inactive-provider'||scenario==='contract-review');
  if(['hidden-only','verification-unavailable','timeout','signal','candidate-drift'].includes(scenario)){
   assert.equal(result.swarm.lowerCalls,['hidden-only','verification-unavailable'].includes(scenario)?3:7);assert.deepEqual(recovery.observations,[]);assert.deepEqual(recovery.rechecked,[]);
  }else{

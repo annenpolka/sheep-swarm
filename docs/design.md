@@ -144,3 +144,5 @@ task v2の`recovery.maxUpstreamRechecks`（1..64、省略で無効）は、局�
 hostはfailed callのcheckout stampを再確認し、call/context/read版/公開command/診断をJSONの観測として保存する。各provider専用の内部artifactへ、hostの限定lease・prepare・validate・commitを通して記録する。host checkoutはその内部artifactだけを読むので、上流から下流への逆依存を作らない。対象providerと通常の下流へkernelの変更通知を流し、古い作業の証拠を失効させる。consumerは必要な内部artifactも配信してobligationを解消する。診断は過去の観測でありproviderの不良確定ではない。workerは元の担当fileだけを直すか、そのまま返す。
 
 最終oracle、model claim、transport失敗、古いcheckout、check基盤障害・timeout・signal、候補の構造変更はこの起動理由にならない。公開検査に表れない誤りは引き続きfinalで失敗し、その診断を修復へ戻さない。現時点は根本原因の判定器ではなく、有限の再検査policyである。上位モデルは呼ばず、hostによる条件更新の件数と上位call数は別に記録する。
+
+上流再検査の`review:contract`は公開仕様全体を同じcallで見直す指示を加える。要件の確認をモデルに求めても、その自己申告を検証証拠とはしない。focusedとの比較では公開仕様・check・oracle・再起動範囲を固定し、実際の最終受入で品質を測る。指示の選択を別の新規課題へ使う場合は、選択規則を実測前に固定し、同じ失敗課題へ非公開診断を戻す修復と区別する。

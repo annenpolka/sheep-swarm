@@ -179,3 +179,12 @@ PR #4の独立レビューでは、実processと注入callerで4件の不具合�
 2026-09-11の追加指示に従い、主モデルopencode-go/deepseek-flashのthinkingは今後有効にする。比較は単体とSheepを同じ設定に揃え、過去のdisabled系列とは分ける。上流再検査はtask v2のopt-inとして実装し、公開local checkの失敗と配信済み版だけを起動根拠にする。再検査はproviderごと1回・総数上限内で、試行予算をリセットしない。完了条件は反例の回復、健全な上流・非公開失敗・古い証拠・上限の検証、thinking有効の実走と使用量保存。[詳細](execplan-upstream-recovery.md)。
 
 計測優先の追加指示により、今後の比較は1call出力64,000 tokens、1条件総1,000,000 tokens、予約100,000 tokensとする。通信timeoutは600秒に広げ、task全体の時間締切や固定時間採点は設けない。旧上限の実測は別条件として保持する。
+
+
+## 公開仕様の再確認と品質・速度の反復 — 完了
+
+[38条件のthinking有効実測](results/contract-quality.md)を完了した。指示だけを強めるcontractはfocusedと同じ8/9成功、40対35callで、両方成功した7組中6組で遅かった。既定はfocusedを保つ。新規2課題×3反復の単体/Sheepはともに6/6成功、同じ課題・反復の6組中5組でSheepが速かった。この小規模な方式対照を一般repoの優位へ拡張しない。
+
+16targetの独立枝でC1/C4と全起動/関連4target起動を各2反復し、8/8成功。全起動の成功時間中央値99.23秒（C1）対43.09秒（C4）、関連起動C4は9.99秒。全体oracleとread policyを保ち、Cとactivationを別々に比較した。実最大同時callはC4全起動4、C4関連起動2で、登録N16と実稼働を分ける。38runの179call/900813tokensはreceiptと独立受入を監査済み。実Goによる集計部品生成は別の1call/5568tokens。通常gate521テストと参照2件を確認した。
+
+次の品質課題は、workerが気付いた原因を、hostで再現できる公開反例・対象版と結び付けて担当上流へ渡す経路である。分岐の失敗では別workerが原因をnoteへ書けたが、既に再検査を消費した上流は直らなかった。noteを真実として採用せず、誤診・古い証拠・健全な上流で検証する。固定hidden oracleを修復へ戻さず、上限緩和や上位介入とは別条件にする。この経路、Manager比較、progressive activation、予算付きread wideningは未実装または未実測の次段階として保持する。

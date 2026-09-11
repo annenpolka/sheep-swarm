@@ -218,7 +218,9 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
       const id=this.#recoveryArtifacts.get(provider)!;
       const content=JSON.stringify({source:'public-local-check-failure',target,provider,callId,context:context.id,
         reads:context.reads,commands:failure.commands,diagnostic:failure.diagnostic.slice(0,8192),
-        instruction:'A downstream PUBLIC local check failed. Recheck your assigned provider against its original contract using this observation. The fault may be in the consumer or another provider. Fix only your assigned file if needed, otherwise return its unchanged contents. Preserve acceptance requirements. This is an immutable historical observation, not a current dependency on the consumer.'});
+        instruction:this.#snapshot.task.recovery?.review==='contract'
+          ? 'A downstream PUBLIC local check failed. Recheck your assigned provider against EVERY requirement in its original public contract, not only the reported example. Before returning the complete file, work through the contract one requirement at a time and check that the proposed implementation satisfies each one. Reconsider existing code as well as your edits; earlier acceptance is not proof of the whole contract. The fault may be in the consumer or another provider. Fix only your assigned file if needed, otherwise return its unchanged contents. Do this within this call; do not request a reviewer or additional tools. Preserve acceptance requirements. This is an immutable historical observation, not a current dependency on the consumer.'
+          : 'A downstream PUBLIC local check failed. Recheck your assigned provider against its original contract using this observation. The fault may be in the consumer or another provider. Fix only your assigned file if needed, otherwise return its unchanged contents. Preserve acceptance requirements. This is an immutable historical observation, not a current dependency on the consumer.'});
       const agent='host-upstream-recovery';
       const checkout=kernel.checkout(agent,[id]);
       const lease=kernel.grant(agent,[id],60000,'meta');
@@ -245,7 +247,7 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
       additionalDeliveredBytes:[...this.#deliveredBytes.values()].reduce((n,b)=>n+b,0)};
   }
   async save(directory:string):Promise<void> {
-    await writeFile(join(directory,'upstream-recovery.json'),JSON.stringify({format:1,enabled:!!this.#snapshot.task.recovery,maxUpstreamRechecks:this.#snapshot.task.recovery?.maxUpstreamRechecks??0,rechecked:[...this.#rechecked],observations:this.#recoveries},null,2)+'\n');
+    await writeFile(join(directory,'upstream-recovery.json'),JSON.stringify({format:1,enabled:!!this.#snapshot.task.recovery,maxUpstreamRechecks:this.#snapshot.task.recovery?.maxUpstreamRechecks??0,review:this.#snapshot.task.recovery?.review??'focused',rechecked:[...this.#rechecked],observations:this.#recoveries},null,2)+'\n');
     await writeFile(join(directory,'activation.json'),JSON.stringify({format:1,...this.activation,limitations:['static-and-declared-context-impact-only','changed-paths-are-host-declared','final-oracle-still-covers-all-targets']},null,2)+'\n');
     await writeFile(join(directory,'dependency-evidence.json'),JSON.stringify({format:1,edges:this.dependencies(),evidence:this.#evidence,scans:this.scans},null,2)+'\n');
     await writeFile(join(directory,'read-deliveries.json'),JSON.stringify({format:1,requests:this.#requests,deliveries:this.#deliveries,additionalBytesByTarget:Object.fromEntries(this.#deliveredBytes)},null,2)+'\n');
