@@ -6,6 +6,8 @@ DeepSeek Flash単体と群れを比較し、分担・依存管理・必要時の
 
 ## Current Working Contract
 
+2026-09-11のPR #9後は[work packet方針](../docs/work-packet-direction.md)を優先する。共通executorで粒度を測り、N=1も正常な選択肢にする。以下の従来範囲は実装の背景として保持する。新しいpacket機能と実測は未着手。
+
 現在はkernel、Luna4体、8・16・32体の規模比較、C=1の永続化と実process再開を確認済み。別taskで4方式の初期比較も完了し、失敗と実装修正後の追加試行を分けて保存した。公式価格・cacheによる見積器に加え、静的・レジストリ意味依存・3段階変更とcredit相当受付を実装した。新しい主比較はtimeoutの使用量不明で停止し、承認された追加100相当の枠でN16/32を実行した。N8/16/32はC=8で各1回成功したが、増員の明確な利益は未確認。詳細は [実測](../docs/results/mechanism-findings.md) に残す。方針全体は [docs/current-direction.md](../docs/current-direction.md)、実装順序は [docs/roadmap.md](../docs/roadmap.md) を参照。
 
 今回の実装範囲は[CLI整理とrepoの依存発見計画](../docs/execplan-repository-discovery.md)。2026-09-10の利用者のCLI整理追加を含む。既存入口・task v1・固定受入を保ち、opt-inで読取依存を発見する。書込範囲は自動拡張せず、全runner再設計を前提にしない。A–Dと初期gateを実装し、利用者指定のGo DeepSeek swarmで部品生成とv2疎通を確認した。親の補修・初回失敗・実走範囲は[結果](../docs/results/repository-discovery.md)に残す。新しいLuna疎通とN比較・有用性比較は未実行。[判断の根拠](../docs/discussion-review-20260910.md)。
@@ -291,3 +293,12 @@ Next: devで設定を選択・固定しevaluationへ移す。その後にManager
 Status: active
 
 Validation update: 555テスト・参照2件、dev 128件preflight成功。実測80runでHTTP 500/usage不明1callにより受付停止。有効な対応39組でSingle 38/39、Sheep 37/39成功。両方成功37組中32組でSingleが速い。既知3351612tokens、総消費不明、再送なし。[記録](../docs/results/synthetic-paired-dev.md)。
+
+
+### PR #9後の仕事の粒度
+Authority: Human request / working default (2026-09-11)
+Evidence: 「このPRはマージして、以下参考に方針を決める」と[有効39組の実測](../docs/results/synthetic-paired-dev.md)。
+Working default: file単位全起動の優位を期待する方針から、N=1を含む仕事の粒度比較へ移る。all/8/4/2/1を共通executor、全起動、同じ公開context、C4で比較する。packet対応は未実装。小さな合成課題の結果を一般repairやモデル全体の能力限界へ拡張しない。
+Next: [決定文書](../docs/work-packet-direction.md)に沿って最小packet実行経路を検証し、新系列profileを固定する。旧停止系列は保全。公開起点のactivation、固定設定でのevaluation、Managerを順に分ける。
+Validation: 品質を落とさないことを先に評価し、両方成功した組の実所要時間と全消費を記録する。分割・検証・retryも計上。未知usageの停止とhidden oracleの境界を維持する。
+Status: active; supersedes earlier immediate N-sweep and dev-pair completion priorities

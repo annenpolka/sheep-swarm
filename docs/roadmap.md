@@ -2,6 +2,12 @@
 
 2026-09-09の [現在の方針](current-direction.md) に基づく計画。小さなkernelから実workerへ進み、人数を変えた振る舞いを早く観測する。各段階の状態は実行証拠に合わせる。詳細な進捗は [ExecPlan](execplan.md)、M2の証拠は [4体pilot](results/luna-four-worker-pilot.md) を参照。
 
+## Work packetの粒度比較 — 方針決定、実装・実測は未着手
+
+[決定と検証順序](work-packet-direction.md)。最初に複数targetを原子的に提案・検証できる共通executorとCLI dry-runを実装する。独立fixtureでscope・read版・packet間通知・循環・usage不明停止を確認後、凍結devでall/8/4/2/1target packetを全起動・同じ公開context・C4で比較する。品質と両方成功した組の完了時間を主指標とし、N=1も採用候補にする。変更起点を公開したactivation比較は粒度を固定した別課題へ分ける。自動選択・evaluation・Managerは設定を選んだ後へ置く。
+
+以下の旧系列と完了記録は保持する。PR #9の停止系列の残りを埋めることは、次の最優先作業にはしない。
+
 ## 合成課題のSingle/Sheep比較 — 実装済み、dev実測は基盤障害で部分停止
 
 [計画](execplan-synthetic-paired.md)。コーパスのhashを凍結し、dev 128課題を同じDeepSeek Flashで対応比較する。品質と両方式が成功した組の実所要時間をfamily・依存形状・target数・最長依存経路別に報告する。[途中実測](results/synthetic-paired-dev.md)は有効39組。Single 38/39・Sheep 37/39成功、両方成功37組中32組でSingleが速かった。80run目にHTTP 500で1callの使用量が不明となり新規受付を停止。未実行176run、evaluation、Managerは残る。devで設定を選んだ後にevaluation、次にManagerを比較する。
