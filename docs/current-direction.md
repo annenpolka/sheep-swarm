@@ -8,6 +8,10 @@
 
 現在の主仮説は、DeepSeek Flashが単体で手戻りするrepo変更を、分担・依存管理・必要時の上位介入によって正しく早く完了できること。品質と受入完了までの実所要時間を主指標とし、低費用モデルの採用による費用面の利点をさらに削ることは優先しない。固定時間内成功率は使わず、失敗・中断のelapsedと成功時だけのcompletionを分ける。
 
+直近は[凍結した合成課題のSingle/Sheep対応比較](execplan-synthetic-paired.md)を優先する。PR #8の256課題を固定し、dev 128件で同じDeepSeek Flash・thinking有効・同じcall/token枠を使って測る。初回SheepはN16/C4、全target起動。機構追加や新しい言語adapterより先に、品質と両方成功した組の完了時間をfamily・topology・target数・実際の依存深さで整理する。
+
+設定を選んだ後にevaluationへ進み、その後にManagerを比較する。devにchainはなく依存深さは1〜3段、evaluationにはchainが24件あり最大31段という分布差がある。evaluationの8件は既にpilotで観測済みで、完全未見とは主張しない。
+
 少数個体での成功から増員時の振る舞いを推定しない。人数を変え、分業、情報伝播、混雑、振動、収束そのものを観測する。
 
 ## 方針の根拠

@@ -280,3 +280,14 @@ Validation: N4/C2、上位0、thinking enabled、14/16成功、成功時中央�
 Working default: 最終oracleを途中で返さず、失敗した候補・採点条件を保存する。4targetの1試行を256課題や一般repositoryへ一般化しない。
 Next: 残りvariantと規模比較、同じ公開情報を与えた単体対照を別条件で測る。疎配列の契約を明文化するなら別hashで扱い、今回の成績を書き換えない。
 Status: active
+
+
+### 合成課題を凍結したSingle/Sheep対照
+Authority: Human request (2026-09-11)
+Evidence: PR #8への議論を参考に進める指示。[計画](../docs/execplan-synthetic-paired.md)。
+Working default: 機構追加を先送りし、全256課題のhashを維持。dev 128件でDeepSeek thinking有効のSingleとSheep N16/C4を対応比較する。時間締切なし、方式共通の緩いtoken/call枠。隣接実行、family内先攻均衡、非直交な課題構成を明記する。
+Validation: 成功率と両方成功した組の速度を分け、family/topology/target数/依存深さで集計する。unknown usageやdriftは新規受付を止める。
+Next: devで設定を選択・固定しevaluationへ移す。その後にManager。evaluationは既にpilot 8件を観測済みなので完全未見とは呼ばない。
+Status: active
+
+Validation update: 555テスト・参照2件、dev 128件preflight成功。実測80runでHTTP 500/usage不明1callにより受付停止。有効な対応39組でSingle 38/39、Sheep 37/39成功。両方成功37組中32組でSingleが速い。既知3351612tokens、総消費不明、再送なし。[記録](../docs/results/synthetic-paired-dev.md)。
