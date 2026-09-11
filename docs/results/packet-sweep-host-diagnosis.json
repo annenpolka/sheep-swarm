@@ -1,0 +1,28 @@
+{
+  "caseId": "syn-stats-v11",
+  "packetSize": 4,
+  "diagnostic": "Offline reference stub; no real model or token usage; excluded from benchmark quality and speed",
+  "results": [
+    {
+      "label": "frozen",
+      "offlineStub": true,
+      "success": false,
+      "termination": "call-limit",
+      "stubCalls": 9,
+      "errors": [
+        "unobserved-obligation",
+        "unobserved-obligation"
+      ],
+      "sourceUnchanged": true
+    },
+    {
+      "label": "corrected",
+      "offlineStub": true,
+      "success": true,
+      "termination": "accepted",
+      "stubCalls": 8,
+      "errors": [],
+      "sourceUnchanged": true
+    }
+  ]
+}

@@ -2,6 +2,18 @@
 
 2026-09-09の [現在の方針](current-direction.md) に基づく計画。小さなkernelから実workerへ進み、人数を変えた振る舞いを早く観測する。各段階の状態は実行証拠に合わせる。詳細な進捗は [ExecPlan](execplan.md)、M2の証拠は [4体pilot](results/luna-four-worker-pilot.md) を参照。
 
+## Work packetの粒度比較 — 全dev比較・監査完了、evaluation条件の固定が次
+
+[決定と検証順序](work-packet-direction.md)。最初に複数targetを原子的に提案・検証できる共通executorとCLI dry-runを実装する。独立fixtureでscope・read版・packet間通知・循環・usage不明停止を確認後、凍結devでall/8/4/2/1target packetを全起動・同じ公開context・C4で比較する。品質と両方成功した組の完了時間を主指標とし、N=1も採用候補にする。変更起点を公開したactivation比較は粒度を固定した別課題へ分ける。自動選択・evaluation・Managerは設定を選んだ後へ置く。
+
+実装: [repo --packet-size](repository-packets.md)でall/1/複数targetを共通経路へ接続した。公開graphのSCC分割、複数writeの原子的commit、変更前baselineと現在依存版の分離、packet内通知の公開再検証、旧版/権限/usageの拒否を含む。単体・循環・並列・scope・失敗・CLIの13追加テストを含む568テストと参照2件が成功。実APIの小規模対照は[別記録](results/repository-packets.md)。dev 128件の粒度比較、適応器、activation比較は次の範囲。
+
+[dev粒度比較の固定計画](packet-sweep-plan.md)を644実runとして開始したが、3完了・1中断で停止。[通知不整合と修正の記録](results/packet-sweep-host-fault.md)。[修正版の新系列](results/packet-sweep-rerun.md)では有効90runが全て成功したが、91run目のHTTP 500・usage不明で停止。その後、通信再試行で[全644条件の比較と監査](results/packet-sweep-findings.md)を完了した。粒度の基準候補はall、evaluation用の条件固定と実走は未完了。stub成功は性能結果に数えない。
+
+利用者の継続指示により、[通信再試行controller](packet-sweep-retry-plan.md)を追加した。完了条件は失敗receipt・未知usageを保持した再実行と残条件の継続、全attemptの時間・call・受付枠の共有。9条件の通信再試行は全て回復。dev比較は完了し、[結論](results/packet-sweep-findings.md)に基づいて次の比較条件を固定する。
+
+以下の旧系列と完了記録は保持する。PR #9の停止系列の残りを埋めることは、次の最優先作業にはしない。
+
 ## 合成課題のSingle/Sheep比較 — 実装済み、dev実測は基盤障害で部分停止
 
 [計画](execplan-synthetic-paired.md)。コーパスのhashを凍結し、dev 128課題を同じDeepSeek Flashで対応比較する。品質と両方式が成功した組の実所要時間をfamily・依存形状・target数・最長依存経路別に報告する。[途中実測](results/synthetic-paired-dev.md)は有効39組。Single 38/39・Sheep 37/39成功、両方成功37組中32組でSingleが速かった。80run目にHTTP 500で1callの使用量が不明となり新規受付を停止。未実行176run、evaluation、Managerは残る。devで設定を選んだ後にevaluation、次にManagerを比較する。

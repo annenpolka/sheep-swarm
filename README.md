@@ -4,7 +4,9 @@
 
 下位モデルの群れが局所作業を進め、上位モデルが群れを観測して必要時に介入する。下位から上位への相談経路は設けない。個体数を増やしたときの分業、情報伝播、混雑、収束を、品質・費用とともに確かめる。既存製品から設計を借り、小さなprotocolから始める。
 
-現在の方針は [docs/current-direction.md](docs/current-direction.md) にまとめている。下位4体の動作確認から16体へ進み、8・16・32体の初期比較を実行した。64体は次の探索候補で、最適人数や成功の境目はまだ示していない。
+現在の方針は [docs/current-direction.md](docs/current-direction.md) にまとめている。[一匹へ渡す仕事の粒度](docs/work-packet-direction.md)のdev比較を完了した。N=1も正常な選択肢とし、共通executorでall/8/4/2/1target packetを比較した。[packet対応](docs/repository-packets.md)をopt-inで実装した。自動粒度選択は未実装。[全644条件の結果](docs/results/packet-sweep-findings.md)は一括処理が優勢で、evaluation用の条件固定が次の段階。過去の8・16・32体の実測は保持する。
+
+[dev 128件の粒度比較](docs/packet-sweep-plan.md)は最初の1課題・3条件完了後、packet-4のhost通知不整合で停止した。[実測・消費と修正](docs/results/packet-sweep-host-fault.md)を保存。[修正版の実API再実行](docs/results/packet-sweep-rerun.md)では18課題を観測し、有効90runが全て成功した。91run目のHTTP 500・usage不明で停止し、残り553runは未開始。 利用者の追加指示により、[通信障害を最大3回再試行する継続runner](docs/packet-sweep-retry-plan.md)を追加した。成功90条件を保持し、[停止条件の再実行成功](docs/results/packet-sweep-transport-retry.md)を経て、全644条件を完了した。通信再試行9条件は全て回復し、Single 127/128、packet-all・8・4・2は128/128、packet-1は127/128成功。[監査済み結果](docs/results/packet-sweep-dev-complete.md)。未知usageは下限とともに残す。
 
 [合成repository課題集](docs/synthetic-corpus.md)は16系統×16variantの256課題を生成する。Devin（SWE-2 Max）に課題生成を委譲し、呼出し側で補修・独立検査した。`node scripts/synthetic-corpus.ts list`で一覧、`materialize ID NEW_DIRECTORY`で書出し、`preflight --all`でモデルなしの全件検査を行える。課題生成とsolverの実測を分ける。[DeepSeek初回pilot](docs/results/synthetic-corpus-deepseek.md)は16課題中14成功、成功時の中央値34.63秒（N4/C2、thinking enabled）。
 

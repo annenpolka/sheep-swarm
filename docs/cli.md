@@ -36,3 +36,8 @@ repo/compareはtoken予算、mechanismは明示したcreditsまたはtokens、sw
 
 
 repoの`--go-thinking enabled|disabled`はOpenCode GoのDeepSeek workerに限る。省略時は`enabled`となり、dry-runのoptionsにも明示される。上位のGo DeepSeekはadapter側の既定で有効になる。
+
+
+## 複数targetのpacket実行
+
+`repo --packet-size all|N`は[共通packet executor](repository-packets.md)へのopt-in。Go deepseek-flash・thinking有効・上位0に対応する。`--concurrency`は上限で、worker数は分割結果から決まる。`--dry-run`に実際のpacket割当・read範囲・依存・循環による上限超過を表示する。省略時の既存repo動作は保持する。

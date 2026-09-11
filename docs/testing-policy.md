@@ -181,3 +181,21 @@ Astraの独立レビューで固定した反例も通常gateに含める。混�
 対応比較の`synthetic-paired.test.ts`は、256課題の凍結hash、dev限定・先攻均衡の固定順序、失敗や欠測を速度比へ混ぜない集計、不完全usage/非公開contextの拒否、中断系列の再送拒否を検査する。実測は`synthetic-paired-benchmark.mjs audit`でreceipt・候補hash・元repo・独立受入・系列順を再照合する。
 
 HTTP障害など証拠が不足するrunは品質・速度の対応比較から除外し、消費したcallと既知token下限を資源集計へ残す。公開reportのsummaryはこの有効runだけを使う。個別runの成功時だけのcompletion、片側結果のみの課題、未実行課題を混同しない。
+
+
+## Repository work packets
+
+`repo-packets.test.ts`は3nodeの全64有向graphを4粒度で調べ、coverage、SCCの不可分性、縮約graphの非循環、入力順不変、scope検査を確認する。kernelの複数writeは旧read・失効lease・候補コピー改変で検証する。`repo-packet-run.test.ts`は同一executorのall/1/複数target、公開失敗時の全件却下、旧案のfeedback、providerの現在版、静的循環、並列call、未知usage時の発行済みpeer精算、検証基盤障害、source drift、静的graph変更拒否、CLI dry-runを確認する。
+
+実APIの`node scripts/packet-smoke.mjs NEW_OUTPUT_DIRECTORY`はdevの固定1件・5条件を呼ぶ有料疎通対照。呼出し前にpreflight・公開/非公開hash・runtime copy・条件順を固定し、各候補を独立検査する。通常gateへ含めない。旧Single/Sheepとpacketではcontext・check・retryの粒度が異なり、1回の疎通時間差を粒度の因果効果にしない。
+
+
+`packet-sweep.test.ts`は、同値packetの重複実行防止、実方式の順序回転、evaluation排除、共有観測を勝敗に数えない集計、失敗/証拠不備の時間比からの除外、停止/inFlight系列の再送拒否を検証する。実系列ではpacketReceiptAuditが生usage・model/thinking・公開baselineと現在版overlay・kernel checkoutの版・候補内容を照合する。既存smokeの3粒度でも同監査をモデルなしで確認した。
+
+packet同居関係によって静的source edge外へ伝わる通知は、独立した4ファイルfixtureで修正前の失敗を確認してから修正する。kernel異常の注入ではモデル再試行を止め、発行済みpeerの使用量を精算する。外部停止の監査は、古いbudget checkpointと後着receiptを区別し、未知usageをnullのまま保持する。`check-packet-host.mjs`は凍結系列と修正版へ正解を返すoffline stub対照であり、通常モデル評価には混ぜない。
+
+
+通信再試行controllerはHTTP 500を注入する実repo試験で、baselineからの回復と旧receipt保持、未知usageを含む受付控除、元repo不変を確認する。通常gateは実APIを呼ばない。品質・時間の観測とusageの完全性を分離し、回復しても総tokensを既知へ変えない。認証・取消・検証基盤障害は自動再送しない。上限を跨ぐ試行の共有会計を検査する。継続系列のauditは旧系列と新controller・保存solverのhash、各row・result・receipt・候補・固定fixtureを照合する。[継続計画](packet-sweep-retry-plan.md)。
+
+
+`report-packet-sweep-retry.mjs`は全条件終了・pendingなしを確認してから655試行を監査し、stateが監査中に変わっていないことを照合する。measurement-notesの追加時間除外も反映し、品質と資源は除外しない。新しいmodel callは発行しない。[完了結果](results/packet-sweep-dev-complete.md)。
