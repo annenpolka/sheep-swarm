@@ -6,7 +6,7 @@ DeepSeek Flash単体と群れを比較し、分担・依存管理・必要時の
 
 ## Current Working Contract
 
-現在は[lazy swarm](../docs/lazy-swarm.md)の最小版と実Goの動作確認を完了し、三対照の品質・速度比較へ進む。以下のPR #9以前の記録は判断の背景として保持する。
+現在は[lazy swarm](../docs/lazy-swarm.md)の最小版と実Goの動作確認を完了し、[三対照54条件の比較](../docs/results/lazy-benchmark-findings.md)も完了した。lazyは品質・速度の採用条件を満たさず、実験用opt-inを維持する。以下のPR #9以前の記録は判断の背景として保持する。
 
 2026-09-11のPR #9後は[work packet方針](../docs/work-packet-direction.md)を優先する。共通executorで粒度を測り、N=1も正常な選択肢にする。以下の従来範囲は実装の背景として保持する。packet機能はopt-in実装済み。dev全体の粒度実測と監査は完了した。
 
@@ -367,3 +367,9 @@ Next: 次の分解実験は複数変更が本当に必要な課題か、公開�
 ## 2026-09-12: lazy swarmの着手
 
 利用者の添付議論に従い、独立plannerを常設せず、実装者が仕事を継続しながら必要な部分だけ委譲する。[lazy swarm](../docs/lazy-swarm.md)を実験用opt-inに置く。親1・子最大2・非再帰・同じGo DeepSeek Flash、排他的write、現在版read検査、共通budgetを使う。子なしでも旧Singleと同じ速度になるとは仮定しない。旧packet-all/新root子なし/新rootfork可の比較を次の検証軸にする。
+
+## 2026-09-12: lazy swarm三対照の測定結果
+
+Evidence: Observed. 18課題・54条件を凍結して完走・独立監査した。packet-all/子なしroot 18/18、lazy 16/18成功。lazyは子なしrootに対し成功組の時間比中央値1.31倍、総tokens 2.07倍で、事前の層別採用条件を満たさない。独立実装6件でfork要求は0。670,565tokens、67call、通信再試行・使用量不明0。
+Working default: 旧packet-allを基準、子なしrootを有望な新対照として保持し、lazyをopt-inに留める。子なしrootの速度差にはpromptと出力形式の差が含まれる。人数やtoolを増やして現在の結果を救済しない。
+Next: 公開contextと実装量が大きい少数課題を事前に定義し、同じ三対照で測る。hidden defect情報を選択へ流用しない。今回の1反復・family再利用・Singleに収まる入力規模から一般的な分業の否定までは広げない。[結果と限界](../docs/results/lazy-benchmark-findings.md)。

@@ -40,10 +40,10 @@ runに時間締切は設けない。通信timeoutとcall/token上限は受付制
 
 子なし対照は `--lazy-children 0`。`--lazy-children` 単独、`--plan-work` / `--packet-size` / 明示workersとの併用を拒否する。`--dry-run`はモデルも子も起動せず、初期root1体と子の上限を設定に示す。runtimeはGo DeepSeek Flashのみ。activation/recovery/static+readsはこの最小版では併用しない。
 
-## 次の比較を先に固定する
+## 三対照の凍結比較
 
 比較するのは既存packet-all、同じ新rootの子なし、同じ新rootのfork許可という三方式。旧dev課題は「小修正で余計な分業をしないか」の非退行対照として維持する。新規課題は独立した複数の実装が必要なものと、共通仕様で強く結合したものを含め、公開作業構造で選ぶ。Singleの失敗を見てから課題を選ばない。
 
-[最小版の実走](results/lazy-swarm.md)は完了したが、本比較は未実施。着手時にtask/hash・反復数・方式順・C・予算・採用閾値をprofileへ固定する。品質低下を許して速度改善としない。小修正群全体の追加負担を示し、forkした成功例だけで判断しない。まず同数成功を必要条件とし、同時期のpaired成功時間を比較する。小さな通信確認から実用性へ一般化しない。
+[最小版の実走](results/lazy-swarm.md)に続き、[18課題・54条件の本比較](results/lazy-benchmark-findings.md)を完了した。packet-all/子なしrootは18/18、lazyは16/18成功し、lazyは子なしrootより成功組の時間比中央値で1.31倍遅かった。事前採用条件を満たさず、lazyを実験用opt-inに留める。task/hash・反復数・方式順・C・予算・採用閾値をprofileへ固定して実行した。品質低下を許して速度改善としない。小修正群全体の追加負担を示し、forkした成功例だけで判断しない。まず同数成功を必要条件とし、同時期のpaired成功時間を比較する。小さな通信確認から実用性へ一般化しない。
 
 reportはfork要求数（却下された要求も含む）・却下tool数・forkまでのelapsed、親子model callが実際に重なった時間、子を待つ時間、親の継続call数とjoin後call数、破棄した子tokensを保存する。join後のcall全てが統合専用とは限らないので、統合費用の厳密な分類にはtraceを読む必要がある。価格やhuman preparation timeは未測定。

@@ -207,3 +207,5 @@ packet同居関係によって静的source edge外へ伝わる通知は、独立
 ## Lazy swarm
 
 `opencode-go-conversation.test.ts` は明示履歴とthinkingの再送、tool ID対応、旧adapterのtool拒否を確認する。`repo-lazy-run.test.ts` は1call直接提出、barrierでの親子実並行、C1、子scopeの排他、checkpointからのsnapshot、stale readの親引取り、unknown usageの回収、未解決子、hidden失敗後のcall不在、drift、無料dry-runを検査する。通常gateに実APIを含めない。実Goのconversation probeと3方式smokeは別証拠とし、強制forkの接続試験を自律分業の成功へ数えない。
+
+`lazy-benchmark.test.ts` は18課題のdev限定・旧hash維持・実graphの成分数・方式順の均衡、ASTによる未実装fixture作成、品質失敗を含むpaired集計、raw assistant/current snapshot/token算術の監査と改ざん拒否を確認する。実API前に全課題のbaseline失敗・reference成功・意味変異検出を保存する。`lazy-benchmark.mjs` はruntimeとfixtureを凍結し、通信障害だけを予算内で再試行する。品質失敗を新規試行で上書きしない。各attemptの候補を独立した全公開検査・固定oracleで採点し、全条件終了後に保存証拠を再照合する。後処理の `report-lazy-benchmark.mjs` はraw reasoningを公開せず、再試行を含む使用量・親子metricsと事前の採用条件を集計する。

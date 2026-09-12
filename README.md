@@ -20,7 +20,7 @@ Go DeepSeekの今後の呼出しはthinking有効を既定にする。単体・S
 
 ## 現在の状態
 
-現在の追加経路は `repo --lazy-swarm`。親が直接実装し、必要時だけ限定scopeの子を起動する。親1・子最大2の[最小版と実Goの動作確認](docs/results/lazy-swarm.md)を完了した。品質・速度の本比較は次段階。
+現在の追加経路は `repo --lazy-swarm`。親が直接実装し、必要時だけ限定scopeの子を起動する。親1・子最大2の[最小版と実Goの動作確認](docs/results/lazy-swarm.md)を完了した。[18課題・三対照54条件の比較](docs/results/lazy-benchmark-findings.md)も完了した。packet-all/子なしrootは18/18、lazyは16/18成功。lazyは子なしrootより成功組で1.31倍遅く、実験用opt-inを維持する。
 
 **kernel、実Luna worker、選択的な上位介入、8・16・32体の実測、SQLiteからの再開を実装し、別taskで4方式の初期比較まで完了した。**
 
