@@ -355,3 +355,9 @@ Evidence: 利用者の「マージして。以下参考に進める」とPR #10�
 Working default: [semantic planner](../docs/semantic-decomposition.md)は全公開入力を読み、1packetを含む担当とuntouchedを選ぶ。workerには選択入力を渡す。重複writeと循環はhostが統合し、固定oracleを維持する。
 Validation: 公開metadataだけで選ぶdev24課題、Single/固定all/planned、planner込みの時間と共有tokens。品質と速度が主指標。通信失敗だけ既定の再試行を適用し、評価用課題は実行しない。
 Next: 全72条件を独立監査し、1packet率・実変更数とpaired結果から次の方針を決める。
+
+### Semantic decomposition pilotの完了
+
+2026-09-12: dev24課題×3方式、全72試行・101callを監査した。Single/固定allは24/24、plannedは23/24。形式拒否1件を維持する。有効23plan中21件が1packetで、全targetの1packetは2件。成功組の時間比中央値はplannedがSingle比1.36倍・固定all比1.48倍。不明usageなし。
+Working default: Single/packet-allを基準に維持し、独立plannerはopt-in研究経路とする。固定細分化・C増加を優先しない。
+Next: 次の分解実験は複数変更が本当に必要な課題か、公開起点の変更伝播で行う。直接修正/分割要求を最初のcallで選ぶ方式は別の未実装仮説。evaluationとManagerは今回呼んでいない。[証拠と限界](../docs/results/semantic-decomposition-findings.md)。

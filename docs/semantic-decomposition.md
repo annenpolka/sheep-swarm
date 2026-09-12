@@ -40,3 +40,7 @@ plannerは1call。時間とtokensを合算し、元のcall/token枠からplanner
 成功率と両方成功した組の完了時間を主指標にする。plannerを含む実行・runtime受入・失敗試行・再試行待機を計測し、独立監査と準備時間は別記録にする。tokens、提案/実行packet数、担当/実変更target数、1packet率、全targetの1packet率も報告する。family・target数・topology・依存深さ別の探索的集計を残す。
 
 この比較は入力選択と分割を含む方式比較であり、分割だけの因果効果ではない。既知devの小規模実験で、一般repoや未観測evaluationへの優越を主張しない。品質が落ちた場合に速度だけで採用しない。evaluationとManagerは今回の範囲外。
+
+## 実測後の位置付け
+
+[24課題×3方式の比較と監査](results/semantic-decomposition-findings.md)を完了した。Single/固定allが24/24、plannedが23/24成功。有効23plan中21件が1packetで、plannedの成功組の時間比中央値はSingle比1.36倍・固定all比1.48倍だった。独立plannerは既定にせず、実験用opt-inに保つ。

@@ -2,9 +2,9 @@
 
 2026-09-09の [現在の方針](current-direction.md) に基づく計画。小さなkernelから実workerへ進み、人数を変えた振る舞いを早く観測する。各段階の状態は実行証拠に合わせる。詳細な進捗は [ExecPlan](execplan.md)、M2の証拠は [4体pilot](results/luna-four-worker-pilot.md) を参照。
 
-## Semantic decomposition — 実装済み、実測前
+## Semantic decomposition — dev24課題・全72条件の実測と監査完了
 
-[plannerと実験条件](semantic-decomposition.md)。全公開repoを読むDeepSeek Flashの1callからwrite/read/依存を提案させ、hostが重複・循環を統合する。全targetの1packetも許す。完了条件は24課題×Single/固定all/plannedの72条件、planner込みの共有予算・完了時間、全receipt/候補/固定oracleの監査。evaluationとManagerは後段。
+[plannerと実験条件](semantic-decomposition.md)。全公開repoを読むDeepSeek Flashの1callからwrite/read/依存を提案させ、hostが重複・循環を統合する。全targetの1packetも許す。完了条件は24課題×Single/固定all/plannedの72条件、planner込みの共有予算・完了時間、全receipt/候補/固定oracleの監査。evaluationとManagerは後段。 [完了結果](results/semantic-decomposition-findings.md): Single/固定all 24/24、planned 23/24。plannedは成功組でSingle比1.36倍・固定all比1.48倍の時間。有効23planの21件が1packet。独立plannerは既定にせず、次の分解実験は真に複数変更が必要な課題または公開起点の変更伝播へ分ける。
 
 ## Work packetの粒度比較 — 全dev比較・監査完了、semantic decompositionの小規模比較へ
 

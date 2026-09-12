@@ -9,16 +9,18 @@
 ## Progress
 
 - [x] (2026-09-11 23:49:16Z) PR #10をPR #8のブランチへマージした。
-- [x] (2026-09-12 00:13Z) WorkPlanの入力検証・重複scopeの統合・依存の正規化を実装する。
-- [x] (2026-09-12 00:13Z) 同じkernelで計画を実行し、plannerを含む共有予算と証拠を保存する。
-- [x] (2026-09-12 00:13Z) CLIと独立反例を追加。593 tests、型検査、参照2件、diff checkが成功。
-- [ ] dev24課題の3条件を凍結し、実モデルで比較・監査する。
+- [x] (2026-09-12 00:13:30Z) WorkPlanの入力検証・重複scopeの統合・依存の正規化を実装する。
+- [x] (2026-09-12 00:13:30Z) 同じkernelで計画を実行し、plannerを含む共有予算と証拠を保存する。
+- [x] (2026-09-12 00:13:30Z) CLIと独立反例を追加。593 tests、型検査、参照2件、diff checkが成功。
+- [x] (2026-09-12 00:52:44Z) dev24課題×3条件を凍結し、全72試行・101callを実行・監査した。
 
 ## Surprises & Discoveries
 
 監査試験で、JSON保存後の通常objectとメモリ上のnull-prototype objectの比較差を検出した。内容を通常objectへ揃えて比較し、HTTP 500からの回復試験が成功した。
 
 #10のworkerは全公開baselineを既に受け取っていた。新方式ではplannerが全公開入力を見て、workerには選択した公開入力と現在依存版を渡すため、旧固定packetとの比較は分割だけでなく入力選択を含む方式比較になる。
+
+plannerの形式拒否1件は余分なtop-level fieldによるものだった。コピーからそのfieldを除けばscope検証を通ったが、worker未起動の原試行を成功へ読み替えない。
 
 ## Decision Log
 
@@ -34,7 +36,7 @@
 
 ## Outcomes & Retrospective
 
-実装と独立試験を追加した。実モデル比較は未開始。成功品質、完了時間、plannerのpacket数・書込対象数・実変更数、1packet選択率を記録する。選択した1packetが最速だったかは、planner overheadを含めた比較で判断する。
+実装・593 tests・型検査・参照2件と、24課題×3方式の実モデル比較・独立監査を完了した。[結果](results/semantic-decomposition-findings.md)。Single/固定allは24/24、plannedは23/24成功。有効23plan中21件が1packetだが、成功組の時間比中央値はplannedがSingle比1.36倍・固定all比1.48倍。独立plannerを既定にせず、opt-inの研究経路に保つ。
 
 ## Context and Orientation
 
@@ -74,3 +76,5 @@ PR #10 merge commit: 11bee3551d007776374df359ad86f650a477afb4。新ブランチ�
 ## Interfaces and Dependencies
 
 WorkPlanはpackets（id、writablePaths、relevantPaths、objective、invariants、dependsOn）、untouchedPaths、rationaleを持つ。parse/compileはunknownから検証する純粋関数。実行は既存のcallOpenCodeGo、TokenBudget、SwarmKernel、runRepoChecksを使い、新しい外部依存やmerge agentを追加しない。planner textは固定taskとoracleを上書きできない。
+
+完了profile hash: e603bd3d0aae66685547eba8c08fa57b4f1e365bebf2af8bac7b7a0879c2ed90。実走revision: 4b3b00a713ae47e8f3cc52ca65ec483419111414。保存先は.sheep/semantic-decomposition/dev-v1、公開結果はdocs/results/semantic-decomposition-dev.{json,md,png,svg}。通信再試行0・不明usage0、全tokens 1,272,505。
