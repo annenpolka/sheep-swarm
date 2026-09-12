@@ -1,5 +1,6 @@
 """Plot the frozen semantic pilot; failures have elapsed time but no completion."""
 import json, sys
+from pathlib import Path
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -35,3 +36,7 @@ fig.suptitle('DeepSeek Flash: semantic decomposition, 24 frozen dev tasks', font
 fig.text(.02,.015,'Single / fixed-all / planned, thinking enabled, upper 0. One repetition. Exploratory dev comparison; independent audit excluded.',fontsize=9)
 fig.tight_layout(rect=(0,.035,1,.965))
 for ext in ['png','svg']:fig.savefig(sys.argv[2]+'.'+ext,dpi=150)
+
+# Matplotlib emits line-end spaces inside SVG paths; keep repository diffs clean.
+svg = Path(sys.argv[2]+'.svg')
+svg.write_text('\n'.join(line.rstrip() for line in svg.read_text().splitlines())+'\n')
