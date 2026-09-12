@@ -12,6 +12,11 @@ async function execute(profile:ResolvedCliProfile) {
   durationMs: report.durationMs, finalErrors: report.finalErrors },report};
     }
     case 'repo': {
+      if ((profile.options as import('./repo-types.ts').RepoRunOptions).lazySwarm) {
+        const {runLazyRepository}=await import('./repo-lazy-run.ts');
+        const report=await runLazyRepository(profile.options as import('./repo-types.ts').RepoRunOptions);
+        return {summary:report,report};
+      }
       if ((profile.options as import('./repo-types.ts').RepoRunOptions).planWork) {
         const {runPlannedRepository}=await import('./repo-planned-run.ts');
         const report=await runPlannedRepository(profile.options as import('./repo-types.ts').RepoRunOptions);

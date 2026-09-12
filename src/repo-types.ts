@@ -61,6 +61,8 @@ export interface RepoVerification {
   readonly errors: readonly string[];
 }
 export interface RepoRunOptions {
+  readonly lazySwarm?: boolean;
+  readonly lazyChildren?: number;
   /** Opt-in shared multi-target executor; omission preserves the legacy runner. */
   readonly packetSize?: number | 'all';
   /** Host-validated semantic decomposition; only the planned runner supplies model output. */

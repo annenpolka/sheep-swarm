@@ -213,10 +213,13 @@ async function resolveRepo(values: CliValues, cwd: string, runtimes: ResolvedRol
 
   const packetRaw = readString(values, 'packet-size');
   const planWork=readBoolean(values,'plan-work')??false;
+  const lazySwarm=readBoolean(values,'lazy-swarm')??false;
+  if(!lazySwarm&&values['lazy-children']!==undefined)throw new Error('--lazy-children requires --lazy-swarm');
+  if(lazySwarm&&(planWork||packetRaw!==undefined))throw new Error('--lazy-swarm excludes planner and packet flags');
   if(planWork&&packetRaw!==undefined)throw new Error('--plan-work and --packet-size are mutually exclusive');
-  if (packetRaw !== undefined || planWork) {
+  if (packetRaw !== undefined || planWork || lazySwarm) {
     if (values['workers'] !== undefined || values['max-rounds'] !== undefined) throw new Error('packet workers derive from the plan; use concurrency and max-calls');
-    const packetSize = planWork||packetRaw === 'all' ? 'all' : numberOption(values, 'packet-size', 1, 1);
+    const packetSize = lazySwarm||planWork||packetRaw === 'all' ? 'all' : numberOption(values, 'packet-size', 1, 1);
     const options: RepoRunOptions = {
       repository, task, outputDirectory: resolve(cwd, readString(values,'output') ?? `.sheep/packets-${Date.now()}`),
       packetSize, runtime:runtimes.runtime, workerModel:runtimes.workerModel,
@@ -229,6 +232,14 @@ async function resolveRepo(values: CliValues, cwd: string, runtimes: ResolvedRol
     const {prepareRepositoryPackets}=await import('./repo-packet-run.ts');
     const {plan,config}=await prepareRepositoryPackets(options);
     const {packetSize:_packetSize,...plannerOptions}=options;
+    if(lazySwarm){
+      const lazyOptions={...plannerOptions,lazySwarm:true,lazyChildren:nonNegativeInt(values,'lazy-children',2)};
+      const {prepareLazyRepository}=await import('./repo-lazy-run.ts');await prepareLazyRepository(lazyOptions);
+      return {command:'repo',options:lazyOptions,outputDirectory:options.outputDirectory,
+        configuration:configurationFor({...runtimes,maxTokensPerCall:config.maxTokensPerCall},1,config.concurrency,config.timeoutMs),
+        limits:{workerCalls:config.maxCalls,totalCalls:config.maxCalls,metaCalls:0},budget:{unit:'tokens',maxTokens:config.maxTokens,reserveTokens:config.reserveTokensPerCall},
+        capabilities:{resume:false,apply:true,verification:'host-lazy-checks'}};
+    }
     if(planWork)return {command:'repo',options:{...plannerOptions,planWork:true},planning:{state:'requires-model-call',publicPaths:plan.publicPaths},outputDirectory:options.outputDirectory,
       configuration:{...configurationFor({...runtimes,maxTokensPerCall:config.maxTokensPerCall},0,config.concurrency,config.timeoutMs),workers:null},
       limits:{workerCalls:config.maxCalls-1,totalCalls:config.maxCalls,metaCalls:0},budget:{unit:'tokens',maxTokens:config.maxTokens,reserveTokens:config.reserveTokensPerCall},
