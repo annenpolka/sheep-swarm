@@ -17,6 +17,13 @@ interface RepoTaskBase {
   readonly protected: readonly string[];
   readonly checks: readonly RepoCommand[];
 }
+export interface RepoPublicProbe {
+  readonly id:string; readonly provider:string; readonly description:string;
+  readonly paths:readonly string[]; readonly check:RepoCommand;
+}
+export interface RepoPublicProbes {
+  readonly maxRequests:number; readonly maxRechecks:number; readonly catalog:readonly RepoPublicProbe[];
+}
 export interface RepoDiscoveryOptions {
   readonly mode: 'static' | 'static+reads';
   readonly readable: readonly string[];
@@ -25,8 +32,8 @@ export interface RepoDiscoveryOptions {
   readonly maxDeliveredBytes: number;
 }
 export type RepoTask = RepoTaskBase & (
-  | {readonly version: 1; readonly discovery?: never; readonly activation?: never}
-  | {readonly version: 2; readonly discovery: RepoDiscoveryOptions; readonly activation?: {readonly changedPaths: readonly string[]}}
+  | {readonly version: 1; readonly discovery?: never; readonly activation?: never; readonly recovery?: never}
+  | {readonly version: 2; readonly recovery?: {readonly maxUpstreamRechecks: number; readonly review?: 'focused' | 'contract'; readonly publicProbes?: RepoPublicProbes}; readonly discovery: RepoDiscoveryOptions; readonly activation?: {readonly changedPaths: readonly string[]}}
 );
 export interface RepoEntry { readonly bytes: Buffer; readonly mode: number }
 export interface RepoSnapshot {
@@ -54,6 +61,13 @@ export interface RepoVerification {
   readonly errors: readonly string[];
 }
 export interface RepoRunOptions {
+  readonly lazySwarm?: boolean;
+  readonly lazyChildren?: number;
+  /** Opt-in shared multi-target executor; omission preserves the legacy runner. */
+  readonly packetSize?: number | 'all';
+  /** Host-validated semantic decomposition; only the planned runner supplies model output. */
+  readonly workPlan?: unknown;
+  readonly planWork?: boolean;
   readonly repository: string;
   readonly task: unknown;
   readonly outputDirectory: string;

@@ -2,9 +2,13 @@
 
 ## Goal
 
-下位モデルの群れを増やしたとき、成果物依存に沿う局所作業と、上位モデルの必要時の介入で、品質と作業の継続を保てるか確かめる。分業・伝播・混雑・収束と、認知範囲・費用・障害範囲を実コード上で観測する。
+DeepSeek Flash単体と群れを比較し、分担・依存管理・必要時の上位介入によって、同じrepo変更の品質と実際の受入完了までの時間を改善できるか確かめる。費用は上限制約と補助指標に置き、固定時間内成功率は使わない。
 
 ## Current Working Contract
+
+現在は[lazy swarm](../docs/lazy-swarm.md)の最小版と実Goの動作確認を完了し、[三対照54条件の比較](../docs/results/lazy-benchmark-findings.md)も完了した。lazyは品質・速度の採用条件を満たさず、実験用opt-inを維持する。以下のPR #9以前の記録は判断の背景として保持する。
+
+2026-09-11のPR #9後は[work packet方針](../docs/work-packet-direction.md)を優先する。共通executorで粒度を測り、N=1も正常な選択肢にする。以下の従来範囲は実装の背景として保持する。packet機能はopt-in実装済み。dev全体の粒度実測と監査は完了した。
 
 現在はkernel、Luna4体、8・16・32体の規模比較、C=1の永続化と実process再開を確認済み。別taskで4方式の初期比較も完了し、失敗と実装修正後の追加試行を分けて保存した。公式価格・cacheによる見積器に加え、静的・レジストリ意味依存・3段階変更とcredit相当受付を実装した。新しい主比較はtimeoutの使用量不明で停止し、承認された追加100相当の枠でN16/32を実行した。N8/16/32はC=8で各1回成功したが、増員の明確な利益は未確認。詳細は [実測](../docs/results/mechanism-findings.md) に残す。方針全体は [docs/current-direction.md](../docs/current-direction.md)、実装順序は [docs/roadmap.md](../docs/roadmap.md) を参照。
 
@@ -19,8 +23,8 @@
 - 明示された利用者の方針を、Agentの推測で上書きしない。
 - referencesの既存snapshotを書き換えない。
 - 実装していない機能や試験していない性能を完了として報告しない。
-- 既存比較の実動作の下位モデルはgpt-5.6-lunaを用いる。2026-09-10のDeepSeek API対応依頼による各runnerの`--runtime deepseek`の明示選択を追加の例外とし、既存比較のmodelは黙って置換しない。
-- 2026-09-10の利用者方針により、Astra単独のコスト感は概ね把握できたため、今後の単独対照はLunaのみとする。群れへの必要時のAstra介入と、過去の実測・凍結記録は維持する。
+- 2026-09-11の利用者指定により主ベンチマークはopencode-go/deepseek-flash。単体・Manager・Sheepで下位を揃える。過去のLuna/DeepSeek実測とCLI defaultsは黙って置換しない。
+- 主目的は品質と実際の受入完了までの時間。固定時間内成功率は使わない。失敗・中断の完了時間はnull。費用は上限と補助指標。Astra単独の新規試行は行わず、必要時のAstra介入と過去の実測は維持する。
 
 ## Preference Gradients
 
@@ -114,7 +118,7 @@ Status: tentative
 Authority: Working default
 Evidence: Derived; 調査レポート第10節の評価提案。Observed; 2026-09-10の利用者によるAstra単独の新規試行を省く方針と、上下モデルを分ける意図。
 Working default:
-- 今後の単独対照にはLuna、Manager-localには同じ上下モデルの組を使う。Astra単独の新規試行は利用者方針により省く。規模探索と総予算を揃える有用性比較を分ける。
+- 主ベンチマークの単独対照にはDeepSeek Flash、Manager-localにはSheepと同じ上下モデルの組を使う。Astra単独の新規試行は利用者方針により省く。規模探索と総予算を揃える有用性比較を分ける。
 - 外側の受入条件をrun前に固定し、上位が作業仕様を直しても採点条件を緩めない。上位の観測・読み直し・介入、依存発見、監査を費用から落とさない。
 Why it matters:
 - 通知削減や少ないtokenだけで成功を装わないため。
@@ -232,3 +236,140 @@ Status: active
 ### MoonBit repository support
 
 利用者の追加指定により、MoonBit packageの静的依存と補助ファイル配信を追加。各packageのv2 write対象は1つとし、公開catalog不足や外部/生成/条件付き等の未対応依存は拒否する。指定のGo swarmを継続使用。parser生成後は親が型・入力境界を補修し、実MoonBit修正は2callで固定compiler oracleに合格。通常gate488件。[結果](../docs/results/moonbit-repository.md)。
+
+### DeepSeek Flashの品質と実所要時間
+Authority: Human stated (2026-09-11)
+
+「低費用はモデル選択である程度達成。品質と速度が問題」「主ベンチマークはdeepseek-flash」「固定時間はやめ、どれだけかかるか測る」を採用した。PR #6を基準に、まず独立3targetと依存連鎖3targetで単体/現行Sheepを比較する。完了はhidden oracleと独立再検査、時間は実行開始から元repo不変確認まで。準備・親レビューは別会計。詳細は[計画](../docs/execplan-quality-speed.md)。
+
+Validation: 初回の形式負担を保全し、対象名固定系列は単体5/6・Sheep4/6成功。固定時間採点なし、非成功のcompletionはnull。496テストと全24runのreceipt/候補/元repoを監査した。次は公開下流失敗から受理済み上流を再検査する経路を固定反例で検証する。[証拠](../docs/results/deepseek-quality-speed.md)。
+
+
+2026-09-11の追加指示に従い、主モデルopencode-go/deepseek-flashのthinkingは今後有効にする。比較は単体とSheepを同じ設定に揃え、過去のdisabled系列とは分ける。上流再検査はtask v2のopt-inとして実装し、公開local checkの失敗と配信済み版だけを起動根拠にする。再検査はproviderごと1回・総数上限内で、試行予算をリセットしない。完了条件は反例の回復、健全な上流・非公開失敗・古い証拠・上限の検証、thinking有効の実走と使用量保存。[詳細](../docs/execplan-upstream-recovery.md)。
+
+計測優先の追加指示により、今後の比較は1call出力64,000 tokens、1条件総1,000,000 tokens、予約100,000 tokensとする。通信timeoutは600秒に広げ、task全体の時間締切や固定時間採点は設けない。旧上限の実測は別条件として保持する。
+
+
+### thinking有効の38条件からの更新
+Authority: Human direction / measured agent judgment (2026-09-11)
+Evidence: 「一通り進めて」に基づき、[再検査指示・単体対照・Cとactivationの実測](../docs/results/contract-quality.md)を完了。
+Working default: contract指示はfocusedと同じ8/9成功でcallと時間が増えたため、focusedを維持する。単体/Sheepは2課題×3反復でともに6/6成功、6組中5組でSheepが速かった。速度8条件は全成功、C増加と関連起動の差を別々に確認した。小規模課題の優位を一般化せず、N・C・実稼働を分ける。
+Next: workerの診断をhostで検証できる公開反例・対象版に結び付けて上流へ渡す品質仮説を優先する。noteの自己申告だけを起動・権限・完了の根拠にしない。上位介入、progressive activation、read wideningは別の比較として残す。
+Validation: 38runのreceipt・使用量・候補・元source・独立受入を照合、521テストと参照hash成功。thinking有効、緩いtoken上限、時間締切なしを継続。旧系列を保存する。
+Status: active
+
+
+### 公開反例の検証と上流配信
+Authority: Human continuation / measured agent judgment (2026-09-11)
+Evidence: 「進めて」に従い、host作成の公開probeをworkerがIDで選び、配信版に対する検証後だけ上流へ渡す経路を実装した。[結果](../docs/results/public-probes.md)。
+Working default: publicProbesはopt-in。従来・検証のみ・配信が各3/3成功、中央値43.61/65.36/62.97秒で優位を確認できず、通常のfocused設定を維持する。全条件で同じ新規公開probe本文を与えたため、以前の成功率と直接比較しない。
+Validation: 実Goの58call/366006tokensと全9runの独立受入を監査。probe検査4回・証拠付き再起動2回。部品生成1call/10398tokensは別計上。通常gate541テスト、参照2件。新規providerの修正は実測後に分離して記録した。
+Next: 従来方式が同じ誤りを繰り返し残す新規課題と、必要時だけ診断する条件を固定する。hostが公開probeを用意する手間も測る。noteだけで期待値・依存・権限を承認しない。
+Status: active
+
+
+### Devinによる合成課題の拡充
+Authority: Human request (2026-09-11)
+Evidence: 「devin-delegateに大量の合成課題を作らせて」に基づく。[仕様](../docs/synthetic-corpus.md)、[生成と検査の記録](../docs/results/synthetic-corpus.md)。
+Working default: 16系統×16variant、Node .mjsの修正課題。SWE-2 Maxで生成し、親が基準解・誤実装・公開scopeを実行検査する。初期生成の失敗と親の補修を記録する。
+Validation: 256/256課題でbaseline失敗・reference成功、784意味変異を検出（公開check通過365）。既存repo runnerを16系統で検証し、通常gate551テスト成功。構文不正・process障害を意味変異の検出に数えず、公開check通過は予測と実測を分ける。
+Next: 課題を凍結し、Go DeepSeek thinking有効・緩いtoken上限で品質と完了時間を比較する。今回の生成・検査では解答モデルを呼ばない。
+Status: active
+
+
+### 合成課題でのDeepSeek初回pilot
+Authority: Human request (2026-09-11)
+Evidence: 「Deepseekで回してみて」に基づき、16系統のvariant 0、各4targetを固定して実走。[記録](../docs/results/synthetic-corpus-deepseek.md)。
+Validation: N4/C2、上位0、thinking enabled、14/16成功、成功時中央値34.63秒、64call/300036tokens。全receipt・独立受入・元repo不変を監査。permissions/ledgerは疎配列の扱いで最終不合格。通常gate551件。
+Working default: 最終oracleを途中で返さず、失敗した候補・採点条件を保存する。4targetの1試行を256課題や一般repositoryへ一般化しない。
+Next: 残りvariantと規模比較、同じ公開情報を与えた単体対照を別条件で測る。疎配列の契約を明文化するなら別hashで扱い、今回の成績を書き換えない。
+Status: active
+
+
+### 合成課題を凍結したSingle/Sheep対照
+Authority: Human request (2026-09-11)
+Evidence: PR #8への議論を参考に進める指示。[計画](../docs/execplan-synthetic-paired.md)。
+Working default: 機構追加を先送りし、全256課題のhashを維持。dev 128件でDeepSeek thinking有効のSingleとSheep N16/C4を対応比較する。時間締切なし、方式共通の緩いtoken/call枠。隣接実行、family内先攻均衡、非直交な課題構成を明記する。
+Validation: 成功率と両方成功した組の速度を分け、family/topology/target数/依存深さで集計する。unknown usageやdriftは新規受付を止める。
+Next: devで設定を選択・固定しevaluationへ移す。その後にManager。evaluationは既にpilot 8件を観測済みなので完全未見とは呼ばない。
+Status: active
+
+Validation update: 555テスト・参照2件、dev 128件preflight成功。実測80runでHTTP 500/usage不明1callにより受付停止。有効な対応39組でSingle 38/39、Sheep 37/39成功。両方成功37組中32組でSingleが速い。既知3351612tokens、総消費不明、再送なし。[記録](../docs/results/synthetic-paired-dev.md)。
+
+
+### PR #9後の仕事の粒度
+Authority: Human request / working default (2026-09-11)
+Evidence: 「このPRはマージして、以下参考に方針を決める」と[有効39組の実測](../docs/results/synthetic-paired-dev.md)。
+Working default: file単位全起動の優位を期待する方針から、N=1を含む仕事の粒度比較へ移る。all/8/4/2/1を共通executor、全起動、同じ公開context、C4で比較する。packet対応は未実装。小さな合成課題の結果を一般repairやモデル全体の能力限界へ拡張しない。
+Next: [決定文書](../docs/work-packet-direction.md)に沿って最小packet実行経路を検証し、新系列profileを固定する。旧停止系列は保全。公開起点のactivation、固定設定でのevaluation、Managerを順に分ける。
+Validation: 品質を落とさないことを先に評価し、両方成功した組の実所要時間と全消費を記録する。分割・検証・retryも計上。未知usageの停止とhidden oracleの境界を維持する。
+Status: active; supersedes earlier immediate N-sweep and dev-pair completion priorities
+
+
+### Packet executorの最小実装
+Authority: Human continuation / implementation judgment (2026-09-11)
+Evidence: 「進めよう」に基づく[実装](../docs/repository-packets.md)。分割と応答validatorの初稿はGo DeepSeek swarm、kernel接続・CLI・独立検証は親が担当。
+Working default: 全公開の変更前baselineは不変artifactとし、packet自身と依存閉包の現在版を別overlayで配信する。全最新targetを毎callのread-setへ載せて独立作業を相互失効させない。これは旧Singleとのcontext差であり、同一policyとは主張しない。allも同じexecutorを通す。
+Validation: SCCと縮約graph、複数writeの原子的却下、read版・lease・候補の拒否、scope逸脱、並列call、未知usage精算、非公開診断の非還流、CLIを独立検証。新規依存追加、activation/recovery、適応選択、並列resumeは未対応。
+Next: 疎通対照を保存し、dev granularity sweepの順序・同値条件・反復・予算を新profileに固定する。
+Status: active
+
+
+### dev packet粒度比較の実行
+Authority: Human request (2026-09-11)
+Evidence: 「やってみよう」に基づく[固定計画](../docs/packet-sweep-plan.md)。
+Working default: dev 128件、各方式1回、旧Singleとpacket-all/8/4/2/1。同じ実分割は一度だけ呼び共有観測にする。task間逐次、packet C4、thinking有効、上位0、時間締切なし。全条件を実行前に固定し、途中結果を見てsolverを変えない。
+Validation: 対応比較の参照は旧Singleとpacket-all。共有観測はpaired winsから除外し、物理的な消費を一度だけ計上。品質不合格は保存し続行、証拠や基盤の異常は新規受付停止。
+Status: active
+
+
+### packet groupingの通知閉包と測定停止
+
+Evidence: [初回dev系列のhost障害](../docs/results/packet-sweep-host-fault.md)。正解stubでも旧executorがunobserved-obligationを繰り返し、修正版は同じ固定oracleへ8 stub callで到達。
+Working default: packetの同居targetを含む公開依存閉包を実行前に固定する。kernel異常はモデルへ返さず、発行済みcall精算後に受付停止。
+Validation: 4ファイルの独立反例、kernel fault注入時のpeer精算、32targetの旧/修正版offline対照。元runのkernel/budget/seriesは保持し、中断runのreceipt消費を別監査。
+Next: 旧系列の3有効runを新runtimeのpaired比較へ再利用しない。修正版の実測は次項。
+
+
+### 修正版dev-v2の実測
+
+Authority: Human request (2026-09-11「修正し、やり直して」)
+Evidence: [再実行結果](../docs/results/packet-sweep-rerun.md)。通知不具合は再発せず、有効90run成功。91run目のHTTP 500で1callのusage不明が生じ、受付停止。
+Working default: solverは実行中に変更せず、旧結果を流用しない。品質・速度は有効観測のみ、526callと既知token下限6,459,555は基盤障害も含める。未知usageは0へ置換しない。
+Validation: 18課題・6familyを観測、17課題の全条件が揃った。終了後のraw receipt監査も一致。packet-allは共通executor内の分割より速い組が多いが、全件結果や適応器の証拠へ拡張しない。
+Next: 残り553実runは未開始。停止系列を保全し、全dev比較は未完了として扱う。
+
+
+### 通信失敗時の再試行と継続
+Authority: Human stated (2026-09-11)
+
+「失敗したときは単にやり直して続ける」を進行中のdev packet比較へ適用する。HTTP 500等の一時的な通信障害は条件全体を元のbaselineから最大3回再実行し、継続失敗なら利用不能として次へ進む。未知usageは保持し、受付上は予約額を控除する。全試行でcall/token枠を共有する。品質失敗は再抽選せず、kernel・検証基盤の異常や不確定なin-flight再送は停止する。過去の停止記録と一般CLIのbudget lockを変更しない。[計画](../docs/packet-sweep-retry-plan.md)。
+
+
+### dev packet粒度比較の完了
+Authority: User-authorized experiment / measured agent judgment (2026-09-12)
+
+全644条件・655試行を完了し監査した。all/8/4/2は128/128、旧Singleとpacket-1は127/128成功。allに対する時間比中央値は8/4/2/1が約1.66/1.70/1.98/2.33倍。通信障害9条件は全回復し、不明usage13callを保持する。devではallを基準候補にする。evaluation条件は未固定・未実走、Managerとactivationは別仮説として保持する。[結果と限界](../docs/results/packet-sweep-findings.md)。
+
+### 2026-09-12: 全体理解からの作業境界選択
+
+Evidence: 利用者の「マージして。以下参考に進める」とPR #10のdev全件結果。#10を既存baseへマージした。
+Working default: [semantic planner](../docs/semantic-decomposition.md)は全公開入力を読み、1packetを含む担当とuntouchedを選ぶ。workerには選択入力を渡す。重複writeと循環はhostが統合し、固定oracleを維持する。
+Validation: 公開metadataだけで選ぶdev24課題、Single/固定all/planned、planner込みの時間と共有tokens。品質と速度が主指標。通信失敗だけ既定の再試行を適用し、評価用課題は実行しない。
+Next: 全72条件を独立監査し、1packet率・実変更数とpaired結果から次の方針を決める。
+
+### Semantic decomposition pilotの完了
+
+2026-09-12: dev24課題×3方式、全72試行・101callを監査した。Single/固定allは24/24、plannedは23/24。形式拒否1件を維持する。有効23plan中21件が1packetで、全targetの1packetは2件。成功組の時間比中央値はplannedがSingle比1.36倍・固定all比1.48倍。不明usageなし。
+Working default: Single/packet-allを基準に維持し、独立plannerはopt-in研究経路とする。固定細分化・C増加を優先しない。
+Next: 次の分解実験は複数変更が本当に必要な課題か、公開起点の変更伝播で行う。直接修正/分割要求を最初のcallで選ぶ方式は別の未実装仮説。evaluationとManagerは今回呼んでいない。[証拠と限界](../docs/results/semantic-decomposition-findings.md)。
+
+## 2026-09-12: lazy swarmの着手
+
+利用者の添付議論に従い、独立plannerを常設せず、実装者が仕事を継続しながら必要な部分だけ委譲する。[lazy swarm](../docs/lazy-swarm.md)を実験用opt-inに置く。親1・子最大2・非再帰・同じGo DeepSeek Flash、排他的write、現在版read検査、共通budgetを使う。子なしでも旧Singleと同じ速度になるとは仮定しない。旧packet-all/新root子なし/新rootfork可の比較を次の検証軸にする。
+
+## 2026-09-12: lazy swarm三対照の測定結果
+
+Evidence: Observed. 18課題・54条件を凍結して完走・独立監査した。packet-all/子なしroot 18/18、lazy 16/18成功。lazyは子なしrootに対し成功組の時間比中央値1.31倍、総tokens 2.07倍で、事前の層別採用条件を満たさない。独立実装6件でfork要求は0。670,565tokens、67call、通信再試行・使用量不明0。
+Working default: 旧packet-allを基準、子なしrootを有望な新対照として保持し、lazyをopt-inに留める。子なしrootの速度差にはpromptと出力形式の差が含まれる。人数やtoolを増やして現在の結果を救済しない。
+Next: 公開contextと実装量が大きい少数課題を事前に定義し、同じ三対照で測る。hidden defect情報を選択へ流用しない。今回の1反復・family再利用・Singleに収まる入力規模から一般的な分業の否定までは広げない。[結果と限界](../docs/results/lazy-benchmark-findings.md)。

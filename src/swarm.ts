@@ -2,7 +2,7 @@ export { dockerWorkspaceWrites } from "./docker-agent-worker.ts";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { dirname, join } from "node:path";
-import { createFixture, type CodeFixture, type FixtureObserver } from "./fixture.ts";
+import { createFixture, type CodeFixture, type FixtureObserver, type PublicCheckFailure } from "./fixture.ts";
 import { CodexWorkerError, type CodexCallResult } from "./codex-worker.ts";
 import { dockerWorkspaceWrites, validateFiles, SANDBOX_TEMPLATE, type DockerAgentOptions, type DockerTranscript } from "./docker-agent-worker.ts";
 import { apiRun, callerForRuntime, resolveRoleRuntimes, sumUsage, unknownUsageForRun, usageCompleteness } from "./model-runtime.ts";
@@ -36,9 +36,11 @@ export interface SwarmTaskControl {
   beforeCall(target:string,context:Checkout):void;
   observations():unknown;
   delivered(kernel: SwarmKernel, target: string, context: Checkout, callId: string): void;
-  propose(kernel: SwarmKernel, target: string, context: Checkout, callId: string, value: unknown): Promise<
-    {writes: Record<string,string>} | {deferred: string; blocked: boolean}>;
+  propose(kernel: SwarmKernel, target: string, context: Checkout, callId: string, value: unknown, eligible?: readonly string[]): Promise<
+    {writes: Record<string,string>} | {deferred: string; blocked: boolean; executionFailure?: true}>;
   committed(target: string, context: Checkout, validation: string): void;
+  rejected?(kernel: SwarmKernel, target: string, context: Checkout, callId: string,
+    failure: PublicCheckFailure, eligible: readonly string[]): Promise<void>;
   save(directory: string): Promise<void>;
 }
 interface Response { content: string; note: string }
@@ -256,8 +258,12 @@ export async function runSwarm(options: SwarmOptions,
       const queuedAt = Date.now();
       await serialize(async () => {
         record.commitWaitMs = Date.now() - queuedAt;
-        const action = task?.control ? await task.control.propose(kernel,target,context,record.id,response) : {writes};
+        const pendingTargets = new Set(kernel.pending().map(item => item.consumer));
+        const eligible = !unknownModelUsage && !verificationUnavailable && !runtimeCleanupFailed
+          ? fixture.writableIds.filter(id => !pendingTargets.has(id) && (attempts.get(id) ?? 0) < (task?.control?.maxAttempts ?? 3)) : [];
+        const action = task?.control ? await task.control.propose(kernel,target,context,record.id,response,eligible) : {writes};
         if ('deferred' in action) {
+          if(action.executionFailure) verificationUnavailable = true;
           record.outcome=action.blocked?'read-blocked':'deferred';record.errors=[action.deferred];
           recordFailure(target,record.errors);
           if(action.blocked) attempts.set(target,task!.control!.maxAttempts);
@@ -266,10 +272,22 @@ export async function runSwarm(options: SwarmOptions,
         const candidate = kernel.prepare({ id: record.id, agent, context: context.id, writes:action.writes,
           lease, obligations: work.map((item) => item.id) });
         candidateId = candidate.id;
-        const verdict = await kernel.validate(candidate.id, (contents) => verify(contents, [target]));
+        let publicFailure: PublicCheckFailure | undefined;
+        const verdict = await kernel.validate(candidate.id, async (contents) => {
+          const result = await verify(contents, [target]);
+          publicFailure = result.publicFailure;
+          return result;
+        });
         if (!verdict.ok) {
           rejectedDrafts.set(target, { content: response.content, reads: context.reads });
-          record.outcome = "rejected"; record.errors = [...verdict.errors]; recordFailure(target, record.errors); return;
+          record.outcome = "rejected"; record.errors = [...verdict.errors]; recordFailure(target, record.errors);
+          if (publicFailure && !unknownModelUsage && !verificationUnavailable && !runtimeCleanupFailed) {
+            const pendingTargets = new Set(kernel.pending().map(item => item.consumer));
+            const eligible = fixture.writableIds.filter(id => !pendingTargets.has(id)
+              && (attempts.get(id) ?? 0) < (task?.control?.maxAttempts ?? 3));
+            await task?.control?.rejected?.(kernel, target, context, record.id, publicFailure, eligible);
+          }
+          return;
         }
         const committed = kernel.commit(candidate.id);
         resolve(target, context.id, committed.validation);

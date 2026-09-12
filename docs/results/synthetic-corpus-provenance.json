@@ -1,0 +1,245 @@
+{
+  "date": "2026-09-11",
+  "transport": "acp",
+  "cliVersion": "3000.10.21",
+  "baseHead": "d00c1c021d256db4145c8303ed52eea556a42e7d",
+  "solverCalls": 0,
+  "totalTokens": null,
+  "totalCost": null,
+  "usageNote": "Raw usage is provider-reported per response/subturn; compaction and resumed sessions prevent a verified session-total sum. Unknown remains null.",
+  "runs": [
+    {
+      "sessionId": "troubled-cheetah",
+      "requestedModel": "swe-2-max",
+      "reportedModel": "SWE-2 Max",
+      "status": "duplicate_tool_id",
+      "stopReason": "cancelled",
+      "elapsedSeconds": 1238.927,
+      "usage": {
+        "totalTokens": 170208,
+        "inputTokens": 162623,
+        "outputTokens": 7585,
+        "cachedReadTokens": 160065
+      },
+      "cost": null,
+      "processExitCode": 0,
+      "cleanupErrors": [
+        "[Errno 1] Operation not permitted"
+      ],
+      "rawResult": ".sheep/synthetic-corpus-devin/runs/devin-acp-3_ckwpq8/result.json"
+    },
+    {
+      "sessionId": "troubled-cheetah",
+      "requestedModel": "swe-2-max",
+      "reportedModel": "SWE-2 Max",
+      "status": "duplicate_tool_id",
+      "stopReason": "cancelled",
+      "elapsedSeconds": 1293.882,
+      "usage": {
+        "totalTokens": 180644,
+        "inputTokens": 177563,
+        "outputTokens": 3081,
+        "cachedReadTokens": 174844
+      },
+      "cost": null,
+      "processExitCode": 0,
+      "cleanupErrors": [
+        "[Errno 1] Operation not permitted"
+      ],
+      "rawResult": ".sheep/synthetic-corpus-devin/runs/devin-acp-7s_y4m8c/result.json"
+    },
+    {
+      "sessionId": "troubled-cheetah",
+      "requestedModel": "swe-2-max",
+      "reportedModel": null,
+      "status": "permission_required",
+      "stopReason": null,
+      "elapsedSeconds": 603.146,
+      "usage": null,
+      "cost": null,
+      "processExitCode": 0,
+      "cleanupErrors": [
+        "[Errno 1] Operation not permitted"
+      ],
+      "rawResult": ".sheep/synthetic-corpus-devin/runs/devin-acp-hkgsp26y/result.json"
+    },
+    {
+      "sessionId": "troubled-cheetah",
+      "requestedModel": "swe-2-max",
+      "reportedModel": "SWE-2 Max",
+      "status": "permission_required",
+      "stopReason": "cancelled",
+      "elapsedSeconds": 200.369,
+      "usage": {
+        "totalTokens": 165428,
+        "inputTokens": 150015,
+        "outputTokens": 15413
+      },
+      "cost": null,
+      "processExitCode": 0,
+      "cleanupErrors": [],
+      "rawResult": ".sheep/synthetic-corpus-devin/runs/devin-acp-n6kdprxj/result.json"
+    },
+    {
+      "sessionId": "troubled-cheetah",
+      "requestedModel": "swe-2-max",
+      "reportedModel": "SWE-2 Max",
+      "status": "permission_required",
+      "stopReason": "cancelled",
+      "elapsedSeconds": 18.41,
+      "usage": {
+        "totalTokens": 149790,
+        "inputTokens": 149587,
+        "outputTokens": 203
+      },
+      "cost": null,
+      "processExitCode": 0,
+      "cleanupErrors": [
+        "[Errno 1] Operation not permitted"
+      ],
+      "rawResult": ".sheep/synthetic-corpus-devin/runs/devin-acp-xn_whzdw/result.json"
+    },
+    {
+      "sessionId": "imaginary-aftermath",
+      "requestedModel": "swe-2-max",
+      "reportedModel": "SWE-2 Max",
+      "status": "permission_required",
+      "stopReason": "cancelled",
+      "elapsedSeconds": 14.036,
+      "usage": {
+        "totalTokens": 29704,
+        "inputTokens": 29199,
+        "outputTokens": 505,
+        "cachedReadTokens": 23085
+      },
+      "cost": null,
+      "processExitCode": 0,
+      "cleanupErrors": [
+        "[Errno 1] Operation not permitted"
+      ],
+      "rawResult": ".sheep/synthetic-corpus-devin/runs-f3/devin-acp-27zsq3ji/result.json"
+    },
+    {
+      "sessionId": "imaginary-aftermath",
+      "requestedModel": "swe-2-max",
+      "reportedModel": "SWE-2 Max",
+      "status": "turn_completed",
+      "stopReason": "end_turn",
+      "elapsedSeconds": 1088.646,
+      "usage": {
+        "totalTokens": 110495,
+        "inputTokens": 109732,
+        "outputTokens": 763,
+        "cachedReadTokens": 109438
+      },
+      "cost": null,
+      "processExitCode": 0,
+      "cleanupErrors": [],
+      "rawResult": ".sheep/synthetic-corpus-devin/runs-f3/devin-acp-t8e1jpg7/result.json"
+    },
+    {
+      "sessionId": "bottled-magpie",
+      "requestedModel": "swe-2-max",
+      "reportedModel": "SWE-2 Max",
+      "status": "permission_required",
+      "stopReason": "cancelled",
+      "elapsedSeconds": 146.378,
+      "usage": {
+        "totalTokens": 148460,
+        "inputTokens": 138531,
+        "outputTokens": 9929
+      },
+      "cost": null,
+      "processExitCode": 0,
+      "cleanupErrors": [],
+      "rawResult": ".sheep/synthetic-corpus-devin/runs-f4/devin-acp-2cy7d1vl/result.json"
+    },
+    {
+      "sessionId": "bottled-magpie",
+      "requestedModel": "swe-2-max",
+      "reportedModel": "SWE-2 Max",
+      "status": "permission_required",
+      "stopReason": "cancelled",
+      "elapsedSeconds": 32.591,
+      "usage": {
+        "totalTokens": 35336,
+        "inputTokens": 35165,
+        "outputTokens": 171,
+        "cachedReadTokens": 31288
+      },
+      "cost": null,
+      "processExitCode": 0,
+      "cleanupErrors": [
+        "[Errno 1] Operation not permitted"
+      ],
+      "rawResult": ".sheep/synthetic-corpus-devin/runs-f4/devin-acp-2q5vqw40/result.json"
+    },
+    {
+      "sessionId": "bottled-magpie",
+      "requestedModel": "swe-2-max",
+      "reportedModel": "SWE-2 Max",
+      "status": "permission_required",
+      "stopReason": "cancelled",
+      "elapsedSeconds": 1343.215,
+      "usage": {
+        "totalTokens": 138228,
+        "inputTokens": 130674,
+        "outputTokens": 7554,
+        "cachedReadTokens": 128866
+      },
+      "cost": null,
+      "processExitCode": 0,
+      "cleanupErrors": [],
+      "rawResult": ".sheep/synthetic-corpus-devin/runs-f4/devin-acp-90bikvlg/result.json"
+    },
+    {
+      "sessionId": "bottled-magpie",
+      "requestedModel": "swe-2-max",
+      "reportedModel": "SWE-2 Max",
+      "status": "permission_required",
+      "stopReason": "cancelled",
+      "elapsedSeconds": 94.319,
+      "usage": {
+        "totalTokens": 158540,
+        "inputTokens": 158204,
+        "outputTokens": 336,
+        "cachedReadTokens": 156886
+      },
+      "cost": null,
+      "processExitCode": 0,
+      "cleanupErrors": [
+        "[Errno 1] Operation not permitted"
+      ],
+      "rawResult": ".sheep/synthetic-corpus-devin/runs-f4/devin-acp-sysu774_/result.json"
+    }
+  ],
+  "devinDeliveredFiles": {
+    "f3-text.ts": "1b96e3b6017aecc506171ca0dba4c8a0753283e9e38bc32a4b34f312878ab41c",
+    "f4-state.ts": "ddf402ec3758b7e988cbd4986f3c21963bf62103fbdd4d335af8c5d67f409797"
+  },
+  "processCleanupAudit": {
+    "ownedProcessGroupIds": [
+      19450,
+      22858,
+      23426,
+      24560,
+      31952,
+      41462,
+      42304,
+      44414,
+      44598,
+      83165,
+      99570
+    ],
+    "remainingOwnedGroups": [],
+    "checkedAfterAllDevinRuns": true
+  },
+  "retainedFiles": {
+    "experiments/synthetic-corpus/common.ts": "0c1589d9f97db9ccf79a4d37b04b707c8440faa6c26a464f53e04d198052b052",
+    "experiments/synthetic-corpus/index.ts": "8f10d73bde009c13b0dc28b9135df6f80ed30ebabccbad3370ccbf18e965eb1d",
+    "experiments/synthetic-corpus/families/f1-scalars.ts": "e4834473c90449bef8d99c1d358dae19d561bf146de05d8b001d6e452ac53f43",
+    "experiments/synthetic-corpus/families/f2-collections.ts": "3eb364b105db53edfa19634e31b58fbce4dbf1e69f9ddcfbae88c5b2c5063187",
+    "experiments/synthetic-corpus/families/f3-text.ts": "076cd6cd576dd7c93598454dc56307ec2cd763b3c8d6ce805904146213a10e9b",
+    "experiments/synthetic-corpus/families/f4-state.ts": "4299e422d35373f2c8829819eb8862b12060cd6e37dd95d498cd3d33612c4a22"
+  }
+}

@@ -1,0 +1,362 @@
+{
+  "format": 1,
+  "series": "/Users/annenpolka/ghq/github.com/annenpolka/sheep-swarm/.sheep/lazy-swarm/smoke-v3",
+  "profile": {
+    "format": 1,
+    "purpose": "implementation-smoke-not-performance-evaluation",
+    "options": {
+      "runtime": "opencode-go",
+      "workerModel": "deepseek-flash",
+      "goThinking": "enabled",
+      "maxCalls": 12,
+      "maxRounds": 24,
+      "maxTokens": 1000000,
+      "reserveTokensPerCall": 100000,
+      "maxTokensPerCall": 64000,
+      "timeoutMs": 600000,
+      "concurrency": 3,
+      "maxMetaCalls": 0
+    },
+    "fixtures": [
+      {
+        "id": "local",
+        "hash": "61ab51249448dc530307dbae7974b1b3427d286290a88042a9c647a1df7723fc"
+      },
+      {
+        "id": "independent",
+        "hash": "91cb2fbe0da06cdf04eea97f4cede15775481d4d6320afb1c38cdc34854bd0a8"
+      },
+      {
+        "id": "coupled",
+        "hash": "eb8ec0d06e95f63c65dd8b92e0a7bc2c20dc79c41a376e79748504ea4c77988e"
+      }
+    ],
+    "orders": [
+      {
+        "id": "local",
+        "methods": [
+          "packet-all",
+          "root-only",
+          "lazy"
+        ]
+      },
+      {
+        "id": "independent",
+        "methods": [
+          "root-only",
+          "lazy",
+          "packet-all"
+        ]
+      },
+      {
+        "id": "coupled",
+        "methods": [
+          "lazy",
+          "packet-all",
+          "root-only"
+        ]
+      }
+    ],
+    "forcedFork": "Separate final plumbing condition explicitly requests fork; not autonomous decomposition evidence."
+  },
+  "rows": [
+    {
+      "fixture": "local",
+      "method": "packet-all",
+      "success": true,
+      "termination": "accepted",
+      "completionMs": 9130.653875,
+      "elapsedMs": 9130.653875,
+      "tokens": 2314,
+      "unknownUsage": 0,
+      "calls": 1,
+      "children": [],
+      "metrics": null,
+      "independentCheckPassed": true,
+      "receiptCount": 1,
+      "receiptTokens": 2314
+    },
+    {
+      "fixture": "local",
+      "method": "root-only",
+      "success": true,
+      "termination": "accepted",
+      "completionMs": 3355.6440000000002,
+      "elapsedMs": 3355.6440000000002,
+      "tokens": 985,
+      "unknownUsage": 0,
+      "calls": 1,
+      "children": [],
+      "metrics": {
+        "forkRequests": 0,
+        "rejectedToolCalls": 0,
+        "firstForkMs": null,
+        "rootChildOverlapMs": 0,
+        "joinWaitMs": 0,
+        "rootContinuationCalls": 0,
+        "rootCallsAfterJoin": 0,
+        "discardedChildTokens": 0
+      },
+      "independentCheckPassed": true,
+      "receiptCount": 1,
+      "receiptTokens": 985
+    },
+    {
+      "fixture": "local",
+      "method": "lazy",
+      "success": true,
+      "termination": "accepted",
+      "completionMs": 4246.712125000002,
+      "elapsedMs": 4246.712125000002,
+      "tokens": 1841,
+      "unknownUsage": 0,
+      "calls": 1,
+      "children": [],
+      "metrics": {
+        "forkRequests": 0,
+        "rejectedToolCalls": 0,
+        "firstForkMs": null,
+        "rootChildOverlapMs": 0,
+        "joinWaitMs": 0,
+        "rootContinuationCalls": 0,
+        "rootCallsAfterJoin": 0,
+        "discardedChildTokens": 0
+      },
+      "independentCheckPassed": true,
+      "receiptCount": 1,
+      "receiptTokens": 1841
+    },
+    {
+      "fixture": "independent",
+      "method": "root-only",
+      "success": true,
+      "termination": "accepted",
+      "completionMs": 25577.571334000004,
+      "elapsedMs": 25577.571334000004,
+      "tokens": 6583,
+      "unknownUsage": 0,
+      "calls": 1,
+      "children": [],
+      "metrics": {
+        "forkRequests": 0,
+        "rejectedToolCalls": 0,
+        "firstForkMs": null,
+        "rootChildOverlapMs": 0,
+        "joinWaitMs": 0,
+        "rootContinuationCalls": 0,
+        "rootCallsAfterJoin": 0,
+        "discardedChildTokens": 0
+      },
+      "independentCheckPassed": true,
+      "receiptCount": 1,
+      "receiptTokens": 6583
+    },
+    {
+      "fixture": "independent",
+      "method": "lazy",
+      "success": true,
+      "termination": "accepted",
+      "completionMs": 9570.630166000003,
+      "elapsedMs": 9570.630166000003,
+      "tokens": 5456,
+      "unknownUsage": 0,
+      "calls": 2,
+      "children": [],
+      "metrics": {
+        "forkRequests": 0,
+        "rejectedToolCalls": 0,
+        "firstForkMs": null,
+        "rootChildOverlapMs": 0,
+        "joinWaitMs": 0,
+        "rootContinuationCalls": 1,
+        "rootCallsAfterJoin": 0,
+        "discardedChildTokens": 0
+      },
+      "independentCheckPassed": true,
+      "receiptCount": 2,
+      "receiptTokens": 5456
+    },
+    {
+      "fixture": "independent",
+      "method": "packet-all",
+      "success": true,
+      "termination": "accepted",
+      "completionMs": 54960.461208,
+      "elapsedMs": 54960.461208,
+      "tokens": 14312,
+      "unknownUsage": 0,
+      "calls": 1,
+      "children": [],
+      "metrics": null,
+      "independentCheckPassed": true,
+      "receiptCount": 1,
+      "receiptTokens": 14312
+    },
+    {
+      "fixture": "coupled",
+      "method": "lazy",
+      "success": true,
+      "termination": "accepted",
+      "completionMs": 1857.072417000003,
+      "elapsedMs": 1857.072417000003,
+      "tokens": 1242,
+      "unknownUsage": 0,
+      "calls": 1,
+      "children": [],
+      "metrics": {
+        "forkRequests": 0,
+        "rejectedToolCalls": 0,
+        "firstForkMs": null,
+        "rootChildOverlapMs": 0,
+        "joinWaitMs": 0,
+        "rootContinuationCalls": 0,
+        "rootCallsAfterJoin": 0,
+        "discardedChildTokens": 0
+      },
+      "independentCheckPassed": true,
+      "receiptCount": 1,
+      "receiptTokens": 1242
+    },
+    {
+      "fixture": "coupled",
+      "method": "packet-all",
+      "success": true,
+      "termination": "accepted",
+      "completionMs": 3745.9215410000033,
+      "elapsedMs": 3745.9215410000033,
+      "tokens": 1049,
+      "unknownUsage": 0,
+      "calls": 1,
+      "children": [],
+      "metrics": null,
+      "independentCheckPassed": true,
+      "receiptCount": 1,
+      "receiptTokens": 1049
+    },
+    {
+      "fixture": "coupled",
+      "method": "root-only",
+      "success": true,
+      "termination": "accepted",
+      "completionMs": 2363.4031669999968,
+      "elapsedMs": 2363.4031669999968,
+      "tokens": 665,
+      "unknownUsage": 0,
+      "calls": 1,
+      "children": [],
+      "metrics": {
+        "forkRequests": 0,
+        "rejectedToolCalls": 0,
+        "firstForkMs": null,
+        "rootChildOverlapMs": 0,
+        "joinWaitMs": 0,
+        "rootContinuationCalls": 0,
+        "rootCallsAfterJoin": 0,
+        "discardedChildTokens": 0
+      },
+      "independentCheckPassed": true,
+      "receiptCount": 1,
+      "receiptTokens": 665
+    },
+    {
+      "fixture": "forced-fork-protocol",
+      "method": "lazy",
+      "success": true,
+      "termination": "accepted",
+      "completionMs": 28589.601125,
+      "elapsedMs": 28589.601125,
+      "tokens": 13592,
+      "unknownUsage": 0,
+      "calls": 4,
+      "children": [
+        {
+          "id": "child-1",
+          "scope": [
+            "b.mjs"
+          ],
+          "status": "accepted",
+          "joined": true
+        }
+      ],
+      "metrics": {
+        "forkRequests": 1,
+        "rejectedToolCalls": 0,
+        "firstForkMs": 5151.522125000003,
+        "rootChildOverlapMs": 2459.6030420000025,
+        "joinWaitMs": 17533.06683299999,
+        "rootContinuationCalls": 2,
+        "rootCallsAfterJoin": 1,
+        "discardedChildTokens": 0
+      },
+      "independentCheckPassed": true,
+      "receiptCount": 4,
+      "receiptTokens": 13592
+    }
+  ],
+  "hashes": {
+    "local/packet-all": {
+      "call-1.json": "fa4eeddcf20b1cb238b9690103a9d8d857a479bac4bdccf1c145b39e7938d188",
+      "call-1.request.json": "90fae25616018053c47f47f90ae7b32c5913635fbe38cb1adca8c48bf4fdd050"
+    },
+    "local/root-only": {
+      "call-1.json": "834007c64b3fd505a860166161c26644465bc1ecbbcab97d3e14a50d1a57e2be",
+      "call-1.request.json": "7ac861cdaba69b9c5e335bf056d2a0d88f6810808e3992142befa8d21ec744bc"
+    },
+    "local/lazy": {
+      "call-1.json": "bb9a3220ea9064d9a744272d373ed68c0ab5cf855eefe863c2ba7bad5d243c3a",
+      "call-1.request.json": "e39730a0691c1044349d2c28f26acbd12236715928df8e824871e9ddffa1df8c"
+    },
+    "independent/root-only": {
+      "call-1.json": "baae5d935398e8f2687748eb04e82fb59186142cc603250e66a16d20dce70d65",
+      "call-1.request.json": "83eb335300ca1ef40f3a14bbf06fcd0bb00a8bc7c86e83667f49b4665707398c"
+    },
+    "independent/lazy": {
+      "call-1.json": "41dd72a9b30422377dd4e1294ec9a5d3acf563e43c617d47fa8ebb484e36e7f5",
+      "call-1.request.json": "b5944920642ddf36b8a4646d1c50da3580af2f22440c0808b86247d1e9410ee8",
+      "call-2.json": "5f27e4e2434aa87f821a4466e8a0b3111d055c577ecef190e4dd6dcc109e7aad",
+      "call-2.request.json": "8f827989cabfb8ec2708b0b545895d9b0472f6d8a51a2b88f28fac9a447c1f38"
+    },
+    "independent/packet-all": {
+      "call-1.json": "87988a0ea3dc98bb33296067a51ad4e3a481e391ff49b3ac365e6b86d3ea40d0",
+      "call-1.request.json": "3d6a4a0fa7a261cc6d0a6911de702d23f2aa9269b8e79b165553ee391386ddef"
+    },
+    "coupled/lazy": {
+      "call-1.json": "99987948f6e51775fd0a7679f9f14d43017f46a910de01f608446e2c6dd1758c",
+      "call-1.request.json": "590dc325a83d80d0be58ecb88a3ac50c01001272a7d31cdb32df65b13a1359bd"
+    },
+    "coupled/packet-all": {
+      "call-1.json": "45159c0876777c2e334c3fd45547d1cf6a493b3fe77411a6fdc566fcae3d249b",
+      "call-1.request.json": "7fd6a3da2a2895d0df3257729d82d6e8c47597edfb9bba373796ff00ec9f4823"
+    },
+    "coupled/root-only": {
+      "call-1.json": "b79987e9f2e60714ebdb8b988d4cbbe4745bd577e64315d83d94c27566bbdea3",
+      "call-1.request.json": "a873ae005c37516be497059e377711f761af4cc05fabc90660fb5496aa829fba"
+    },
+    "forced-fork-protocol/lazy": {
+      "call-1.json": "7523365d2d6ec3f158247d6cef14976fd51cedcc9bda160587aa775400e905e1",
+      "call-1.request.json": "5fd25ef01789fa2e28011a08127365db22e1ef3d220e19f46c8e753515da7e3b",
+      "call-2.json": "cc744db9715d3066c463832c07bd96009168dc060600a55654f3b74fa4cc9a99",
+      "call-2.request.json": "c58659e40af8acd83fa0fdcd999cd593af18e55ee6ae414df26395acd7890672",
+      "call-3.json": "0675a085464d946ece7ca94fa56056e31f636fa93d6cf4985d53ae56da8e2027",
+      "call-3.request.json": "e09cd07fd5ca2f28094519ada74cdad480a859a0d4145a346e115d04d9c77c5e",
+      "call-4.json": "826f4ce71f261e99ca36cf25046c0cd39c10d0417a33a423a474bf2ac1434c5d",
+      "call-4.request.json": "8539f344c6e0c720e9b062a9ed8eba4182d72d4d0929e43a5d8a516f71bdc74c"
+    }
+  },
+  "tokens": 48039,
+  "calls": 14,
+  "unknownUsage": 0,
+  "auditIssues": [],
+  "sources-before.json": {
+    "src/repo-lazy-run.ts": "4e8ae9b43560d5840974d63cf947405fa92a1323450d98e0c3c580a1e0787d7e",
+    "src/opencode-go-worker.ts": "9a399e30679e347cf8180a61688078af172bac443e31438a3e92d2e5380cddb9",
+    "src/opencode-go-conversation.ts": "e4b2d26e11cf34dfb81b23b2e6edea6efd63f62babaa6d24dac9e26e8ecd8a3f",
+    "scripts/lazy-swarm-smoke.mjs": "e5c2014bbb98dc482f7917d4ebba8b0cdff6e06906ad0874d7e4076daa7f10e0"
+  },
+  "sources.json": {
+    "src/repo-lazy-run.ts": "4e8ae9b43560d5840974d63cf947405fa92a1323450d98e0c3c580a1e0787d7e",
+    "src/opencode-go-worker.ts": "9a399e30679e347cf8180a61688078af172bac443e31438a3e92d2e5380cddb9",
+    "src/opencode-go-conversation.ts": "e4b2d26e11cf34dfb81b23b2e6edea6efd63f62babaa6d24dac9e26e8ecd8a3f",
+    "scripts/lazy-swarm-smoke.mjs": "e5c2014bbb98dc482f7917d4ebba8b0cdff6e06906ad0874d7e4076daa7f10e0"
+  }
+}

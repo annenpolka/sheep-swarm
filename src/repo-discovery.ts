@@ -2,20 +2,26 @@ import {createHash} from 'node:crypto';
 import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import type {Checkout, SwarmKernel} from './kernel.ts';
-import type {RepoSnapshot} from './repo-types.ts';
+import type {RepoSnapshot,RepoPublicProbe,RepoVerification} from './repo-types.ts';
+import type {PublicCheckFailure} from './fixture.ts';
+import {admitPublicProbe} from './repo-probe-admission.ts';
+import {selectUpstreamRechecks} from './repo-recovery-selection.ts';
 import type {SwarmTaskControl} from './swarm.ts';
 import {discoverRepoDependencies, type RepoDependencyScan} from './repo-dependencies.ts';
-import {REPO_WORKER_SCHEMA, parseWorkerResponse} from './worker-proposal.ts';
+import {REPO_WORKER_SCHEMA, parseWorkerResponse, parseProbeResponse} from './worker-proposal.ts';
 import {selectImpactedTargets} from './repo-impact.ts';
 import {validateMoonBitCatalog} from './repo-moonbit.ts';
 
 export const REPO_GOAL='.sheep-internal/goal.md';
 export const REPO_GUIDANCE='.sheep-internal/guidance.md';
+const RECOVERY_PREFIX='.sheep-internal/recovery/';
 const hash=(s:string)=>createHash('sha256').update(s).digest('hex');
 type Stamp={version:number;evidenceEpoch:number};
 interface Evidence {consumer:string;provider:string;source:'static-import'|'delivered-read';evidenceId:string;consumerStamp:Stamp;providerStamp:Stamp|null;sourceHash:string}
 interface Delivery {callId:string;target:string;path:string;stamp:Stamp;sha256:string;bytes:number}
 interface Uncertainty {callId:string;target:string;reads:Checkout['reads'];source:'model-claim'|'host-observation';observed:readonly string[];missing:readonly string[];hypothesis:string|null;open:boolean;resolution:string|null}
+
+type ProbeVerifier=(probe:RepoPublicProbe,contents:Readonly<Record<string,string>>)=>Promise<RepoVerification>;
 
 /** An explicit public catalog and delivery ledger; never a capability issuer. */
 export class RepositoryDiscovery implements SwarmTaskControl {
@@ -37,9 +43,19 @@ export class RepositoryDiscovery implements SwarmTaskControl {
   readonly #requests:{callId:string;target:string;paths:readonly string[];accepted:boolean;reason:string|null}[]=[];
   readonly #uncertainties:Uncertainty[]=[];
   readonly #pendingScans=new Map<string,RepoDependencyScan>();
+  readonly #recoveryArtifacts=new Map<string,string>();
+  readonly #feedbackReads=new Map<string,Set<string>>();
+  readonly #rechecked=new Set<string>();
+  readonly #recoveries:{callId:string;target:string;context:string;selected:string[];reason:string;validations:string[]}[]=[];
   #scan:RepoDependencyScan;
+  readonly #probeVerifier:ProbeVerifier|undefined;
+  readonly #probeSeen=new Set<string>();
+  readonly #probeRecords:Record<string,unknown>[]=[];
+  #probeRequests=0;
+  #probeRechecks=0;
 
-  private constructor(snapshot:RepoSnapshot,scan:RepoDependencyScan) {
+  private constructor(snapshot:RepoSnapshot,scan:RepoDependencyScan,probeVerifier?:ProbeVerifier) {
+    this.#probeVerifier=probeVerifier;
     this.#snapshot=snapshot;this.#scan=scan;this.scans.push(scan);
     const options=snapshot.task.discovery!;
     this.maxAttempts=3+options.maxReadCalls;
@@ -55,8 +71,17 @@ export class RepositoryDiscovery implements SwarmTaskControl {
     for(const path of this.#public)this.artifacts[path]=snapshot.initialTargets[path]??snapshot.entries.get(path)!.bytes.toString('utf8');
     snapshot.task.files.forEach((file,i)=>{
       const instruction=`.sheep-internal/instructions/${i}.md`;
+      if(snapshot.task.recovery){
+        const feedback=`${RECOVERY_PREFIX}${i}.json`;
+        this.#recoveryArtifacts.set(file.path,feedback);
+        this.artifacts[feedback]='No upstream recheck requested.';
+        this.#feedbackReads.set(file.path,new Set([feedback]));
+        this.edge(file.path,feedback);
+      }
       this.instructions.set(file.path,instruction);this.artifacts[instruction]=file.instructions;
       const selected=this.closure([file.path,...snapshot.task.context,...file.dependsOn]);selected.delete(file.path);
+      for(const probe of snapshot.task.recovery?.publicProbes?.catalog??[])
+        if(probe.provider===file.path||selected.has(probe.provider))for(const p of probe.paths)if(p!==file.path)selected.add(p);
       this.#selected.set(file.path,selected);
       for(const provider of selected)this.edge(file.path,provider);
       // Only selected work receives the initial goal-change obligation. All declared
@@ -65,13 +90,13 @@ export class RepositoryDiscovery implements SwarmTaskControl {
     });
   }
 
-  static async create(snapshot:RepoSnapshot):Promise<RepositoryDiscovery> {
+  static async create(snapshot:RepoSnapshot,probeVerifier?:ProbeVerifier):Promise<RepositoryDiscovery> {
     if(!snapshot.task.discovery)throw new Error('repository discovery requires task v2');
     const paths=[...new Set([...snapshot.task.files.map(f=>f.path),...snapshot.task.context,...snapshot.task.discovery.readable])];
     validateMoonBitCatalog([...snapshot.entries.keys()],paths);
     const contents=Object.fromEntries(paths.map(p=>[p,snapshot.initialTargets[p]??snapshot.entries.get(p)!.bytes.toString('utf8')]));
     const scan=await discoverRepoDependencies(contents,paths,snapshot.task.files.map(f=>f.path));
-    return new RepositoryDiscovery(snapshot,scan);
+    return new RepositoryDiscovery(snapshot,scan,probeVerifier);
   }
 
   private edge(consumer:string,provider:string):void {
@@ -89,21 +114,25 @@ export class RepositoryDiscovery implements SwarmTaskControl {
     return ids;
   }
   dependencies():readonly {consumer:string;provider:string}[]{return [...this.#edges.values()];}
-  contextIds(_kernel:SwarmKernel,target:string):readonly string[] {
+  contextIds(kernel:SwarmKernel,target:string):readonly string[] {
     if(this.#targets.has(target)){
       const selected=this.closure([target,...(this.#selected.get(target)??[])]);selected.delete(target);this.#selected.set(target,selected);
     }
-    return [...new Set([target,REPO_GOAL,REPO_GUIDANCE,...(this.instructions.has(target)?[this.instructions.get(target)!]:[]),...(this.#selected.get(target)??[])])];
+    for(const work of kernel.pending())if(work.consumer===target && work.provider.startsWith(RECOVERY_PREFIX))
+      this.#feedbackReads.get(target)?.add(work.provider);
+    return [...new Set([target,REPO_GOAL,REPO_GUIDANCE,...(this.#feedbackReads.get(target)??[]),...(this.instructions.has(target)?[this.instructions.get(target)!]:[]),...(this.#selected.get(target)??[])])];
   }
   instruction(_target:string):string {
+    const probes=this.#snapshot.task.recovery?.publicProbes;
+    const probeInstruction=probes ? ` You may instead choose kind="diagnose" with content="", paths=["<one public probe id>"], observed=[], missing=[], hypothesis="", note="<unverified diagnosis>". Use this when a delivered upstream provider appears to violate a public requirement. The host executes the selected fixed probe on its delivered version, not on your draft; no file is written by this action. Successful reproduction can request a bounded upstream recheck; a passing probe does not prove the full contract. Do not supply executable code or new expected values. Probe catalog: ${JSON.stringify(probes.catalog)}.` : '';
     return `Choose one action: kind="write" to replace your assigned file, kind="read" to request public paths in a separate call, or kind="uncertain" to record missing information. Return all fields {kind,content,paths,observed,missing,hypothesis,note}; unused strings must be "" and unused arrays []. A read request changes no files; requested contents arrive in the NEXT separately metered call. Exact wire shapes by action:
 WRITE: {"kind":"write","content":"<complete replacement>","paths":[],"observed":[],"missing":[],"hypothesis":"","note":"<summary>"}
 READ: {"kind":"read","content":"","paths":["<requested public path>"],"observed":[],"missing":[],"hypothesis":"","note":"<reason>"}
 UNCERTAIN: {"kind":"uncertain","content":"","paths":[],"observed":["<observation>"],"missing":["<unresolved information>"],"hypothesis":"<optional unverified hypothesis, or empty string>","note":"<summary>"}
-A write MUST NOT put its target in paths. On write/read, observed and missing MUST be [] and hypothesis MUST be "". Put explanatory prose only in note. Current Local files are already delivered. A read request may name at most ${this.#snapshot.task.discovery!.maxPathsPerRead} paths; do not request the whole catalog when it exceeds that limit. Never claim a requested file was read before delivery. Public catalog (names only): ${JSON.stringify([...this.#public])}. No tools or upper consultation. ${this.#snapshot.task.discovery!.mode==='static'?'Additional model read requests are disabled in static mode.':''}`;
+A write MUST NOT put its target in paths. On write/read, observed and missing MUST be [] and hypothesis MUST be "". Put explanatory prose only in note. Current Local files are already delivered. A read request may name at most ${this.#snapshot.task.discovery!.maxPathsPerRead} paths; do not request the whole catalog when it exceeds that limit. Never claim a requested file was read before delivery. Public catalog (names only): ${JSON.stringify([...this.#public])}. No tools or upper consultation. ${this.#snapshot.task.discovery!.mode==='static'?'Additional model read requests are disabled in static mode.':''}${probeInstruction}`;
   }
   private additionalBytes(target:string,context:Checkout):number {
-    return [...(this.#selected.get(target)??[])].filter(p=>!this.#snapshot.task.context.includes(p)).reduce((n,p)=>n+Buffer.byteLength(context.contents[p]!),0);
+    return [...(this.#selected.get(target)??[]),...(this.#feedbackReads.get(target)??[])].filter(p=>!this.#snapshot.task.context.includes(p)).reduce((n,p)=>n+Buffer.byteLength(context.contents[p]!),0);
   }
   beforeCall(target:string,context:Checkout):void {
     if((this.#deliveredBytes.get(target)??0)+this.additionalBytes(target,context)>this.#snapshot.task.discovery!.maxDeliveredBytes){
@@ -114,7 +143,7 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
   delivered(kernel:SwarmKernel,target:string,context:Checkout,callId:string):void {
     if(!this.#targets.has(target))return;
     this.#deliveredBytes.set(target,(this.#deliveredBytes.get(target)??0)+this.additionalBytes(target,context));
-    for(const path of this.#selected.get(target)??[]) {
+    for(const path of [...(this.#selected.get(target)??[]),...(this.#feedbackReads.get(target)??[])]) {
       const stamp=context.reads[path]!;
       this.#deliveries.push({callId,target,path,stamp,sha256:hash(context.contents[path]!),bytes:Buffer.byteLength(context.contents[path]!)});
       this.#evidence.push({consumer:target,provider:path,source:'delivered-read',evidenceId:callId,consumerStamp:context.reads[target]!,providerStamp:stamp,sourceHash:hash(context.contents[path]!)});
@@ -148,8 +177,9 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
     this.#selected.set(target,selected);
     return this.defer(target,context,callId,`Read requested; await next call: ${paths.join(', ')}`,false);
   }
-  async propose(kernel:SwarmKernel,target:string,context:Checkout,callId:string,value:unknown) {
-    const action=parseWorkerResponse(value);
+  async propose(kernel:SwarmKernel,target:string,context:Checkout,callId:string,value:unknown,eligible:readonly string[]=[]) {
+    const action=this.#snapshot.task.recovery?.publicProbes?parseProbeResponse(value):parseWorkerResponse(value);
+    if(action.kind==='diagnose')return this.diagnose(kernel,target,context,callId,action.id,action.note,eligible);
     if(action.kind==='uncertain') {
       this.#uncertainties.push({callId,target,reads:context.reads,source:'model-claim',observed:action.observed,missing:action.missing,hypothesis:action.hypothesis,open:true,resolution:null});
       return {deferred:`Uncertain: ${action.missing.join('; ')}`,blocked:false};
@@ -177,12 +207,109 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
     // Future reads of accepted target contents still come from the kernel.
     for(const path of this.#selected.get(target)??[])if(context.contents[path]!==undefined)this.artifacts[path]=context.contents[path]!;
   }
+  /** A failed public consumer check is suspicion, never proof that its providers are wrong. */
+  async rejected(kernel:SwarmKernel,target:string,context:Checkout,callId:string,
+    failure:PublicCheckFailure,eligible:readonly string[]):Promise<void> {
+    const limit=this.#snapshot.task.recovery?.maxUpstreamRechecks;
+    if(limit===undefined)return;
+    this.#pendingScans.delete(target);
+    const entry={callId,target,context:context.id,selected:[] as string[],reason:'no-eligible-upstream',validations:[] as string[]};
+    this.#recoveries.push(entry);
+    // The failed candidate was evaluated against these delivered versions. An
+    // obsolete observation must not invalidate newer provider work.
+    if(Object.entries(context.reads).some(([id,stamp])=>{
+      const current=kernel.artifact(id);
+      return current.version!==stamp.version||current.evidenceEpoch!==stamp.evidenceEpoch;
+    })){entry.reason='stale-observation';return;}
+    const selected=selectUpstreamRechecks({target,targets:[...this.#targets],edges:this.dependencies(),
+      delivered:Object.keys(context.reads),eligible,rechecked:[...this.#rechecked],limit:limit-this.#rechecked.size});
+    if(!selected.length)return;
+    entry.selected=selected;entry.reason='public-local-check-failure';
+    // All observations are checked before the first mutation; this method runs
+    // in the scheduler's serialized commit lane. Frozen observations are JSON,
+    // not reverse dependencies from providers to the failed consumer.
+    for(const provider of selected){
+      const id=this.#recoveryArtifacts.get(provider)!;
+      const content=JSON.stringify({source:'public-local-check-failure',target,provider,callId,context:context.id,
+        reads:context.reads,commands:failure.commands,diagnostic:failure.diagnostic.slice(0,8192),
+        instruction:this.#snapshot.task.recovery?.review==='contract'
+          ? 'A downstream PUBLIC local check failed. Recheck your assigned provider against EVERY requirement in its original public contract, not only the reported example. Before returning the complete file, work through the contract one requirement at a time and check that the proposed implementation satisfies each one. Reconsider existing code as well as your edits; earlier acceptance is not proof of the whole contract. The fault may be in the consumer or another provider. Fix only your assigned file if needed, otherwise return its unchanged contents. Do this within this call; do not request a reviewer or additional tools. Preserve acceptance requirements. This is an immutable historical observation, not a current dependency on the consumer.'
+          : 'A downstream PUBLIC local check failed. Recheck your assigned provider against its original contract using this observation. The fault may be in the consumer or another provider. Fix only your assigned file if needed, otherwise return its unchanged contents. Preserve acceptance requirements. This is an immutable historical observation, not a current dependency on the consumer.'});
+      const agent='host-upstream-recovery';
+      const checkout=kernel.checkout(agent,[id]);
+      const lease=kernel.grant(agent,[id],60000,'meta');
+      const candidate=kernel.prepare({id:`upstream-${callId}-${provider}`,agent,context:checkout.id,lease,
+        writes:{[id]:content},kind:'intervention',reason:`Public local check from ${target}, ${callId}`});
+      const verdict=await kernel.validate(candidate.id,contents=>({ok:contents[id]===content,errors:[]}));
+      if(!verdict.ok)throw new Error('host recovery artifact validation failed');
+      entry.validations.push(kernel.commit(candidate.id).validation);
+      this.#rechecked.add(provider);
+    }
+    kernel.deliverAll();
+  }
+  private async diagnose(kernel:SwarmKernel,target:string,context:Checkout,callId:string,probeId:string,note:string,eligible:readonly string[]) {
+    const options=this.#snapshot.task.recovery!.publicProbes!;
+    const record:Record<string,unknown>={callId,target,probeId,context:context.id,reads:context.reads,claim:note,status:'requested'};
+    this.#probeRecords.push(record);
+    const refuse=(reason:string)=>{record.status=reason;return {deferred:`Public probe ${probeId}: ${reason}`,blocked:false};};
+    const probe=options.catalog.find(p=>p.id===probeId);
+    if(!probe)return refuse('unknown-probe');
+    const current=Object.fromEntries(Object.keys(context.reads).map(p=>[p,kernel.artifact(p)]));
+    const key=hash(JSON.stringify([probe.id,probe.paths.map(p=>[p,context.reads[p]])]));
+    const upstream=selectUpstreamRechecks({target,targets:[...this.#targets],edges:this.dependencies(),delivered:Object.keys(context.reads),eligible:[...this.#targets],rechecked:[],limit:this.#targets.size});
+    const reason=admitPublicProbe({target,provider:probe.provider,upstream,eligible,required:probe.paths,reads:context.reads,current,key,seen:[...this.#probeSeen],requests:this.#probeRequests,maxRequests:options.maxRequests});
+    if(reason)return refuse(reason);
+    try {if([...this.closure(probe.paths)].some(p=>!probe.paths.includes(p)))return refuse('probe-dependency-outside-scope');}
+    catch {return refuse('probe-dependency-outside-scope');}
+    this.#probeRequests++;this.#probeSeen.add(key);
+    record.key=key;record.provider=probe.provider;record.inputHashes=Object.fromEntries(probe.paths.map(p=>[p,hash(context.contents[p]!)]));
+    record.command=probe.check;
+    let verification:RepoVerification;
+    try {
+      if(!this.#probeVerifier)throw new Error('probe verifier unavailable');
+      verification=await this.#probeVerifier(probe,context.contents);
+      record.verification=verification;
+    } catch {
+      record.status='probe-verification-unavailable';
+      return {deferred:'Public probe verification unavailable',blocked:true,executionFailure:true as const};
+    }
+    const failed=verification.checks.find(c=>c.exitCode!==0||c.timedOut||c.signal!==null);
+    let confirmed=false;
+    try {
+      const marker=JSON.parse(failed?.stdout??'');
+      confirmed=marker!==null&&typeof marker==='object'&&Object.keys(marker).length===2&&marker.probeId===probeId&&marker.status==='counterexample';
+    } catch { /* An interpreter/import failure is not a reproduced contract violation. */ }
+    const ordinaryFailure=confirmed&&failed?.exitCode===1&&!verification.ok&&!verification.executionFailure&&failed&&failed.exitCode!==null&&!failed.timedOut&&failed.signal===null
+      &&verification.errors.length===1&&verification.errors[0]===`command exited with code ${failed.exitCode}: ${failed.argv.join(' ')}`;
+    if(verification.executionFailure||(!verification.ok&&!ordinaryFailure)){
+      record.status='probe-verification-unavailable';
+      return {deferred:'Public probe verification unavailable',blocked:true,executionFailure:true as const};
+    }
+    if(verification.ok)return refuse('probe-passed');
+    // The command ran on a private copy, but check again before committing evidence.
+    if(Object.entries(context.reads).some(([p,stamp])=>{const a=kernel.artifact(p);return a.version!==stamp.version||a.evidenceEpoch!==stamp.evidenceEpoch;}))return refuse('stale-observation');
+    const diagnostic=[failed!.stderr,failed!.stdout].filter(Boolean).join('\n').slice(0,8192);
+    record.status='verified-counterexample';
+    if(this.#probeRechecks>=options.maxRechecks)return refuse('verified-recheck-limit');
+    const id=this.#recoveryArtifacts.get(probe.provider)!;
+    const content=JSON.stringify({source:'verified-public-probe',probeId,target,provider:probe.provider,callId,
+      reads:Object.fromEntries(probe.paths.map(p=>[p,context.reads[p]])),inputHashes:record.inputHashes,
+      command:probe.check,diagnostic,instruction:'A host-authored PUBLIC probe failed on the stated provider version using only its declared public inputs. Recheck this reproducible counterexample against your original contract. Fix only your assigned file. Preserve acceptance requirements. This is historical evidence, not a dependency on the reporting consumer. A model diagnosis is not acceptance evidence.'});
+    const agent='host-public-probe',checkout=kernel.checkout(agent,[id]),lease=kernel.grant(agent,[id],60000,'meta');
+    const candidate=kernel.prepare({id:`probe-${callId}`,agent,context:checkout.id,lease,writes:{[id]:content},kind:'intervention',reason:`Verified public probe ${probeId}`});
+    const verdict=await kernel.validate(candidate.id,contents=>({ok:contents[id]===content,errors:[]}));
+    if(!verdict.ok)throw new Error('probe evidence validation failed');
+    record.validation=kernel.commit(candidate.id).validation;record.status='upstream-recheck';this.#probeRechecks++;
+    kernel.deliverAll();
+    return {deferred:`Public probe ${probeId}: verified counterexample; upstream recheck scheduled. Wait for the provider's new version before changing its consumer.`,blocked:false};
+  }
   observations():unknown {
     return this.#uncertainties.filter(u=>u.open).slice(-6).map(u=>({...u,observed:u.observed.slice(0,3),missing:u.missing.slice(0,3)}));
   }
   metrics(calls:readonly {role:string;target:string;contextBytes:number}[]) {
     const workers=calls.filter(c=>c.role==='worker');const sizes=workers.map(c=>c.contextBytes).sort((a,b)=>a-b);
     return {selectedTargets:this.#targets.size,activatedTargets:new Set(workers.map(c=>c.target)).size,initiallyActivatedTargets:this.activation.activeTargets.length,
+      publicProbeRequests:this.#probeRequests,publicProbeRechecks:this.#probeRechecks,upstreamRechecks:this.#rechecked.size,recoveryObservations:this.#recoveries.length,
       scanCount:this.scans.length,scannedFiles:this.scans.reduce((n,s)=>n+s.filesRead,0),scannedBytes:this.scans.reduce((n,s)=>n+s.bytesRead,0),scanDurationMs:this.scans.reduce((n,s)=>n+s.durationMs,0),
       contextBytes:{total:sizes.reduce((n,b)=>n+b,0),p95:sizes[Math.max(0,Math.ceil(sizes.length*0.95)-1)]??0,max:sizes.at(-1)??0},
       uniqueDeliveredDependencies:new Set(this.#deliveries.map(d=>d.path)).size,readRequests:this.#requests.length,
@@ -190,6 +317,8 @@ A write MUST NOT put its target in paths. On write/read, observed and missing MU
       additionalDeliveredBytes:[...this.#deliveredBytes.values()].reduce((n,b)=>n+b,0)};
   }
   async save(directory:string):Promise<void> {
+    await writeFile(join(directory,'public-probes.json'),JSON.stringify({format:1,requests:this.#probeRequests,rechecks:this.#probeRechecks,records:this.#probeRecords},null,2)+'\n');
+    await writeFile(join(directory,'upstream-recovery.json'),JSON.stringify({format:1,enabled:!!this.#snapshot.task.recovery,maxUpstreamRechecks:this.#snapshot.task.recovery?.maxUpstreamRechecks??0,review:this.#snapshot.task.recovery?.review??'focused',rechecked:[...this.#rechecked],observations:this.#recoveries},null,2)+'\n');
     await writeFile(join(directory,'activation.json'),JSON.stringify({format:1,...this.activation,limitations:['static-and-declared-context-impact-only','changed-paths-are-host-declared','final-oracle-still-covers-all-targets']},null,2)+'\n');
     await writeFile(join(directory,'dependency-evidence.json'),JSON.stringify({format:1,edges:this.dependencies(),evidence:this.#evidence,scans:this.scans},null,2)+'\n');
     await writeFile(join(directory,'read-deliveries.json'),JSON.stringify({format:1,requests:this.#requests,deliveries:this.#deliveries,additionalBytesByTarget:Object.fromEntries(this.#deliveredBytes)},null,2)+'\n');

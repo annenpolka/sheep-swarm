@@ -24,6 +24,10 @@ interface OptionSpec {
  */
 const COMMAND_OPTIONS: Record<CommandName, readonly OptionSpec[]> = {
   repo: [
+    { key: 'packet-size', type: 'string' },
+    { key: 'plan-work', type: 'boolean' },
+    { key: 'lazy-swarm', type: 'boolean' },
+    { key: 'lazy-children', type: 'string' },
     { key: 'repo', type: 'string' },
     { key: 'task', type: 'string' },
     { key: 'output', type: 'string' },
@@ -268,7 +272,12 @@ Defaults: N=4, C=2, worker calls=16, meta calls=2, rounds=12, timeout=120000 ms;
 Host commands run in candidate workspaces; they are not a security sandbox.
 --apply writes accepted targets after final checks and source drift checks.
 Repository resume and Docker Agent are unsupported.
---go-thinking enabled|disabled requires an OpenCode Go DeepSeek worker.`,
+--go-thinking enabled|disabled requires an OpenCode Go DeepSeek worker (default: enabled).
+--lazy-swarm enables an implementing root with optional fork/join; --lazy-children 0|1|2 (default 2) controls the run-wide child limit.
+--plan-work asks DeepSeek Flash to choose scopes before execution; planner time/tokens count. Dry-run makes no model calls.
+--packet-size all|N opts into the shared packet executor (Go deepseek-flash, thinking enabled, upper 0).
+Packet mode derives worker count from the public graph; --concurrency is a ceiling (default 4).
+Packet --dry-run includes assignments, current read paths, dependencies and SCC size exceptions.`,
   swarm:`Defaults: N=4, C=4, size=4, worker calls=size*5, meta calls=2, rounds=20.
 --max-worker-calls (legacy --max-calls) excludes meta calls.
 No total token or credit admission budget; --max-tokens-per-call limits output.

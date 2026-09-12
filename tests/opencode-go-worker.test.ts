@@ -37,6 +37,8 @@ test("chat completions sends schema prompt, JSON mode and session header", async
 test("responses Luna and Anthropic messages parse their native output shapes", async () => {
   const responses = fake({ model: "gpt-5.6-luna", status: "completed", output: [{ type: "message", role: "assistant", content: [{ type: "output_text", text: '{"ok":true}' }] }], usage: { input_tokens: 10, output_tokens: 3, total_tokens: 13 } });
   const luna = await callOpenCodeGo(opts("gpt-5.6-luna", responses.fetch));
+  assert.equal(JSON.parse(String(responses.init?.body)).thinking, undefined);
+  assert.equal(luna.transcript.thinking, null);
   assert.deepEqual(luna.result, { ok: true }); assert.equal(luna.transcript.apiFormat, "responses");
   const messages = fake({ model: "qwen3.8-max", type: "message", role: "assistant", stop_reason: "end_turn", content: [{ type: "text", text: '{"ok":true}' }], usage: { input_tokens: 8, output_tokens: 2, total_tokens: 14, cache_read_input_tokens: 4 } });
   const qwen = await callOpenCodeGo(opts("qwen3.8-max", messages.fetch));
@@ -48,7 +50,7 @@ test("responses Luna and Anthropic messages parse their native output shapes", a
 test("DeepSeek thinking is explicit and invalid profiles never reach the provider", async () => {
   const seen = fake({ model: "deepseek-flash", choices: [{ finish_reason: "stop", message: { role: "assistant", content: '{"ok":true}' } }], usage });
   await callOpenCodeGo(opts("deepseek-flash", seen.fetch));
-  assert.equal(JSON.parse(String(seen.init?.body)).thinking, undefined);
+  assert.deepEqual(JSON.parse(String(seen.init?.body)).thinking, { type: "enabled" });
   for (const thinking of ["disabled", "enabled"]) {
     await callOpenCodeGo(opts("deepseek-flash", seen.fetch, { thinking }));
     assert.deepEqual(JSON.parse(String(seen.init?.body)).thinking, { type: thinking });

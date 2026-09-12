@@ -135,3 +135,25 @@ task v2のactivation.changedPathsはhost入力。既知graphの逆向きclosure�
 ## MoonBit repository discovery
 
 `moonbit-manifest.ts`が新旧設定の宣言的subsetを純粋解析し、`repo-moonbit.ts`がmodule/source directoryとpackage importをpublic catalog内で解決する。`.mbt` consumerからmodule/package設定・import先sourceへのedgeを張り、書換targetだけが同一packageのreadonly companionsへedgeを持つ。複数writableを同一packageへ置く場合は拒否する。これによりpackageの相互可視性をkernelの循環writeへ変換しない。test/wbtest importも保守的に合併する。新形式を優先し、snapshot内の該当package全sourceとmetadataがpublic範囲にあることを事前確認する。Moonやbuild scriptは探索中に実行しない。外部依存・生成・条件付き等は未対応issue、意味・構文・型の受入はhost checkが担う。[詳細](moonbit-repositories.md)。
+
+
+## 公開失敗による上流再検査
+
+task v2の`recovery.maxUpstreamRechecks`（1..64、省略で無効）は、局所checkが通常終了で不合格となったときに、配信済みの上流targetを再検査するopt-in。selectorは依存先から順に選び、未配信・readonly・pending・試行上限済み・再検査済みtargetを除く。全runの総数と各provider 1回までの上限を併用し、通常のattempt/call/token/read byte上限をリセットしない。
+
+hostはfailed callのcheckout stampを再確認し、call/context/read版/公開command/診断をJSONの観測として保存する。各provider専用の内部artifactへ、hostの限定lease・prepare・validate・commitを通して記録する。host checkoutはその内部artifactだけを読むので、上流から下流への逆依存を作らない。対象providerと通常の下流へkernelの変更通知を流し、古い作業の証拠を失効させる。consumerは必要な内部artifactも配信してobligationを解消する。診断は過去の観測でありproviderの不良確定ではない。workerは元の担当fileだけを直すか、そのまま返す。
+
+最終oracle、model claim、transport失敗、古いcheckout、check基盤障害・timeout・signal、候補の構造変更はこの起動理由にならない。公開検査に表れない誤りは引き続きfinalで失敗し、その診断を修復へ戻さない。現時点は根本原因の判定器ではなく、有限の再検査policyである。上位モデルは呼ばず、hostによる条件更新の件数と上位call数は別に記録する。
+
+上流再検査の`review:contract`は公開仕様全体を同じcallで見直す指示を加える。要件の確認をモデルに求めても、その自己申告を検証証拠とはしない。focusedとの比較では公開仕様・check・oracle・再起動範囲を固定し、実際の最終受入で品質を測る。指示の選択を別の新規課題へ使う場合は、選択規則を実測前に固定し、同じ失敗課題へ非公開診断を戻す修復と区別する。
+
+
+公開probeによる追加再検査は、model claimをhostの検査証拠に変換するopt-in経路である。実行はprovider一つとreadonly公開入力のコピーに限定し、配信版全体のfreshness、試行可能性、probe/入力版の重複、要求数と追加再起動数の上限を照合する。kernelで検証・確定した回復artifactだけを更新し、逆依存やwrite capabilityを増やさない。固定検査の反例印とexit 1がない失敗は検査不能として受付停止する。[詳細](public-probes.md)。
+
+## Semantic WorkPlan
+
+[WorkPlan](semantic-decomposition.md)のtextは提案でありwrite capabilityではない。hostがtarget coverageと公開read範囲を検査し、重複writeと依存循環を統合した後に既存kernelのlease/read/原子的commitへ接続する。untouchedを最終oracleから除かない。plannerとworkerの台帳を合算し、planner精算後の残り予算だけをworkerへ渡す。
+
+## Lazy rootと限定job
+
+[lazy経路](lazy-swarm.md)は単体の直接提出から始める。forkはhost検証されたscopeとsnapshotを子へ渡し、親の会話を保った継続を非同期に開始する。子の完了は候補であり、join時の配信read版とlease検査・公開検査・kernel確定を要する。未解決子を残した完了は認めない。最後に現在版の公開統合検査で通知義務を処理し、固定の全体oracleを一度だけ採点へ使う。既存wave型packet executorと専用の親継続loopは分ける。

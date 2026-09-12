@@ -25,13 +25,13 @@
 
 ```sh
 npm run repo -- --repo /path/to/project --task /path/to/task.json \
-  --runtime opencode-go --worker-model deepseek-flash --go-thinking disabled \
+  --runtime opencode-go --worker-model deepseek-flash --go-thinking enabled \
   --workers 4 --concurrency 2 --max-calls 12 --max-meta-calls 0 \
   --max-tokens 200000 --reserve-tokens 30000 --max-tokens-per-call 16000 \
   --timeout-ms 180000 --output .sheep/my-repository-run
 ```
 
-`--go-thinking disabled`はGo DeepSeek workerの推論モードを明示する。省略時はproviderの既定値。上位には転送しない。今回の実装試行では既定の推論だけで出力上限に達したため、この明示設定で生成を確認した。CLI全般への暗黙の既定変更はしていない。
+Go DeepSeekは省略時もthinkingを有効にする。`--go-thinking disabled`で過去条件を明示的に再現できる。このrepo optionはworkerにだけ転送する。Go adapterを使う他runnerやGo DeepSeekのupperも、明示指定がなければ有効になる。過去のdisabled実測は元の条件のまま保持する。
 
 Goのkeyは`OPENCODE_GO_API_KEY`を使う。CLIは認証storeを自動で読まない。`opencode-go/deepseek-flash`という指定はruntime `opencode-go`とraw model ID `deepseek-flash`へ分ける。keyを引数やtaskへ書かない。
 
@@ -121,3 +121,15 @@ v2で `"activation":{"changedPaths":["policy.ts"]}` を追加すると、公開s
 changedPathsはGit差分の自動検出ではなく作業者の宣言。書込範囲はfilesのままで、未起動のtargetも全体oracleへ含める。隠れた意味依存の見逃しや不正な元コードをidleだけで成功にしない。[実走と境界](results/repository-scale-activation.md)。
 
 TS targetの局所検査は `node --check` だけに頼らず、実行環境のmodule読み込みや型検査を明示する。新しいuntrackedのテスト/依存もcontextまたはprotected等へ指定し、snapshotへ含める。検査programが存在しない入力を無視する場合、processのexit 0だけでは意図したcaseを実行した証拠にならない。
+
+
+### 公開された下流失敗から上流を再検査する
+
+task v2に`"recovery":{"maxUpstreamRechecks":2}`を追加すると、公開local checkの不合格から配信済みの上流targetを再起動する。各providerはrun内1回、全体で指定数まで。省略すると従来の動作。`activation.changedPaths`で初期起動しなかったproviderも、宣言済みの書込対象なら再検査できる。試行回数・token・追加context bytesの上限は引き継ぐ。内部の診断artifactの再配信も追加bytesに含める。
+
+`swarm/upstream-recovery.json`が起動理由・対象・検証receiptを保存し、内部artifactに公開command・診断・観測版が残る。候補のコード権限や非公開final検査は変わらない。公開checkを通る誤りにはこの方法だけでは対応できない。[検証・実走](results/upstream-recovery.md)。
+
+`recovery.review`は`focused`（省略時）または`contract`。後者は上流を再検査する同じcall内で、公開された元仕様を要件ごとに見直すよう指示する。追加のテスト情報・別モデル・追加callを与える方式ではない。write権限、再起動上限、非公開oracleの隔離は共通。
+
+
+公開反例を選ぶ `recovery.publicProbes` と `diagnose` actionを追加した。host作成の固定検査を配信版で実行し、所定の失敗印を確認した場合だけ有限の追加上流再検査を行う。省略時は従来通り。[設定・wire形式・制限](public-probes.md)。

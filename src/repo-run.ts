@@ -170,6 +170,7 @@ function makeTask(
       ): Promise<FixtureResult> => {
         const errors: string[] = [];
         let executionFailure = false;
+        let publicFailure: FixtureResult['publicFailure'];
         const scoped = scope !== undefined && scope.length > 0 ? scope : undefined;
 
         // Immutable artifacts must never be replaced by generated code.
@@ -224,13 +225,19 @@ function makeTask(
                 const diagnostic = [failed.stderr && `stderr:\n${failed.stderr}`, failed.stdout && `stdout:\n${failed.stdout}`]
                   .filter(Boolean).join('\n').slice(0, 8192);
                 if (diagnostic) errors.push(`Local check diagnostics:\n${diagnostic}`);
+                if (!verification.executionFailure && !failed.timedOut && failed.signal === null && failed.exitCode !== null
+                  && verification.errors.length === 1
+                  && verification.errors[0] === `command exited with code ${failed.exitCode}: ${failed.argv.join(' ')}`) {
+                  publicFailure = {commands: [failed.argv], diagnostic};
+                }
               }
             }
           }
         };
 
         const verdict = (): FixtureResult => ({ ok: errors.length === 0, errors,
-          ...(executionFailure ? { executionFailure: true } : {}) });
+          ...(executionFailure ? { executionFailure: true } : {}),
+          ...(!executionFailure && publicFailure ? {publicFailure} : {}) });
 
         if (scoped === undefined) {
           // Final scope: run every final check against the combined candidate.
@@ -240,6 +247,7 @@ function makeTask(
 
         // Local scope: structural immutable-source verdict plus each target's local checks.
         await runChecks([]);
+        if (errors.length > 0) return verdict();
         for (const id of scoped) {
           if (id === GOAL_ARTIFACT || id === GUIDANCE_ARTIFACT) continue;
           const commands = localChecks.get(id) ?? [];
@@ -284,6 +292,9 @@ export async function runRepository(
   options: RepoRunOptions,
   caller?: RepoCaller,
 ): Promise<RepoRunReport> {
+  if(options.lazySwarm||options.lazyChildren!==undefined)throw new Error('use runLazyRepository for lazy mode');
+  if(options.planWork||options.workPlan!==undefined)throw new Error('use runPlannedRepository or runPacketRepository for work plans');
+  if (options.packetSize !== undefined) throw new Error('use runPacketRepository for packetSize');
   // ---- Preflight: manifest, runtime, limits, output path, capture (no model calls). ----
   const task = parseRepoTask(options.task);
 
@@ -325,6 +336,7 @@ export async function runRepository(
   if (options.goThinking !== undefined &&
     ((options.goThinking !== 'enabled' && options.goThinking !== 'disabled') || resolved.runtime !== 'opencode-go' || !resolved.workerModel.startsWith('deepseek-')))
     throw new RangeError('goThinking requires an OpenCode Go DeepSeek worker and enabled or disabled');
+  const goThinking = options.goThinking ?? (resolved.runtime === 'opencode-go' && resolved.workerModel.startsWith('deepseek-') ? 'enabled' : undefined);
   const snapshot = await captureRepository(options.repository, task);
   for (const file of [...task.files.map(f=>f.path),...task.context,...task.protected,...(task.discovery?.readable??[])]) {
     const absolute=join(snapshot.root,file);
@@ -336,8 +348,19 @@ export async function runRepository(
     originalHashes[file.path] = hashContent(originalContent(snapshot, file.path));
   }
 
-  const discovery=task.version===2?await RepositoryDiscovery.create(snapshot):undefined;
   const verifier=createHostRepoVerifier();
+  const verifications: RepoVerification[] = [];
+  const discovery=task.version===2?await RepositoryDiscovery.create(snapshot,async(probe,contents)=>{
+    // A newly created provider has no entry in the original snapshot; the overlay supplies it.
+    const entries=new Map(probe.paths.filter(p=>snapshot.entries.has(p)).map(p=>[p,snapshot.entries.get(p)!]));
+    const scoped:RepoSnapshot={...snapshot,entries,initialTargets:{[probe.provider]:snapshot.initialTargets[probe.provider]!},
+      task:{version:1,goal:'Host-authored public counterexample',files:snapshot.task.files.filter(f=>f.path===probe.provider),
+        context:probe.paths.filter(p=>p!==probe.provider),protected:probe.paths.filter(p=>p!==probe.provider),checks:[probe.check]}};
+    const request={snapshot:scoped,overlay:{[probe.provider]:contents[probe.provider]!},commands:[probe.check],outputRoot:checksDirectory,phase:'local' as const};
+    const receipt=await verifier.verify(request);
+    assertVerificationReceipt(request,receipt,verifier.environmentId);
+    verifications.push(receipt);return receipt;
+  }):undefined;
   const goalArtifact = buildGoalArtifact(snapshot);
   const guidanceArtifact = buildGuidanceArtifact(snapshot);
 
@@ -392,7 +415,7 @@ export async function runRepository(
     let receipt: CodexCallResult<JsonResponse> | undefined;
     let failure: unknown;
     try {
-      const providerOptions = {...callOptions,...(role === 'worker' && options.goThinking !== undefined ? {thinking:options.goThinking} : {})};
+      const providerOptions = {...callOptions,...(role === 'worker' && goThinking !== undefined ? {thinking:goThinking} : {})};
       receipt = await active(providerOptions);
     } catch (error) {
       failure = error;
@@ -419,7 +442,6 @@ export async function runRepository(
     return receipt!;
   };
 
-  const verifications: RepoVerification[] = [];
   const finalChecks: {value?: RepoVerification} = {};
   const swarmTask = makeTask(snapshot, goalArtifact, guidanceArtifact, checksDirectory, verifications, finalChecks, verifier, discovery);
 
@@ -441,7 +463,7 @@ export async function runRepository(
     maxTokensPerCall,
   };
 
-  await writeJson(join(outputDirectory,'profile.json'),{...swarmOptions,goThinking:options.goThinking??'provider-default',maxTokens,reserveTokensPerCall,apply:options.apply??false});
+  await writeJson(join(outputDirectory,'profile.json'),{...swarmOptions,goThinking:goThinking??'provider-default',maxTokens,reserveTokensPerCall,apply:options.apply??false});
   let swarmReport: SwarmReport | undefined;
   let swarmFailure: unknown;
   try {
