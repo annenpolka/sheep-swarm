@@ -6,6 +6,8 @@ DeepSeek Flash単体と群れを比較し、分担・依存管理・必要時の
 
 ## Current Working Contract
 
+2026-09-12の利用者の指示により、現段階の研究を区切り、追加の機構開発・ベンチマークを休止する。実装と実験記録は保存し、[READMEの再開条件](../README.md#限界と再開条件)が得られた場合に再開を検討する。以下の過去の計画やNextは、自動的に着手する予定ではない。
+
 現在は[lazy swarm](../docs/lazy-swarm.md)の最小版と実Goの動作確認を完了し、[三対照54条件の比較](../docs/results/lazy-benchmark-findings.md)も完了した。lazyは品質・速度の採用条件を満たさず、実験用opt-inを維持する。以下のPR #9以前の記録は判断の背景として保持する。
 
 2026-09-11のPR #9後は[work packet方針](../docs/work-packet-direction.md)を優先する。共通executorで粒度を測り、N=1も正常な選択肢にする。以下の従来範囲は実装の背景として保持する。packet機能はopt-in実装済み。dev全体の粒度実測と監査は完了した。

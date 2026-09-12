@@ -1,5 +1,7 @@
 # 実装順序
 
+**2026-09-12時点で研究を休止。** 以下は完了した範囲と当時の計画を保存したもの。未実施の項目は保留とし、[READMEの再開条件](../README.md#限界と再開条件)が得られた場合に優先順位を見直す。
+
 2026-09-09の [現在の方針](current-direction.md) に基づく計画。小さなkernelから実workerへ進み、人数を変えた振る舞いを早く観測する。各段階の状態は実行証拠に合わせる。詳細な進捗は [ExecPlan](execplan.md)、M2の証拠は [4体pilot](results/luna-four-worker-pilot.md) を参照。
 
 ## Lazy swarm — 最小版と三対照dev18課題・全54条件の監査完了

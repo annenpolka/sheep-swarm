@@ -1,5 +1,7 @@
 # 羊型Agent Swarm — 現在の方針
 
+**状態: 研究休止（2026-09-12）。** 現段階の結論と[再開条件](../README.md#限界と再開条件)をREADMEにまとめた。追加の機構開発・ベンチマークは予定せず、実装・実測・失敗記録を保存する。以下は休止までの判断と計画の履歴であり、記載された「次の検証」は再開時に見直す候補である。
+
 更新日: 2026-09-12。kernel、Luna4体、8・16・32体の反復、C=1のSQLite再開を実測した。別taskの[4方式比較](results/comparison-findings.md)と[Manager修正後の追加試行](results/manager-observation-fix.md)も記録した。一般的な有用性と創発は未確認。進捗は[ExecPlan](execplan.md)、規模の証拠は[結果](results/scaling-findings.md)、再開は[記録](results/durable-restart.md)を参照。
 
 ## 目的と仮説
