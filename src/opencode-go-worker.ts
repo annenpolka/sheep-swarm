@@ -3,6 +3,8 @@ import { extractTokenUsage } from "./cost-estimate.ts";
 import { assertSupportedSchema, conforms, CodexWorkerError,
   type CodexCallOptions, type CodexCallResult, type CodexTranscript, type CodexUsage } from "./codex-worker.ts";
 
+import {parseGoAssistant,validateGoConversation,type GoConversation,type GoAssistant} from './opencode-go-conversation.ts';
+
 const MAX_BODY_BYTES = 4 * 1024 * 1024;
 const DEFAULT_BASE_URL = "https://opencode.ai/zen/go/v1";
 const MAX_SESSION_BYTES = 256;
@@ -79,6 +81,19 @@ function parseUsage(raw: unknown, format: OpenCodeGoProtocol, secret: string): {
 
 /** Direct, bounded, tool-less Go request. No implicit host authentication or retry. */
 export async function callOpenCodeGo<T = unknown>(options: OpenCodeGoOptions): Promise<OpenCodeGoResult<T>> {
+  return callGo<T>(options);
+}
+
+export type OpenCodeGoTurnOptions = Omit<OpenCodeGoOptions,'prompt'|'schema'> & GoConversation;
+/** Explicit conversation path; session headers alone do not restore conversation state. */
+export async function callOpenCodeGoTurn(options:OpenCodeGoTurnOptions):Promise<OpenCodeGoResult<GoAssistant>> {
+  if(options.model!=='deepseek-flash'||options.thinking==='disabled')throw new Error('conversation requires Go deepseek-flash thinking enabled');
+  const conversation=structuredClone({messages:options.messages,tools:options.tools});
+  validateGoConversation(conversation);
+  return callGo<GoAssistant>({...options,prompt:'',schema:{type:'object'},thinking:'enabled'},conversation);
+}
+
+async function callGo<T>(options:OpenCodeGoOptions,conversation?:GoConversation):Promise<OpenCodeGoResult<T>> {
   if (!Number.isSafeInteger(options.timeoutMs) || options.timeoutMs <= 0)
     throw new RangeError("timeoutMs must be a positive integer");
   if (!Number.isSafeInteger(options.maxTokens) || (options.maxTokens ?? 0) < 1)
@@ -140,6 +155,10 @@ export async function callOpenCodeGo<T = unknown>(options: OpenCodeGoOptions): P
       payload = { model: options.model, system: instruction,
         messages: [{ role: "user", content: options.prompt }], stream: false, max_tokens: options.maxTokens };
     }
+    if(conversation) {
+      payload={model:options.model,messages:conversation.messages,stream:false,max_tokens:options.maxTokens,
+        thinking:{type:'enabled'},...(conversation.tools.length?{tools:conversation.tools}:{})};
+    }
     const headers: Record<string, string> = {
       "content-type": "application/json", "user-agent": "sheep-swarm/0.0.0", "x-opencode-session": sessionId,
     };
@@ -198,6 +217,15 @@ export async function callOpenCodeGo<T = unknown>(options: OpenCodeGoOptions): P
     }
     if (!body) throw new CodexWorkerError("malformed-events", "OpenCode Go response is not a JSON object", transcript());
     const reject = (message: string): never => { throw new CodexWorkerError("missing-output", message, transcript()); };
+    if(conversation){
+      const choice=Array.isArray(body.choices)&&body.choices.length===1?record(body.choices[0]):undefined;
+      let assistant:GoAssistant;
+      try{assistant=parseGoAssistant(choice?.message,choice?.finish_reason,conversation.tools);}
+      catch {throw new CodexWorkerError('malformed-output','Invalid Go conversation response',transcript());}
+      if(conversation.tools.length&&typeof assistant.reasoning_content!=='string')
+        throw new CodexWorkerError('malformed-output','Missing thinking continuation evidence',transcript());
+      return {result:assistant as T,requestedModel:options.model,usage,transcript:transcript()};
+    }
     let content: string | undefined;
     if (format === "chat-completions") {
       const choice = Array.isArray(body.choices) ? record(body.choices[0]) : undefined;

@@ -2,6 +2,10 @@
 
 2026-09-09の [現在の方針](current-direction.md) に基づく計画。小さなkernelから実workerへ進み、人数を変えた振る舞いを早く観測する。各段階の状態は実行証拠に合わせる。詳細な進捗は [ExecPlan](execplan.md)、M2の証拠は [4体pilot](results/luna-four-worker-pilot.md) を参照。
 
+## Lazy swarm — 最小版・実Goの動作確認完了
+
+[実行計画](execplan-lazy-swarm.md)。[結果](results/lazy-swarm.md): 613テスト・参照2件、最終smoke10条件が成功。実装受入はGoのthinking/tool履歴の実継続、直接提出の1call完了、親子が重なる非同期実行、scope/read版/共通予算の反例検査、固定最終oracleとsource drift付き候補採用、子なし対照のCLIである。最小版の動作確認と、三方式の品質・速度ベンチマークを分ける。後者、独立複数変更と強結合変更の新しい凍結課題、並列durability、子の再試行は次の範囲。
+
 ## Semantic decomposition — dev24課題・全72条件の実測と監査完了
 
 [plannerと実験条件](semantic-decomposition.md)。全公開repoを読むDeepSeek Flashの1callからwrite/read/依存を提案させ、hostが重複・循環を統合する。全targetの1packetも許す。完了条件は24課題×Single/固定all/plannedの72条件、planner込みの共有予算・完了時間、全receipt/候補/固定oracleの監査。evaluationとManagerは後段。 [完了結果](results/semantic-decomposition-findings.md): Single/固定all 24/24、planned 23/24。plannedは成功組でSingle比1.36倍・固定all比1.48倍の時間。有効23planの21件が1packet。独立plannerは既定にせず、次の分解実験は真に複数変更が必要な課題または公開起点の変更伝播へ分ける。

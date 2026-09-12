@@ -20,6 +20,8 @@ Go DeepSeekの今後の呼出しはthinking有効を既定にする。単体・S
 
 ## 現在の状態
 
+現在の追加経路は `repo --lazy-swarm`。親が直接実装し、必要時だけ限定scopeの子を起動する。親1・子最大2の[最小版と実Goの動作確認](docs/results/lazy-swarm.md)を完了した。品質・速度の本比較は次段階。
+
 **kernel、実Luna worker、選択的な上位介入、8・16・32体の実測、SQLiteからの再開を実装し、別taskで4方式の初期比較まで完了した。**
 
 静的変更・公開レジストリを使う意味依存・3段階の仕様変更も実装し、クレジット相当による実行受付を追加した。新しい48モジュール課題はN8/16/32、C=8で各1回成功した。元の28条件の比較は使用量不明で2条件目に停止し、その後の承認された追加2条件と分けて記録している。
@@ -165,3 +167,5 @@ npm run mechanism:experiment -- --budget-mode tokens --runtime deepseek --worker
 
 
 task v2に、workerが公開probeのIDを選び、hostで失敗を再現して上流へ渡すopt-in経路を追加した。通常再検査後の追加回復、誤診・古い版・重複・検査障害の拒否を検証した。[使い方と境界](docs/public-probes.md)、[9条件の実測](docs/results/public-probes.md)。各方式3/3成功だが品質・速度の改善は確認できず、既定では有効化しない。
+
+`repo --lazy-swarm` に、直接実装する親と任意の子（最大2体）の継続・fork/joinを追加した。子なし対照は `--lazy-children 0`。既存packet-allを基準に保ち、lazyは実験用opt-inとする。[使い方と境界](docs/lazy-swarm.md)、[実行計画](docs/execplan-lazy-swarm.md)。
