@@ -63,6 +63,9 @@ export interface RepoVerification {
 export interface RepoRunOptions {
   /** Opt-in shared multi-target executor; omission preserves the legacy runner. */
   readonly packetSize?: number | 'all';
+  /** Host-validated semantic decomposition; only the planned runner supplies model output. */
+  readonly workPlan?: unknown;
+  readonly planWork?: boolean;
   readonly repository: string;
   readonly task: unknown;
   readonly outputDirectory: string;

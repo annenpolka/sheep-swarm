@@ -2,7 +2,11 @@
 
 2026-09-09の [現在の方針](current-direction.md) に基づく計画。小さなkernelから実workerへ進み、人数を変えた振る舞いを早く観測する。各段階の状態は実行証拠に合わせる。詳細な進捗は [ExecPlan](execplan.md)、M2の証拠は [4体pilot](results/luna-four-worker-pilot.md) を参照。
 
-## Work packetの粒度比較 — 全dev比較・監査完了、evaluation条件の固定が次
+## Semantic decomposition — 実装済み、実測前
+
+[plannerと実験条件](semantic-decomposition.md)。全公開repoを読むDeepSeek Flashの1callからwrite/read/依存を提案させ、hostが重複・循環を統合する。全targetの1packetも許す。完了条件は24課題×Single/固定all/plannedの72条件、planner込みの共有予算・完了時間、全receipt/候補/固定oracleの監査。evaluationとManagerは後段。
+
+## Work packetの粒度比較 — 全dev比較・監査完了、semantic decompositionの小規模比較へ
 
 [決定と検証順序](work-packet-direction.md)。最初に複数targetを原子的に提案・検証できる共通executorとCLI dry-runを実装する。独立fixtureでscope・read版・packet間通知・循環・usage不明停止を確認後、凍結devでall/8/4/2/1target packetを全起動・同じ公開context・C4で比較する。品質と両方成功した組の完了時間を主指標とし、N=1も採用候補にする。変更起点を公開したactivation比較は粒度を固定した別課題へ分ける。自動選択・evaluation・Managerは設定を選んだ後へ置く。
 

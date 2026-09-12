@@ -47,7 +47,7 @@ export interface ResolvedCapabilities {
 
 /** Resolved registered pool and configured concurrency; observed activity is in the run report. */
 export interface ResolvedConfiguration {
-  readonly workers: number;
+  readonly workers: number | null;
   readonly concurrency: number;
   readonly runtime: ModelRuntime;
   readonly metaRuntime: ModelRuntime;
@@ -69,6 +69,7 @@ export type CliRunnerOptions =
 
 /** Fully resolved command profile. */
 export interface ResolvedCliProfile {
+  readonly planning?: {state:'requires-model-call';publicPaths:string[]};
   readonly packetPlan?: Awaited<ReturnType<typeof import('./repo-packet-run.ts').prepareRepositoryPackets>>['plan'];
   readonly command: CommandName;
   readonly options: SwarmOptions | RepoRunOptions | ComparisonOptions | DurableOptions | MechanismOptions;
@@ -211,9 +212,11 @@ async function resolveRepo(values: CliValues, cwd: string, runtimes: ResolvedRol
   const task: RepoTask = parseRepoTask(raw);
 
   const packetRaw = readString(values, 'packet-size');
-  if (packetRaw !== undefined) {
+  const planWork=readBoolean(values,'plan-work')??false;
+  if(planWork&&packetRaw!==undefined)throw new Error('--plan-work and --packet-size are mutually exclusive');
+  if (packetRaw !== undefined || planWork) {
     if (values['workers'] !== undefined || values['max-rounds'] !== undefined) throw new Error('packet workers derive from the plan; use concurrency and max-calls');
-    const packetSize = packetRaw === 'all' ? 'all' : numberOption(values, 'packet-size', 1, 1);
+    const packetSize = planWork||packetRaw === 'all' ? 'all' : numberOption(values, 'packet-size', 1, 1);
     const options: RepoRunOptions = {
       repository, task, outputDirectory: resolve(cwd, readString(values,'output') ?? `.sheep/packets-${Date.now()}`),
       packetSize, runtime:runtimes.runtime, workerModel:runtimes.workerModel,
@@ -225,6 +228,11 @@ async function resolveRepo(values: CliValues, cwd: string, runtimes: ResolvedRol
     };
     const {prepareRepositoryPackets}=await import('./repo-packet-run.ts');
     const {plan,config}=await prepareRepositoryPackets(options);
+    const {packetSize:_packetSize,...plannerOptions}=options;
+    if(planWork)return {command:'repo',options:{...plannerOptions,planWork:true},planning:{state:'requires-model-call',publicPaths:plan.publicPaths},outputDirectory:options.outputDirectory,
+      configuration:{...configurationFor({...runtimes,maxTokensPerCall:config.maxTokensPerCall},0,config.concurrency,config.timeoutMs),workers:null},
+      limits:{workerCalls:config.maxCalls-1,totalCalls:config.maxCalls,metaCalls:0},budget:{unit:'tokens',maxTokens:config.maxTokens,reserveTokens:config.reserveTokensPerCall},
+      capabilities:{resume:false,apply:true,verification:'host-planned-packet-checks'}};
     return {command:'repo',options,packetPlan:plan,outputDirectory:options.outputDirectory,
       configuration:configurationFor({...runtimes,maxTokensPerCall:config.maxTokensPerCall},plan.packets.length,config.concurrency,config.timeoutMs),
       limits:{workerCalls:config.maxCalls,totalCalls:config.maxCalls,metaCalls:0},

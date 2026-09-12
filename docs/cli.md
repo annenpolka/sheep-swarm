@@ -41,3 +41,5 @@ repoの`--go-thinking enabled|disabled`はOpenCode GoのDeepSeek workerに限る
 ## 複数targetのpacket実行
 
 `repo --packet-size all|N`は[共通packet executor](repository-packets.md)へのopt-in。Go deepseek-flash・thinking有効・上位0に対応する。`--concurrency`は上限で、worker数は分割結果から決まる。`--dry-run`に実際のpacket割当・read範囲・依存・循環による上限超過を表示する。省略時の既存repo動作は保持する。
+
+`repo --plan-work`は[semantic planner](semantic-decomposition.md)へのopt-in。`--packet-size`と`--workers`は併用不可。plannerがscopeを選び、重複write/循環をhostが統合する。dry-runはモデルを呼ばずworker数null・`planning.state=requires-model-call`を返す。plannerも総call/token枠と実行時間に含む。

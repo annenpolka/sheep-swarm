@@ -12,6 +12,11 @@ async function execute(profile:ResolvedCliProfile) {
   durationMs: report.durationMs, finalErrors: report.finalErrors },report};
     }
     case 'repo': {
+      if ((profile.options as import('./repo-types.ts').RepoRunOptions).planWork) {
+        const {runPlannedRepository}=await import('./repo-planned-run.ts');
+        const report=await runPlannedRepository(profile.options as import('./repo-types.ts').RepoRunOptions);
+        return {summary:report,report};
+      }
       if ((profile.options as import('./repo-types.ts').RepoRunOptions).packetSize !== undefined) {
         const {runPacketRepository}=await import('./repo-packet-run.ts');
         const report=await runPacketRepository(profile.options as import('./repo-types.ts').RepoRunOptions);
@@ -70,5 +75,5 @@ export async function runCli(command:CommandName,args:readonly string[],legacy=f
   }catch(error){process.stderr.write(`${String(error)}\n`);process.exitCode=1;}
 }
 function renderProfile(p:ResolvedCliProfile):string {
-  return `${p.command}: dry-run\nRuntime: ${p.configuration.runtime} / ${p.configuration.workerModel}\nMeta: ${p.configuration.metaRuntime} / ${p.configuration.metaModel}\nWorkers: N=${p.configuration.workers}, C=${p.configuration.concurrency}\nLimits: ${JSON.stringify(p.limits)}\nBudget: ${JSON.stringify(p.budget)}\nCapabilities: ${JSON.stringify(p.capabilities)}\nOutput: ${p.outputDirectory}\n${p.packetPlan?`Packets: ${JSON.stringify(p.packetPlan)}\n`:''}`;
+  return `${p.command}: dry-run\nRuntime: ${p.configuration.runtime} / ${p.configuration.workerModel}\nMeta: ${p.configuration.metaRuntime} / ${p.configuration.metaModel}\nWorkers: N=${p.configuration.workers??'chosen by planner'}, C=${p.configuration.concurrency}\nLimits: ${JSON.stringify(p.limits)}\nBudget: ${JSON.stringify(p.budget)}\nCapabilities: ${JSON.stringify(p.capabilities)}\nOutput: ${p.outputDirectory}\n${p.packetPlan?`Packets: ${JSON.stringify(p.packetPlan)}\n`:''}`;
 }

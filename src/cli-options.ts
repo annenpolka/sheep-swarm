@@ -25,6 +25,7 @@ interface OptionSpec {
 const COMMAND_OPTIONS: Record<CommandName, readonly OptionSpec[]> = {
   repo: [
     { key: 'packet-size', type: 'string' },
+    { key: 'plan-work', type: 'boolean' },
     { key: 'repo', type: 'string' },
     { key: 'task', type: 'string' },
     { key: 'output', type: 'string' },
@@ -270,6 +271,7 @@ Host commands run in candidate workspaces; they are not a security sandbox.
 --apply writes accepted targets after final checks and source drift checks.
 Repository resume and Docker Agent are unsupported.
 --go-thinking enabled|disabled requires an OpenCode Go DeepSeek worker (default: enabled).
+--plan-work asks DeepSeek Flash to choose scopes before execution; planner time/tokens count. Dry-run makes no model calls.
 --packet-size all|N opts into the shared packet executor (Go deepseek-flash, thinking enabled, upper 0).
 Packet mode derives worker count from the public graph; --concurrency is a ceiling (default 4).
 Packet --dry-run includes assignments, current read paths, dependencies and SCC size exceptions.`,
