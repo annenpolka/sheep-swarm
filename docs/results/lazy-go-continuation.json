@@ -1,0 +1,32 @@
+[
+  {
+    "version": 1,
+    "success": false,
+    "error": "SyntaxError: Unexpected token '`', \"```json\n{\"\"... is not valid JSON",
+    "tokens": 981,
+    "calls": 2,
+    "unknownUsage": 0,
+    "hashes": {
+      "summary.json": "50a40490b155e06fe84793b3978ad01f9db72f8e5fe3ea53a173c6f4ef35afd5",
+      "call-1.request.json": "8c4696ac6c7b2109890980ea10b369aef9fb6418e2befc40c27b7e93a80f85cb",
+      "call-2.json": "ea1054fa2faf79dd5c54dbccf19ccb94ad84c208bd225f3523c458e6ae486f93",
+      "call-1.json": "fb6db94594641abc4839e3e29575e5e12ffe6a3639a259342d3333ed82e15adf",
+      "call-2.request.json": "11c97251e694c87e001ed8e42ad59352908b89c0dea7f44c4fbe4bbd5b669171"
+    }
+  },
+  {
+    "version": 2,
+    "success": true,
+    "error": null,
+    "tokens": 962,
+    "calls": 2,
+    "unknownUsage": 0,
+    "hashes": {
+      "summary.json": "15b6d5742620cb8d5f7c29a37366fc517b395773c309ef019258d286d6d3ad74",
+      "call-1.request.json": "4a6b60d3ef42dbbc7e1463ecdb8a73ef5a2a5859b99092a74ced52b43c9c4ad1",
+      "call-2.json": "bda8f6c78e7ba74b8f30708d2935687b92da9143675e76c99e48d787971da71a",
+      "call-1.json": "2f67ee1f18f905c4e95f6d7261150345e4163cc6b672933010ebc5684396b755",
+      "call-2.request.json": "0e6d69a87a1acc1fd8b24b56c6282ceeafa1e1f1f83f6c790c34b8569ad34db4"
+    }
+  }
+]

@@ -1,0 +1,81 @@
+{
+  "format": 1,
+  "profileHash": "4e3e6521d5a00c84a7135bfb633adbc8f72891e027ff17c106c020f5ff6a2cfd",
+  "sourceProfileHash": "4e7cefd595dab48ded3fffabe13296c7b30de5a8eff2a90bec0695f0b882c35d",
+  "solver": "5104ad326ab0bb7bca4313be7de136e4954a8e24",
+  "model": "opencode-go/deepseek-flash",
+  "thinking": "enabled",
+  "recoveredCondition": {
+    "id": "syn-units-v02",
+    "method": "packet-2",
+    "success": true,
+    "calls": 4,
+    "knownTokens": 10529,
+    "tokens": null,
+    "unknownUsageCalls": 1,
+    "elapsedMs": 70401.07695900009,
+    "completionMs": 70401.07695900009,
+    "retries": 1,
+    "historicalRecovery": true,
+    "operatorPauseMs": 1498573.530167
+  },
+  "attempts": [
+    {
+      "directory": "/Users/annenpolka/ghq/github.com/annenpolka/sheep-swarm/.sheep/packet-sweep/dev-v2/runs/syn-units-v02/packet-2",
+      "resultHash": "6bccae0319b340290096a4020135a2396493a058128b67f08885cbd291b9df29",
+      "rowHash": "d934fbc56b88f7e03c9f3d65f5363c999b7d40f88ccc39674f7e288b08d1b2ed",
+      "inherited": true,
+      "success": false,
+      "elapsedMs": 47884.4698330001,
+      "calls": 2,
+      "tokens": null,
+      "knownTokens": 2312,
+      "unknownUsageCalls": 1
+    },
+    {
+      "directory": "/Users/annenpolka/ghq/github.com/annenpolka/sheep-swarm/.sheep/packet-sweep/dev-v2-retry/runs/syn-units-v02/packet-2/attempt-2",
+      "resultHash": "cbfd7631655d271082eae97479d77d3d47d7fff31d8059ffb34a267e6ed7de47",
+      "rowHash": "3df8dc6effaf3a0813d6aac9459a19095c937d2efa782f301f4042d951d7027e",
+      "inherited": false,
+      "success": true,
+      "elapsedMs": 20515.194459,
+      "calls": 2,
+      "tokens": 8217,
+      "knownTokens": 8217,
+      "unknownUsageCalls": 0
+    }
+  ],
+  "checkpoint": {
+    "completedConditions": 96,
+    "plannedConditions": 644,
+    "complete": false,
+    "accounting": {
+      "calls": 540,
+      "knownTokens": 6516698,
+      "totalTokens": null,
+      "unknownUsageCalls": 1,
+      "chargedTokens": 6716698,
+      "activeReservations": 0,
+      "elapsedMs": 3263407.871541001
+    }
+  },
+  "measurementNotes": {
+    "recordedAt": "2026-09-11T08:40:13.502383+00:00",
+    "timingExclusions": [
+      {
+        "id": "syn-units-v02",
+        "method": "packet-1",
+        "reason": "Initial continuation overlapped a redundant full npm check on the same host. Exclude this condition from primary timing analysis; preserve quality and all resources."
+      }
+    ],
+    "verificationLog": "/tmp/sheep-transport-retry-check-final.log",
+    "verificationFinishedAt": "2026-09-11T08:39:33.387795+00:00",
+    "automaticReportCaveat": "Automatic report excludes operator-interrupted packet-2 only. Apply the additional timingExclusions before interpreting speed comparisons."
+  },
+  "validation": {
+    "fullTests": 579,
+    "referenceSnapshots": 2,
+    "injectedTransportRecovery": "passed",
+    "previous91AttemptAudit": "passed"
+  }
+}

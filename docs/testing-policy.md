@@ -171,3 +171,41 @@ Astraの独立レビューで固定した反例も通常gateに含める。混�
 
 
 公開probeは元の失敗候補ではなく、配信済みproviderとreadonly公開入力で検査する。repo-public-probes.test.tsは通常再検査後の回復、健全上流、検証のみ、要求上限、stale/未配信/無関係/依存scope外、検査中の版変更、timeout・signal・改変・未存在command・印なしexit・異なるprobe ID・unknown usageの拒否、新規providerの検査と元repoへの非書込を検査する。repo-probe-admission.test.tsは受付順序・重複・epoch・上限を固定する。実比較では公開probe本文を全条件に渡し、baseline/検証のみ/証拠配信を分ける。追加再起動枠の違いと通常試行の消費を明記する。
+
+
+## 合成課題集
+
+`synthetic-corpus-cli.test.ts`は独立した手書きfixtureで、上書き拒否、公開/非公開scope、構文エラーと意味変異の区別、oracleを生き残る変異の拒否を確認する。`synthetic-corpus.test.ts`は256課題の決定性・hash・系統分割、系統ごとの代表課題、独立した契約境界を検査する。通常gateでLLMを呼ばない。生成器変更後は`node scripts/synthetic-corpus.ts preflight --all`も実行して全variantを検査する。[全件検査の記録](results/synthetic-corpus.md)。
+
+
+対応比較の`synthetic-paired.test.ts`は、256課題の凍結hash、dev限定・先攻均衡の固定順序、失敗や欠測を速度比へ混ぜない集計、不完全usage/非公開contextの拒否、中断系列の再送拒否を検査する。実測は`synthetic-paired-benchmark.mjs audit`でreceipt・候補hash・元repo・独立受入・系列順を再照合する。
+
+HTTP障害など証拠が不足するrunは品質・速度の対応比較から除外し、消費したcallと既知token下限を資源集計へ残す。公開reportのsummaryはこの有効runだけを使う。個別runの成功時だけのcompletion、片側結果のみの課題、未実行課題を混同しない。
+
+
+## Repository work packets
+
+`repo-packets.test.ts`は3nodeの全64有向graphを4粒度で調べ、coverage、SCCの不可分性、縮約graphの非循環、入力順不変、scope検査を確認する。kernelの複数writeは旧read・失効lease・候補コピー改変で検証する。`repo-packet-run.test.ts`は同一executorのall/1/複数target、公開失敗時の全件却下、旧案のfeedback、providerの現在版、静的循環、並列call、未知usage時の発行済みpeer精算、検証基盤障害、source drift、静的graph変更拒否、CLI dry-runを確認する。
+
+実APIの`node scripts/packet-smoke.mjs NEW_OUTPUT_DIRECTORY`はdevの固定1件・5条件を呼ぶ有料疎通対照。呼出し前にpreflight・公開/非公開hash・runtime copy・条件順を固定し、各候補を独立検査する。通常gateへ含めない。旧Single/Sheepとpacketではcontext・check・retryの粒度が異なり、1回の疎通時間差を粒度の因果効果にしない。
+
+
+`packet-sweep.test.ts`は、同値packetの重複実行防止、実方式の順序回転、evaluation排除、共有観測を勝敗に数えない集計、失敗/証拠不備の時間比からの除外、停止/inFlight系列の再送拒否を検証する。実系列ではpacketReceiptAuditが生usage・model/thinking・公開baselineと現在版overlay・kernel checkoutの版・候補内容を照合する。既存smokeの3粒度でも同監査をモデルなしで確認した。
+
+packet同居関係によって静的source edge外へ伝わる通知は、独立した4ファイルfixtureで修正前の失敗を確認してから修正する。kernel異常の注入ではモデル再試行を止め、発行済みpeerの使用量を精算する。外部停止の監査は、古いbudget checkpointと後着receiptを区別し、未知usageをnullのまま保持する。`check-packet-host.mjs`は凍結系列と修正版へ正解を返すoffline stub対照であり、通常モデル評価には混ぜない。
+
+
+通信再試行controllerはHTTP 500を注入する実repo試験で、baselineからの回復と旧receipt保持、未知usageを含む受付控除、元repo不変を確認する。通常gateは実APIを呼ばない。品質・時間の観測とusageの完全性を分離し、回復しても総tokensを既知へ変えない。認証・取消・検証基盤障害は自動再送しない。上限を跨ぐ試行の共有会計を検査する。継続系列のauditは旧系列と新controller・保存solverのhash、各row・result・receipt・候補・固定fixtureを照合する。[継続計画](packet-sweep-retry-plan.md)。
+
+
+`report-packet-sweep-retry.mjs`は全条件終了・pendingなしを確認してから655試行を監査し、stateが監査中に変わっていないことを照合する。measurement-notesの追加時間除外も反映し、品質と資源は除外しない。新しいmodel callは発行しない。[完了結果](results/packet-sweep-dev-complete.md)。
+
+## Semantic planner
+
+`repo-work-plan.test.ts`は公開scope・coverage・重複write・static/semantic循環・不正入力と実APIのschema方言を検査する。`repo-planned-run.test.ts`は1packet、untouched、並列packet、providerの現在版、誤ったuntouchedの全体失敗、planner使用量・モデル・source drift、CLI dry-runを確認する。`semantic-decomposition.test.ts`は24課題のdev限定・サイズ/順序均衡と欠測・失敗の集計、`semantic-pilot-runner.test.ts`は3方式の独立監査とplanner通信失敗からの再試行・未知usage保持を確認する。通常gateではAPIを呼ばない。実APIの前にgateを終え、速度計測中に重いtestを重ねない。全72条件後に凍結runtime・raw receipt・候補・元fixture・独立oracleを再監査する。
+
+## Lazy swarm
+
+`opencode-go-conversation.test.ts` は明示履歴とthinkingの再送、tool ID対応、旧adapterのtool拒否を確認する。`repo-lazy-run.test.ts` は1call直接提出、barrierでの親子実並行、C1、子scopeの排他、checkpointからのsnapshot、stale readの親引取り、unknown usageの回収、未解決子、hidden失敗後のcall不在、drift、無料dry-runを検査する。通常gateに実APIを含めない。実Goのconversation probeと3方式smokeは別証拠とし、強制forkの接続試験を自律分業の成功へ数えない。
+
+`lazy-benchmark.test.ts` は18課題のdev限定・旧hash維持・実graphの成分数・方式順の均衡、ASTによる未実装fixture作成、品質失敗を含むpaired集計、raw assistant/current snapshot/token算術の監査と改ざん拒否を確認する。実API前に全課題のbaseline失敗・reference成功・意味変異検出を保存する。`lazy-benchmark.mjs` はruntimeとfixtureを凍結し、通信障害だけを予算内で再試行する。品質失敗を新規試行で上書きしない。各attemptの候補を独立した全公開検査・固定oracleで採点し、全条件終了後に保存証拠を再照合する。後処理の `report-lazy-benchmark.mjs` はraw reasoningを公開せず、再試行を含む使用量・親子metricsと事前の採用条件を集計する。

@@ -292,6 +292,9 @@ export async function runRepository(
   options: RepoRunOptions,
   caller?: RepoCaller,
 ): Promise<RepoRunReport> {
+  if(options.lazySwarm||options.lazyChildren!==undefined)throw new Error('use runLazyRepository for lazy mode');
+  if(options.planWork||options.workPlan!==undefined)throw new Error('use runPlannedRepository or runPacketRepository for work plans');
+  if (options.packetSize !== undefined) throw new Error('use runPacketRepository for packetSize');
   // ---- Preflight: manifest, runtime, limits, output path, capture (no model calls). ----
   const task = parseRepoTask(options.task);
 

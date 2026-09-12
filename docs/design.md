@@ -149,3 +149,11 @@ hostはfailed callのcheckout stampを再確認し、call/context/read版/公開
 
 
 公開probeによる追加再検査は、model claimをhostの検査証拠に変換するopt-in経路である。実行はprovider一つとreadonly公開入力のコピーに限定し、配信版全体のfreshness、試行可能性、probe/入力版の重複、要求数と追加再起動数の上限を照合する。kernelで検証・確定した回復artifactだけを更新し、逆依存やwrite capabilityを増やさない。固定検査の反例印とexit 1がない失敗は検査不能として受付停止する。[詳細](public-probes.md)。
+
+## Semantic WorkPlan
+
+[WorkPlan](semantic-decomposition.md)のtextは提案でありwrite capabilityではない。hostがtarget coverageと公開read範囲を検査し、重複writeと依存循環を統合した後に既存kernelのlease/read/原子的commitへ接続する。untouchedを最終oracleから除かない。plannerとworkerの台帳を合算し、planner精算後の残り予算だけをworkerへ渡す。
+
+## Lazy rootと限定job
+
+[lazy経路](lazy-swarm.md)は単体の直接提出から始める。forkはhost検証されたscopeとsnapshotを子へ渡し、親の会話を保った継続を非同期に開始する。子の完了は候補であり、join時の配信read版とlease検査・公開検査・kernel確定を要する。未解決子を残した完了は認めない。最後に現在版の公開統合検査で通知義務を処理し、固定の全体oracleを一度だけ採点へ使う。既存wave型packet executorと専用の親継続loopは分ける。

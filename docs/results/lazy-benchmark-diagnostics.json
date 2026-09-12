@@ -1,0 +1,47 @@
+{
+  "format": 1,
+  "purpose": "Posthoc diagnosis only; never sent to a solver or counted as benchmark success",
+  "rawEvidence": ".sheep/lazy-benchmark/dev-v2/posthoc-diagnostics/results.json",
+  "evidenceHash": "6ec2b4673b8cbb82dd65a91d1839bcba7b88cdfcb9ada5489fb35140d943ad0f",
+  "diagnosticScriptHash": "0dbb87c7a154a3b160658a609080171a217f3f96ca7ea5a494c0276b4e3106ae",
+  "results": [
+    {
+      "id": "lazy-independent-0",
+      "label": "parse-only",
+      "replacedWithReference": [
+        "component-1/src/parse-0.mjs"
+      ],
+      "ok": true,
+      "errors": []
+    },
+    {
+      "id": "lazy-coupled-2",
+      "label": "parent-decide",
+      "replacedWithReference": [
+        "src/decide-2.mjs",
+        "src/decide-5.mjs"
+      ],
+      "ok": true,
+      "errors": []
+    },
+    {
+      "id": "lazy-coupled-2",
+      "label": "child-scope",
+      "replacedWithReference": [
+        "src/bucket-6.mjs",
+        "src/count-7.mjs",
+        "src/decide-8.mjs",
+        "src/bucket-9.mjs",
+        "src/count-10.mjs",
+        "src/decide-11.mjs",
+        "src/bucket-12.mjs",
+        "src/count-13.mjs",
+        "src/decide-14.mjs"
+      ],
+      "ok": false,
+      "errors": [
+        "command exited with code 1: node holdout.mjs"
+      ]
+    }
+  ]
+}

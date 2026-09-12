@@ -4,7 +4,48 @@
 
 下位モデルの群れが局所作業を進め、上位モデルが群れを観測して必要時に介入する。下位から上位への相談経路は設けない。個体数を増やしたときの分業、情報伝播、混雑、収束を、品質・費用とともに確かめる。既存製品から設計を借り、小さなprotocolから始める。
 
-現在の方針は [docs/current-direction.md](docs/current-direction.md) にまとめている。下位4体の動作確認から16体へ進み、8・16・32体の初期比較を実行した。64体は次の探索候補で、最適人数や成功の境目はまだ示していない。
+## Conclusion
+
+2026-09-12、PR #12までの暫定結論。**今回の小さな合成repositoryでは、単体agentへまとめて実装させる方式が強かった。ファイル単位の全起動、固定packet分割、独立planner、lazy forkのいずれも、強い単体対照に対する品質・速度の改善を確立できていない。** 一方、変更の起点が公開されている課題では、無関係なtargetを起こさないactivationに明確な改善例があった。
+
+現在の主目的は、同じ `opencode-go/deepseek-flash` を使ったときの品質と受入完了までの実所要時間である。安価な下位モデルを選ぶことと、swarm化によって費用を下げることは別で、細分化は総tokensを増やす場合が多かった。以下は系列ごとの対照であり、異なる課題・runtime・thinking設定の秒数を横断して順位付けしたものではない。
+
+### 実測から分かったこと
+
+| 問い | 観測 | 現在の判断 |
+| --- | --- | --- |
+| 読む範囲を細かく絞れば得か | 2targetのlocal/broadは同品質。localは6call・8,241tokens、broadは2call・5,593tokens。各1回、thinking disabledの初期pilot。[証拠](docs/results/read-selection-pilot.md) | 1callのcontext削減だけでは総量・所要時間の改善にならない。追加callの負担も測る。 |
+| 必要なtargetだけ起こすと得か | 16targetの変更伝播で、C4の全起動から関連4target起動へ変えると完了時間中央値43.09秒→9.99秒、16call→4call。各2反復、全体oracleを維持。[証拠](docs/results/contract-quality.md) | 既知の変更起点を使うactivationは有望。ただし不具合位置が秘密のrepair課題へ答えのmetadataを渡してよい根拠にはならない。 |
+| 1 file = 1 workerの全起動は単体に勝つか | 途中まで揃った39組でSingle 38/39、Sheep 37/39成功。両成功37組中32組でSingleが速く、Sheepだけ成功した組は0。[証拠](docs/results/synthetic-paired-dev.md) | この固定分担を通常修正の既定にする仮説を下げた。128組の完了結果ではない。 |
+| まとめる粒度を変えれば逆転するか | dev128課題でall/8/4/2は128/128、1は127/128成功。packet-allに対する8/4/2/1の時間比中央値は1.66/1.70/1.98/2.33倍。32targetでも一括処理が優勢。[証拠](docs/results/packet-sweep-findings.md) | 細分化の品質上の利益を確認できず、時間は増えた。packet-allは共通executor上の単体一括修正である。 |
+| モデルに先に分業計画を作らせればよいか | dev24課題でSingle/固定allは24/24、plannedは23/24成功。plannedは固定all比1.48倍の時間。有効23plan中21件が1packetで、plannerだけのtokensが固定all全体に近かった。[証拠](docs/results/semantic-decomposition-findings.md) | 対象を絞る能力があっても、独立plannerの追加負担を回収できるとは限らない。常設しない。 |
+| 親が実装しながら必要時だけforkすればよいか | 18課題でpacket-all/子なしrootは18/18、lazyは16/18成功。lazyは子なしroot比1.31倍の時間・2.07倍の総tokens。独立実装6件でfork要求0。[証拠](docs/results/lazy-benchmark-findings.md) | 現在のlazyは事前採用条件を満たさない。分業しない経路への追加負担も含め、実験用opt-inに留める。 |
+
+粒度・planner・lazyの時間比は、同じ課題で両方式が成功した組ごとの比の中央値。方式別の時間中央値同士を割った値ではない。品質は失敗も含めて別に比較する。粒度比較では同値packetと事前に記録した時間比較不適格2条件を除き、通信再試行と待ちを含めた。各系列の採点・除外・会計の詳細はリンク先に残す。
+
+初期Luna/Astra実験では、32体までの局所作業と、上位による共有指示の訂正からの復旧を確認した。ただしCを固定した比較でNだけを増やす利益は見えず、同じ誤指示へ進むworkerも増えた。小課題では常設ManagerよりSheepが速い例もあったが、単体対照とモデルが異なり、Manager実装の不具合と少数試行の影響もある。現在のDeepSeekでの単体対照を置き換える証拠にはしない。[規模比較](docs/results/scaling-findings.md)、[4方式比較](docs/results/comparison-findings.md)、[Manager修正後](docs/results/manager-observation-fix.md)。
+
+### 品質と検証基盤で得たもの
+
+版付きread、排他的write、固定受入、使用量台帳により、古い前提の候補や不明な完了を拒否し、失敗を保存したまま比較できるようになった。TS/MoonBitの依存adapter、上流再検査、公開probe、fork/joinが動くことと、それによって解答品質が上がることは分ける。公開仕様を再確認する指示はfocusedと同じ8/9成功でcallが増え、公開probeの9条件でも品質・速度の改善は確認できなかった。[仕様確認](docs/results/contract-quality.md)、[公開probe](docs/results/public-probes.md)。
+
+公開検査の成功は全体品質の保証にならない。初回corpus pilotでは疎配列、lazy比較では小数の拒否規則とbucket引数の解釈で、公開検査を通る意味上の不具合が残った。モデルの自己申告を成功にせず、公開/privateのhashを固定し、基準解・意味変異・最終oracleを独立検査することが研究の前提になった。hidden失敗を修正callへ戻さず、通信再試行と品質失敗を分け、未知usageを0扱いしない。[課題集](docs/synthetic-corpus.md)、[初回pilot](docs/results/synthetic-corpus-deepseek.md)、[lazyの診断](docs/results/lazy-benchmark-findings.md)。
+
+### まだ言えないことと次の方針
+
+これらは主にNode `.mjs`の制御された合成課題で、少数familyのvariantを再利用している。初期の2課題×3反復ではSheepの速度優位も出たが、広いdev比較では維持されなかった。32ファイルでもSingleのcontextに収まるため、大規模な実務repository、深い依存連鎖、未知の意味依存、異なるモデルへ一般化できない。dev128件にはchainがなく、evaluationとは構造分布も異なる。evaluation全体の比較は未実行だが、初回pilotで8件を観測済みなので完全未見とも呼ばない。実請求額と人間の課題準備時間も十分には測れていない。
+
+**N=1を正常な選択肢として保ち、「何体にするか」より「そもそも分ける必要があるか」を研究する。** 旧packet-allを既存基準、子なしrootを有望な新対照として残す。子なしrootは直近18件の15件でpacket-allより速かったが、prompt・出力形式・会話構造の差を含み、swarmの利益ではない。固定細分化・子の増員・planner常設を先に進めず、公開contextと必要な実装量が大きい少数課題、または公開された変更起点を持つ課題で三対照を再確認する。単体で収まる仕事を速く処理する経路を保ちながら、分業の利益が追加負担を上回る条件があるかを確かめる。
+
+## 研究経緯
+
+現在の方針は [docs/current-direction.md](docs/current-direction.md) にまとめている。[一匹へ渡す仕事の粒度](docs/work-packet-direction.md)のdev比較を完了した。N=1も正常な選択肢とし、共通executorでall/8/4/2/1target packetを比較した。[packet対応](docs/repository-packets.md)をopt-inで実装した。[モデルによる作業境界の選択](docs/semantic-decomposition.md)を`repo --plan-work`でopt-in実装した。[全644条件の結果](docs/results/packet-sweep-findings.md)は一括処理が優勢で、[planner込みのdev24課題比較](docs/results/semantic-decomposition-findings.md)も完了した。Single/固定allは24/24、plannedは23/24成功。plannedは両基準より遅く、実験用opt-inに留める。過去の8・16・32体の実測は保持する。
+
+[dev 128件の粒度比較](docs/packet-sweep-plan.md)は最初の1課題・3条件完了後、packet-4のhost通知不整合で停止した。[実測・消費と修正](docs/results/packet-sweep-host-fault.md)を保存。[修正版の実API再実行](docs/results/packet-sweep-rerun.md)では18課題を観測し、有効90runが全て成功した。91run目のHTTP 500・usage不明で停止し、残り553runは未開始。 利用者の追加指示により、[通信障害を最大3回再試行する継続runner](docs/packet-sweep-retry-plan.md)を追加した。成功90条件を保持し、[停止条件の再実行成功](docs/results/packet-sweep-transport-retry.md)を経て、全644条件を完了した。通信再試行9条件は全て回復し、Single 127/128、packet-all・8・4・2は128/128、packet-1は127/128成功。[監査済み結果](docs/results/packet-sweep-dev-complete.md)。未知usageは下限とともに残す。
+
+[合成repository課題集](docs/synthetic-corpus.md)は16系統×16variantの256課題を生成する。Devin（SWE-2 Max）に課題生成を委譲し、呼出し側で補修・独立検査した。`node scripts/synthetic-corpus.ts list`で一覧、`materialize ID NEW_DIRECTORY`で書出し、`preflight --all`でモデルなしの全件検査を行える。課題生成とsolverの実測を分ける。[DeepSeek初回pilot](docs/results/synthetic-corpus-deepseek.md)は16課題中14成功、成功時の中央値34.63秒（N4/C2、thinking enabled）。
+
+[凍結したdev 128課題のSingle/Sheep対照](docs/execplan-synthetic-paired.md)を開始した。[途中結果](docs/results/synthetic-paired-dev.md)は有効39組でSingle 38/39・Sheep 37/39成功。両方成功37組中32組でSingleが速かった。80run目にHTTP 500・使用量不明で停止し、残り176runは未実行。PR #8のhashと採点を維持し、evaluationとManagerは設定選択の後へ分ける。
 
 主ベンチマークは`opencode-go/deepseek-flash`へ移し、品質と受入完了までの実所要時間を測る。固定時間内成功率は使わない。単体の複数file修正と現行Sheepの小規模対照を実行し、対象名固定系列は単体5/6・Sheep4/6成功だった。[全結果・時間・限界](docs/results/deepseek-quality-speed.md)、[計画](docs/execplan-quality-speed.md)。
 
@@ -13,6 +54,8 @@ Go DeepSeekの今後の呼出しはthinking有効を既定にする。単体・S
 上流再検査には`recovery.review: "contract"`を追加した。[38条件の実測](docs/results/contract-quality.md)を完了した。指示強化は成功数を増やさず、既定はfocusedを維持する。新規2課題×3反復では単体/Sheepとも6/6成功、6組中5組でSheepが速かった。独立枝の速度8条件は全成功し、並列度と関連起動の効果を分けて確認した。[計画と完了記録](docs/execplan-contract-quality.md)。
 
 ## 現在の状態
+
+現在の追加経路は `repo --lazy-swarm`。親が直接実装し、必要時だけ限定scopeの子を起動する。親1・子最大2の[最小版と実Goの動作確認](docs/results/lazy-swarm.md)を完了した。[18課題・三対照54条件の比較](docs/results/lazy-benchmark-findings.md)も完了した。packet-all/子なしrootは18/18、lazyは16/18成功。lazyは子なしrootより成功組で1.31倍遅く、実験用opt-inを維持する。
 
 **kernel、実Luna worker、選択的な上位介入、8・16・32体の実測、SQLiteからの再開を実装し、別taskで4方式の初期比較まで完了した。**
 
@@ -159,3 +202,5 @@ npm run mechanism:experiment -- --budget-mode tokens --runtime deepseek --worker
 
 
 task v2に、workerが公開probeのIDを選び、hostで失敗を再現して上流へ渡すopt-in経路を追加した。通常再検査後の追加回復、誤診・古い版・重複・検査障害の拒否を検証した。[使い方と境界](docs/public-probes.md)、[9条件の実測](docs/results/public-probes.md)。各方式3/3成功だが品質・速度の改善は確認できず、既定では有効化しない。
+
+`repo --lazy-swarm` に、直接実装する親と任意の子（最大2体）の継続・fork/joinを追加した。子なし対照は `--lazy-children 0`。既存packet-allを基準に保ち、lazyは実験用opt-inとする。[使い方と境界](docs/lazy-swarm.md)、[実行計画](docs/execplan-lazy-swarm.md)。

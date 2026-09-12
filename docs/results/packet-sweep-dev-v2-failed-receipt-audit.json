@@ -1,0 +1,23 @@
+{
+  "calls": 2,
+  "knownTokens": 2312,
+  "totalTokens": null,
+  "unknownCalls": [
+    "call-2"
+  ],
+  "evidenceErrors": [
+    "call-2: model/thinking evidence"
+  ],
+  "hashes": {
+    "call-1.request.json": "995276172c70995a3ee9cbb016ebc0f885b480eea80cac62a23c21ccc64f3001",
+    "call-2.request.json": "63b6fa5b38250fa89790041ad88198bd3f22e9ad99a0be519da01923b039004b",
+    "call-1.json": "862ccf0458092dc1d75bf463b34eef33e31cb2718add66a3f6996f6965417b64",
+    "call-2.json": "98e6b076d552358ad9cbe5619b75e64af080688c639623af094ce1c0449a041e",
+    "budget.json": "411f364aa1c199640272b88dbbd77da9cbdb55fea5e4e5699d6937c48922c8fd",
+    "kernel.json": "295c8b8126cedce70ada3f7176f90e64af6dad142354097d5a8365b51f84fe83"
+  },
+  "checkpointObservedTokens": 2312,
+  "checkpointActiveReservations": 0,
+  "quality": null,
+  "completionMs": null
+}

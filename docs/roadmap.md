@@ -2,6 +2,34 @@
 
 2026-09-09の [現在の方針](current-direction.md) に基づく計画。小さなkernelから実workerへ進み、人数を変えた振る舞いを早く観測する。各段階の状態は実行証拠に合わせる。詳細な進捗は [ExecPlan](execplan.md)、M2の証拠は [4体pilot](results/luna-four-worker-pilot.md) を参照。
 
+## Lazy swarm — 最小版と三対照dev18課題・全54条件の監査完了
+
+[実行計画](execplan-lazy-swarm.md)。[結果](results/lazy-swarm.md): 613テスト・参照2件、最終smoke10条件が成功。実装受入はGoのthinking/tool履歴の実継続、直接提出の1call完了、親子が重なる非同期実行、scope/read版/共通予算の反例検査、固定最終oracleとsource drift付き候補採用、子なし対照のCLIである。最小版の動作確認と、三方式の品質・速度ベンチマークを分ける。[三対照の実行計画](execplan-lazy-benchmark.md)に従い、小修正・独立実装・連結実装の18課題×三方式を凍結して完走・監査した。[結果](results/lazy-benchmark-findings.md)はpacket-all/子なしroot 18/18、lazy 16/18成功。lazyは子なしrootより遅く事前採用条件を満たさない。617テストと全receipt/候補の監査を完了した。次は公開context・実装量が大きい少数課題で三対照を維持して検証する。並列durabilityと子の再試行は未実装のまま後段に置く。
+
+## Semantic decomposition — dev24課題・全72条件の実測と監査完了
+
+[plannerと実験条件](semantic-decomposition.md)。全公開repoを読むDeepSeek Flashの1callからwrite/read/依存を提案させ、hostが重複・循環を統合する。全targetの1packetも許す。完了条件は24課題×Single/固定all/plannedの72条件、planner込みの共有予算・完了時間、全receipt/候補/固定oracleの監査。evaluationとManagerは後段。 [完了結果](results/semantic-decomposition-findings.md): Single/固定all 24/24、planned 23/24。plannedは成功組でSingle比1.36倍・固定all比1.48倍の時間。有効23planの21件が1packet。独立plannerは既定にせず、次の分解実験は真に複数変更が必要な課題または公開起点の変更伝播へ分ける。
+
+## Work packetの粒度比較 — 全dev比較・監査完了、semantic decompositionの小規模比較へ
+
+[決定と検証順序](work-packet-direction.md)。最初に複数targetを原子的に提案・検証できる共通executorとCLI dry-runを実装する。独立fixtureでscope・read版・packet間通知・循環・usage不明停止を確認後、凍結devでall/8/4/2/1target packetを全起動・同じ公開context・C4で比較する。品質と両方成功した組の完了時間を主指標とし、N=1も採用候補にする。変更起点を公開したactivation比較は粒度を固定した別課題へ分ける。自動選択・evaluation・Managerは設定を選んだ後へ置く。
+
+実装: [repo --packet-size](repository-packets.md)でall/1/複数targetを共通経路へ接続した。公開graphのSCC分割、複数writeの原子的commit、変更前baselineと現在依存版の分離、packet内通知の公開再検証、旧版/権限/usageの拒否を含む。単体・循環・並列・scope・失敗・CLIの13追加テストを含む568テストと参照2件が成功。実APIの小規模対照は[別記録](results/repository-packets.md)。dev 128件の粒度比較、適応器、activation比較は次の範囲。
+
+[dev粒度比較の固定計画](packet-sweep-plan.md)を644実runとして開始したが、3完了・1中断で停止。[通知不整合と修正の記録](results/packet-sweep-host-fault.md)。[修正版の新系列](results/packet-sweep-rerun.md)では有効90runが全て成功したが、91run目のHTTP 500・usage不明で停止。その後、通信再試行で[全644条件の比較と監査](results/packet-sweep-findings.md)を完了した。粒度の基準候補はall、evaluation用の条件固定と実走は未完了。stub成功は性能結果に数えない。
+
+利用者の継続指示により、[通信再試行controller](packet-sweep-retry-plan.md)を追加した。完了条件は失敗receipt・未知usageを保持した再実行と残条件の継続、全attemptの時間・call・受付枠の共有。9条件の通信再試行は全て回復。dev比較は完了し、[結論](results/packet-sweep-findings.md)に基づいて次の比較条件を固定する。
+
+以下の旧系列と完了記録は保持する。PR #9の停止系列の残りを埋めることは、次の最優先作業にはしない。
+
+## 合成課題のSingle/Sheep比較 — 実装済み、dev実測は基盤障害で部分停止
+
+[計画](execplan-synthetic-paired.md)。コーパスのhashを凍結し、dev 128課題を同じDeepSeek Flashで対応比較する。品質と両方式が成功した組の実所要時間をfamily・依存形状・target数・最長依存経路別に報告する。[途中実測](results/synthetic-paired-dev.md)は有効39組。Single 38/39・Sheep 37/39成功、両方成功37組中32組でSingleが速かった。80run目にHTTP 500で1callの使用量が不明となり新規受付を停止。未実行176run、evaluation、Managerは残る。devで設定を選んだ後にevaluation、次にManagerを比較する。
+
+## 合成課題集 — 256課題の生成・全件検査済み
+
+利用者指定のDevin（SWE-2 Max）で16系統・256課題を作成し、呼出し側で補修・検証した。[使い方](synthetic-corpus.md)、[証拠](results/synthetic-corpus.md)。完了条件は全件の元コード失敗・基準解成功・意味変異拒否、family単位のdev/evaluation分離、公開/非公開hash、既存repo runnerへの接続、CLIの再現性。[DeepSeek初回pilot](results/synthetic-corpus-deepseek.md)は16系統の4target課題を各1回実行し、14/16成功・中央値34.63秒。次は残りvariantと規模・方式の対照。課題数を独立した問題系統数と混同しない。
+
 ## DeepSeek Flashの品質・実所要時間比較 — 初期実走済み
 
 利用者の2026-09-11指定により主比較をopencode-go/deepseek-flashへ移し、固定時間による採点は採用しない。単体は全targetを1callで修正できるbaselineを追加し、2family×3variant×2方式を実行した。初回の配列応答形式による却下を保全し、対象名固定schemaの別12runも同じoracleで測定した。[結果](results/deepseek-quality-speed.md)。後者は単体5/6、Sheep4/6成功。496テスト・型検査・原資料照合・全receipt監査が成功した。
