@@ -13,6 +13,7 @@ import {callOpenCodeGo,type OpenCodeGoOptions} from './opencode-go-worker.ts';
 import {CodexWorkerError,type CodexCallResult} from './codex-worker.ts';
 import type {RepoRunOptions,RepoVerification} from './repo-types.ts';
 import {planPackets} from './repo-packets.ts';
+import {compileWorkPlan} from './repo-work-plan.ts';
 import {packetSchema,parsePacketResponse} from './repo-packet-response.ts';
 
 export type PacketCaller=(options:OpenCodeGoOptions)=>Promise<CodexCallResult<unknown>>;
@@ -69,32 +70,45 @@ export async function prepareRepositoryPackets(options:RepoRunOptions) {
   }
   return {path,dependsOn:[...dependencies].sort()};
  });
- const partition=planPackets(nodes,config.packetSize);
+ const semantic=options.workPlan===undefined?undefined:compileWorkPlan(options.workPlan,targets,publicPaths,edges);
+ const partition=semantic??planPackets(nodes,config.packetSize);
+ if(semantic)for(const packet of semantic.packets)for(const consumer of packet.paths){
+  for(const provider of packet.relevantPaths)graph.get(consumer)!.add(provider);
+  for(const dep of packet.dependsOn)for(const provider of semantic.packets.find(p=>p.id===dep)!.paths)graph.get(consumer)!.add(provider);
+ }
  // The kernel records every delivered read for every written member. Grouping
  // a and b therefore couples their consumers even when a/b have no source edge.
  // Close over co-members before dispatch so transitive notifications always
  // have a current provider in the checkout. This adds reads, never authority.
  for(const packet of partition.packets)for(const consumer of packet.paths)for(const provider of packet.paths)
   if(consumer!==provider)graph.get(consumer)!.add(provider);
- const packets=partition.packets.map(p=>({...p,currentReadPaths:closure(p.paths).filter(path=>targets.includes(path))}));
- const plan={...partition,packets,publicPaths,contextPolicy:'immutable-public-baseline+upstream-packet-closure',
+ const packets=partition.packets.map(p=>({...p,currentReadPaths:closure(p.paths).filter(path=>targets.includes(path)),
+  ...(semantic?{contextPaths:closure(p.paths),work:semantic.packets.find(x=>x.id===p.id)!}:{})}));
+ const plan={...partition,packets,publicPaths,contextPolicy:semantic?'planner-selected-public-baseline+upstream-packet-closure':'immutable-public-baseline+upstream-packet-closure',
   initialPublicBytes:Object.values(initial).reduce((n,s)=>n+Buffer.byteLength(s),0),graphEdges:edges};
  if(task.discovery&&plan.initialPublicBytes>task.discovery.maxDeliveredBytes)throw new Error('packet public baseline exceeds maxDeliveredBytes');
  return {snapshot,initial,plan,config};
+}
+
+export async function preparePacketOutput(snapshot:Awaited<ReturnType<typeof captureRepository>>,directory:string) {
+ const output=await canonicalOutput(directory);
+ for(const p of new Set([...snapshot.entries.keys(),...snapshot.task.files.map(f=>f.path)])) {
+  const absolute=join(snapshot.root,p);
+  if(output===absolute||output.startsWith(absolute+sep)||absolute.startsWith(output+sep))throw new Error('output overlaps repository files');
+ }
+ await mkdir(dirname(output),{recursive:true});await mkdir(output);
+ return output;
 }
 
 /** Shared executor for singleton, multi-target and all-target packets; no durable resume. */
 export async function runPacketRepository(options:RepoRunOptions,caller:PacketCaller=callOpenCodeGo) {
  const started=performance.now();
  const {snapshot,initial,plan,config}=await prepareRepositoryPackets(options),task=snapshot.task;
- const output=await canonicalOutput(options.outputDirectory);
- for(const p of new Set([...snapshot.entries.keys(),...task.files.map(f=>f.path)])) {
-  const absolute=join(snapshot.root,p);
-  if(output===absolute||output.startsWith(absolute+sep)||absolute.startsWith(output+sep))throw new Error('output overlaps repository files');
- }
- await mkdir(dirname(output),{recursive:true});await mkdir(output);
+ const output=await preparePacketOutput(snapshot,options.outputDirectory);
  const baseline=JSON.stringify({goal:task.goal,instructions:task.files.map(f=>({path:f.path,instructions:f.instructions})),files:initial});
- const kernel=new SwarmKernel({artifacts:{...snapshot.initialTargets,[BASELINE]:baseline}});
+ const baselineId=(p:typeof plan.packets[number])=>p.work?`${BASELINE}/${p.id}`:BASELINE;
+ const baselines=Object.fromEntries(plan.packets.map(p=>[baselineId(p),p.work?JSON.stringify({goal:task.goal,instructions:task.files.filter(f=>p.paths.includes(f.path)).map(f=>({path:f.path,instructions:f.instructions})),files:Object.fromEntries(p.contextPaths!.map(path=>[path,initial[path]])),objective:p.work.objective,invariants:p.work.invariants}):baseline]));
+ const kernel=new SwarmKernel({artifacts:{...snapshot.initialTargets,...baselines}});
  for(const p of plan.packets)for(const consumer of p.paths)for(const provider of p.currentReadPaths)if(consumer!==provider)kernel.addDependency(consumer,provider);
  kernel.closeInput();
  const budget=new TokenBudget(config),done=new Set<string>(),feedback=new Map<string,string>();
@@ -123,7 +137,7 @@ export async function runPacketRepository(options:RepoRunOptions,caller:PacketCa
  // internal notification obligations, without purchasing an identical LLM call.
  const acknowledge=async(packet:Packet)=>{
   const obligations=pendingFor(packet);if(!obligations.length)return;
-  const context=kernel.checkout(packet.id,[BASELINE,...packet.currentReadPaths]);
+  const context=kernel.checkout(packet.id,[baselineId(packet),...packet.currentReadPaths]);
   const lease=kernel.grant(packet.id,packet.paths,Number.MAX_SAFE_INTEGER-Date.now());
   const candidate=kernel.prepare({id:randomUUID(),agent:packet.id,context:context.id,lease,writes:Object.fromEntries(packet.paths.map(p=>[p,context.contents[p]!])),obligations:obligations.map(o=>o.id)});
   const verdict=await kernel.validate(candidate.id,contents=>verify(contents,packet.paths));
@@ -144,7 +158,7 @@ export async function runPacketRepository(options:RepoRunOptions,caller:PacketCa
     if(calls.length>=config.maxCalls){termination='call-limit';break;}
     const id=`call-${calls.length+1}`;
     if(!budget.reserve('deepseek-flash',id)){termination='token-budget';break;}
-    const context=kernel.checkout(packet.id,[BASELINE,...packet.currentReadPaths]);
+    const context=kernel.checkout(packet.id,[baselineId(packet),...packet.currentReadPaths]);
     const lease=kernel.grant(packet.id,packet.paths,Number.MAX_SAFE_INTEGER-Date.now());
     const call={id,packet:packet.id,outcome:'reserved',errors:[] as string[],durationMs:0,promptBytes:0,readContext:context.id};calls.push(call);
     pending.push({packet,context,lease,call});kernel.beginWork(id,packet.id);
@@ -154,7 +168,7 @@ export async function runPacketRepository(options:RepoRunOptions,caller:PacketCa
     const {packet,context,call}=item;
     const prompt=[`Implement one work packet. Return exactly {files: {each assigned path: complete source string}, note: string}. No tools or upper consultation.`,
      `The following public baseline is immutable original task input, NOT current versions of other packets. Use the current dependency overlay below for evolving code.`,
-     `Public baseline: ${context.contents[BASELINE]}`,`Assigned targets: ${JSON.stringify(packet.paths)}`,
+     `Public baseline: ${context.contents[baselineId(packet)]}`,`Assigned targets: ${JSON.stringify(packet.paths)}`,
      `Current packet/dependency files: ${JSON.stringify(Object.fromEntries(packet.currentReadPaths.map(p=>[p,context.contents[p]])))}`,
      `Previous rejected proposal: ${JSON.stringify(previousProposals.get(packet.id)??null)}`,
      `Previous public feedback: ${feedback.get(packet.id)??''}`].join('\n');

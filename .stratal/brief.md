@@ -6,7 +6,7 @@ DeepSeek Flash単体と群れを比較し、分担・依存管理・必要時の
 
 ## Current Working Contract
 
-2026-09-11のPR #9後は[work packet方針](../docs/work-packet-direction.md)を優先する。共通executorで粒度を測り、N=1も正常な選択肢にする。以下の従来範囲は実装の背景として保持する。packet機能はopt-in実装済み。dev全体の粒度実測は初回系列が基盤障害で途中停止。
+2026-09-11のPR #9後は[work packet方針](../docs/work-packet-direction.md)を優先する。共通executorで粒度を測り、N=1も正常な選択肢にする。以下の従来範囲は実装の背景として保持する。packet機能はopt-in実装済み。dev全体の粒度実測と監査は完了した。
 
 現在はkernel、Luna4体、8・16・32体の規模比較、C=1の永続化と実process再開を確認済み。別taskで4方式の初期比較も完了し、失敗と実装修正後の追加試行を分けて保存した。公式価格・cacheによる見積器に加え、静的・レジストリ意味依存・3段階変更とcredit相当受付を実装した。新しい主比較はtimeoutの使用量不明で停止し、承認された追加100相当の枠でN16/32を実行した。N8/16/32はC=8で各1回成功したが、増員の明確な利益は未確認。詳細は [実測](../docs/results/mechanism-findings.md) に残す。方針全体は [docs/current-direction.md](../docs/current-direction.md)、実装順序は [docs/roadmap.md](../docs/roadmap.md) を参照。
 
@@ -348,3 +348,16 @@ Authority: Human stated (2026-09-11)
 Authority: User-authorized experiment / measured agent judgment (2026-09-12)
 
 全644条件・655試行を完了し監査した。all/8/4/2は128/128、旧Singleとpacket-1は127/128成功。allに対する時間比中央値は8/4/2/1が約1.66/1.70/1.98/2.33倍。通信障害9条件は全回復し、不明usage13callを保持する。devではallを基準候補にする。evaluation条件は未固定・未実走、Managerとactivationは別仮説として保持する。[結果と限界](../docs/results/packet-sweep-findings.md)。
+
+### 2026-09-12: 全体理解からの作業境界選択
+
+Evidence: 利用者の「マージして。以下参考に進める」とPR #10のdev全件結果。#10を既存baseへマージした。
+Working default: [semantic planner](../docs/semantic-decomposition.md)は全公開入力を読み、1packetを含む担当とuntouchedを選ぶ。workerには選択入力を渡す。重複writeと循環はhostが統合し、固定oracleを維持する。
+Validation: 公開metadataだけで選ぶdev24課題、Single/固定all/planned、planner込みの時間と共有tokens。品質と速度が主指標。通信失敗だけ既定の再試行を適用し、評価用課題は実行しない。
+Next: 全72条件を独立監査し、1packet率・実変更数とpaired結果から次の方針を決める。
+
+### Semantic decomposition pilotの完了
+
+2026-09-12: dev24課題×3方式、全72試行・101callを監査した。Single/固定allは24/24、plannedは23/24。形式拒否1件を維持する。有効23plan中21件が1packetで、全targetの1packetは2件。成功組の時間比中央値はplannedがSingle比1.36倍・固定all比1.48倍。不明usageなし。
+Working default: Single/packet-allを基準に維持し、独立plannerはopt-in研究経路とする。固定細分化・C増加を優先しない。
+Next: 次の分解実験は複数変更が本当に必要な課題か、公開起点の変更伝播で行う。直接修正/分割要求を最初のcallで選ぶ方式は別の未実装仮説。evaluationとManagerは今回呼んでいない。[証拠と限界](../docs/results/semantic-decomposition-findings.md)。

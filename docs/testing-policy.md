@@ -199,3 +199,7 @@ packet同居関係によって静的source edge外へ伝わる通知は、独立
 
 
 `report-packet-sweep-retry.mjs`は全条件終了・pendingなしを確認してから655試行を監査し、stateが監査中に変わっていないことを照合する。measurement-notesの追加時間除外も反映し、品質と資源は除外しない。新しいmodel callは発行しない。[完了結果](results/packet-sweep-dev-complete.md)。
+
+## Semantic planner
+
+`repo-work-plan.test.ts`は公開scope・coverage・重複write・static/semantic循環・不正入力と実APIのschema方言を検査する。`repo-planned-run.test.ts`は1packet、untouched、並列packet、providerの現在版、誤ったuntouchedの全体失敗、planner使用量・モデル・source drift、CLI dry-runを確認する。`semantic-decomposition.test.ts`は24課題のdev限定・サイズ/順序均衡と欠測・失敗の集計、`semantic-pilot-runner.test.ts`は3方式の独立監査とplanner通信失敗からの再試行・未知usage保持を確認する。通常gateではAPIを呼ばない。実APIの前にgateを終え、速度計測中に重いtestを重ねない。全72条件後に凍結runtime・raw receipt・候補・元fixture・独立oracleを再監査する。
